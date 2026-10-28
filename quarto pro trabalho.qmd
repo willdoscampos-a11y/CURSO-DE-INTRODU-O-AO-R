@@ -9,3 +9,12 @@ format:
 ---
 oi vim ensinar R
 
+# Meu Primeiro Teste
+
+Abaixo, o R vai calcular automaticamente a soma de 2 mais 2 bem no meio do texto:
+
+```{r}
+2 + 2
+```
+
+O texto continua normalmente aqui embaixo após o resultado aparecer.
