@@ -1,13 +1,4 @@
----
-title: "AULAS DE R"
-format:
-  pdf:
-    toc: true
-    number-sections: true
-    fig-pos: "H"
-    code-line-numbers: true
----
-oi vim ensinar R
+TEM QUE REESCREVER AQUI O PRIMEIRO ENTREGAVEL
 
 # Meu Primeiro Teste
 

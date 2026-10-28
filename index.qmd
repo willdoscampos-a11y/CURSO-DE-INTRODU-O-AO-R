@@ -1,0 +1,5 @@
+# Apresentação {.unnumbered}
+
+Bem-vindo ao nosso e-book de introdução à linguagem R.
+
+Este material foi desenvolvido em colaboração para ensinar programação em R, desde os conceitos básicos.

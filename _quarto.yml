@@ -1,0 +1,27 @@
+project:
+  type: book
+
+book:
+  title: "E-book de Introdução ao R"
+  author: "William Cordeiro, Lucas de Freitas..."
+  chapters:
+    - index.qmd
+    - "ENTREGAVEL 1.qmd"
+    - part: "ENTREGAVEL 2"
+    chapters: 
+      - ENTREGAVEL 2BADO.qmd
+      - ENTREGAVEL 2DAVI.qmd
+      - ENTREGAVEL 2LUCAS.qmd
+      - ENTREGAVEL 2MESTRE.qmd
+      - ENTREGAVEL 2WILLIAM.qmd
+      - ENTREGAVEL 2JOÃO PEDRO.qmd
+    - "o texto e codigos.qmd"
+
+format:
+  pdf:
+    toc: true
+    fig-pos: "H"
+    code-line-numbers: true
+    number-sections: true
+  html:
+    toc: true
