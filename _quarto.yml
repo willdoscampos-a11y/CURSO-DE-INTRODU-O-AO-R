@@ -1,3 +1,6 @@
+# CONFIGURAÇÕES GERAIS DO E-BOOK
+# Aqui ficam o título, os capítulos e a formatação.
+
 project:
   type: book
 
