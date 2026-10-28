@@ -10,22 +10,24 @@ book:
   chapters:
     - index.qmd
     - "ENTREGAVEL 1.qmd"
+
     - part: "ENTREGAVEL 2"
-      chapters: 
-      - ENTREGAVEL 2BADO.qmd
-      - ENTREGAVEL 2DAVI.qmd
-      - ENTREGAVEL 2LUCAS.qmd
-      - ENTREGAVEL 2MESTRE.qmd
-      - ENTREGAVEL 2WILLIAM.qmd
-      - ENTREGAVEL 2JOÃO PEDRO.qmd
+      chapters:
+        - "ENTREGAVEL 2/ENTREGAVEL 2BADO.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2DAVI.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2MESTRE.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.qmd"
+
     - part: "ENTREGAVEL 3"
-      chapters: 
-        - ENTREGAVEL 3\ENTREGAVEL 2DAVI.qmd
-        - ENTREGAVEL 3\ENTREGAVEL 3bado.qmd
-        - ENTREGAVEL 3\ENTREGAVEL 3JOÃO PEDRO.qmd
-        - ENTREGAVEL 3\ENTREGAVEL 3LUCAS.qmd
-        - ENTREGAVEL 3\ENTREGAVEL 3mestre.qmd
-        - ENTREGAVEL 3\ENTREGAVEL 3william.qmd
+      chapters:
+        - "ENTREGAVEL 3/ENTREGAVEL 2DAVI.qmd"
+        - "ENTREGAVEL 3/ENTREGAVEL 3bado.qmd"
+        - "ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.qmd"
+        - "ENTREGAVEL 3/ENTREGAVEL 3LUCAS.qmd"
+        - "ENTREGAVEL 3/ENTREGAVEL 3mestre.qmd"
+        - "ENTREGAVEL 3/ENTREGAVEL 3william.qmd"
 
 format:
   pdf:
@@ -33,5 +35,6 @@ format:
     fig-pos: "H"
     code-line-numbers: true
     number-sections: true
+
   html:
     toc: true
