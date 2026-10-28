@@ -11,14 +11,21 @@ book:
     - index.qmd
     - "ENTREGAVEL 1.qmd"
     - part: "ENTREGAVEL 2"
-    chapters: 
+      chapters: 
       - ENTREGAVEL 2BADO.qmd
       - ENTREGAVEL 2DAVI.qmd
       - ENTREGAVEL 2LUCAS.qmd
       - ENTREGAVEL 2MESTRE.qmd
       - ENTREGAVEL 2WILLIAM.qmd
       - ENTREGAVEL 2JOÃO PEDRO.qmd
-    - "o texto e codigos.qmd"
+    - part: "ENTREGAVEL 3"
+      chapters: 
+        - ENTREGAVEL 3\ENTREGAVEL 2DAVI.qmd
+        - ENTREGAVEL 3\ENTREGAVEL 3bado.qmd
+        - ENTREGAVEL 3\ENTREGAVEL 3JOÃO PEDRO.qmd
+        - ENTREGAVEL 3\ENTREGAVEL 3LUCAS.qmd
+        - ENTREGAVEL 3\ENTREGAVEL 3mestre.qmd
+        - ENTREGAVEL 3\ENTREGAVEL 3william.qmd
 
 format:
   pdf:
