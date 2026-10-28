@@ -9,7 +9,9 @@ book:
   author: "William Cordeiro, Lucas de Freitas..."
   chapters:
     - index.qmd
-    - "ENTREGAVEL 1.qmd"
+    - part: "ENTREGAVEL 1"
+      chapters: 
+        - ENTREGAVEL 1.qmd
 
     - part: "ENTREGAVEL 2"
       chapters:
