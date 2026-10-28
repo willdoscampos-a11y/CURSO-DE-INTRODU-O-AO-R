@@ -1,5 +1,11 @@
 ---
 title: "AULAS DE R"
-format: pdf
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    fig-pos: "H"
+    code-line-numbers: true
 ---
+oi vim ensinar R
 
