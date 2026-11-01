@@ -1,11 +1,76 @@
-TEM QUE REESCREVER AQUI O PRIMEIRO ENTREGAVEL
+---
+title: "Entregável 1 — Importação da PNAD Contínua no Positron"
+execute:
+  eval: false
+---
 
-# Meu Primeiro Teste
+# Importação da PNAD Contínua no Positron
 
-Abaixo, o R vai calcular automaticamente a soma de 2 mais 2 bem no meio do texto:
+Neste entregável, vamos aprender a instalar e carregar o pacote `PNADcIBGE`, selecionar o ano e o trimestre de interesse, importar os dados da PNAD Contínua e verificar o resultado no R usando o Positron.
+
+**Exemplo didático:** primeiro trimestre de 2024.
+
+**Pré-requisitos:** R instalado, Positron, conexão com a internet e espaço disponível em disco.
+
+> **Sobre a geração do PDF:** por padrão, os blocos deste capítulo são **exibidos, mas não executados** durante a renderização. Isso evita downloads grandes e falhas por falta de internet. Depois de instalar o pacote e confirmar que a importação funciona no Positron, você pode trocar `eval: false` por `eval: true` no início deste arquivo para executar o código e incluir seus resultados no PDF.
+
+## Etapa 1 — Instalar o pacote
+
+O pacote `PNADcIBGE` permite acessar dados da PNAD Contínua a partir do R. A instalação precisa ser feita apenas se o pacote ainda não estiver instalado.
 
 ```{r}
-2 + 2
+install.packages("PNADcIBGE")
 ```
 
-O texto continua normalmente aqui embaixo após o resultado aparecer.
+**Dica:** execute esse comando no console R do Positron uma vez; não é necessário reinstalar o pacote a cada sessão.
+
+## Etapa 2 — Carregar o pacote
+
+Em uma nova sessão do R, carregue o pacote instalado com `library()`.
+
+```{r}
+library(PNADcIBGE)
+```
+
+## Etapa 3 — Definir os parâmetros da consulta
+
+Antes de buscar os dados, defina o ano e o trimestre que deseja consultar. No R, o operador `<-` atribui um valor a um objeto.
+
+```{r}
+ano <- 2024
+trimestre <- 1  # valores válidos: 1, 2, 3 ou 4
+```
+
+Neste exemplo, estamos solicitando o **primeiro trimestre de 2024**. Para consultar outro período, modifique esses dois valores.
+
+## Etapa 4 — Baixar e importar a PNAD Contínua
+
+A função `get_pnadc()` é utilizada para obter os dados. O operador `::` indica explicitamente o pacote ao qual a função pertence. A opção `design = TRUE` solicita um objeto com informações do desenho amostral da pesquisa.
+
+```{r}
+pnad <- PNADcIBGE::get_pnadc(
+  year = ano,
+  quarter = trimestre,
+  design = TRUE
+)
+```
+
+**Atenção:** a primeira execução pode demorar, porque envolve download de dados. É preciso ter internet e espaço no disco.
+
+## Etapa 5 — Conferir o resultado
+
+Depois da importação, confira a classe do objeto, seu resumo, os nomes das variáveis, as dimensões da base e as primeiras observações.
+
+```{r}
+class(pnad)                  # classe do objeto importado
+summary(pnad)                # resumo do desenho amostral
+names(pnad$variables)[1:20]  # primeiras 20 variáveis
+dim(pnad$variables)           # número de linhas e colunas
+head(pnad$variables)         # primeiras observações
+```
+
+Esses comandos ajudam a verificar a estrutura do objeto importado antes de iniciar as análises.
+
+## Encerramento
+
+Neste capítulo, você viu o fluxo básico de importação da PNAD Contínua no Positron: **instalar o pacote → carregá-lo → definir o período → importar → conferir os dados**. Os exemplos usam o primeiro trimestre de 2024; o procedimento pode ser adaptado para outros trimestres.
