@@ -1,6 +1,6 @@
+
 ---
-title: "Introdução e interpretação das variáveis"
-subtitle: "Conhecendo os microdados da PNAD Contínua"
+title: "Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua"
 lang: pt-BR
 
 format:
@@ -21,13 +21,19 @@ format:
     colorlinks: true
     include-in-header:
       - text: |
-          \usepackage{etoolbox}
+          \usepackage{titling}
+          \pretitle{\begin{center}\Huge\bfseries}
+          \posttitle{\par}
+          \preauthor{\begin{center}}
+          \postauthor{\end{center}}
+          \predate{\begin{center}}
+          \postdate{\end{center}\par}
           \makeatletter
-          \providecommand{\subtitle}[1]{%
-            \apptocmd{\@title}{%
-              \par\vspace{0.4em}
-              {\Large\bfseries #1\par}
-            }{}{}
+          \renewcommand{\maketitlehookb}{%
+            \par\vspace{0.5em}
+            {\fontsize{16}{20}\selectfont\bfseries
+            Conhecendo os microdados da PNAD Contínua\par}
+            \vspace{1em}
           }
           \makeatother
 
@@ -37,17 +43,20 @@ execute:
 ---
 
 
+
 ## O que são variáveis e por que precisamos interpretá-las?
 Antes de iniciar qualquer análise estatística, é necessário compreender quais informações estão disponíveis na base de dados e o que cada uma delas representa.
 
 Uma variável é uma característica observada para cada unidade de análise de uma pesquisa. Na PNAD Contínua, por exemplo, podemos encontrar informações sobre idade, escolaridade, rendimento, condição de ocupação e características dos domicílios.
 
 Em uma pesquisa sobre diferenças de renda entre famílias chefiadas por homens e mulheres, algumas perguntas orientam a escolha das variáveis:
+
 - Qual é a renda do domicílio?
 - Quem é considerado responsável pelo domicílio?
 - Em qual região do Brasil o domicílio está localizado?
 - Qual é a escolaridade dos moradores?
 - Quantas pessoas compõem o domicílio?
+
 Cada pergunta precisa ser associada a uma ou mais variáveis disponíveis na base de dados.
 
 Uma observação importante: não basta encontrar uma variável com um nome aparentemente adequado. É necessário verificar sua definição, população de referência, período de coleta, categorias de resposta e unidade de medida.
@@ -63,6 +72,7 @@ Sem consultar a documentação, o pesquisador não sabe necessariamente o que es
 Essa consulta permite compreender o significado dos dados e evita interpretações equivocadas.
 
 Isso é importante pois:
+
 - Evita confundir variáveis com nomes ou códigos semelhantes.
 - Permite identificar quais informações são adequadas aos objetivos da pesquisa.
 - Ajuda a reconhecer valores ausentes e categorias especiais.
@@ -94,10 +104,13 @@ As variáveis podem assumir diferentes formatos, e reconhecer essas diferenças 
 
 ### Variáveis qualitativas
 Representam características ou categorias. Podem ser divididas em:
+
 - Nominais: categorias sem uma ordem natural, como sexo, região geográfica e cor ou raça.
 - Ordinais: categorias que apresentam uma ordem, como faixas de escolaridade ou classes de rendimento.
+
 ### Variáveis quantitativas
 Representam valores numéricos e podem ser divididas em:
+
 - Discretas: assumem valores contáveis, como número de moradores no domicílio.
 - Contínuas: podem assumir diferentes valores dentro de um intervalo, como rendimento mensal.
 
@@ -149,9 +162,11 @@ Na documentação, o código 01 corresponde à pessoa responsável pelo domicíl
 Isso significa que não devemos simplesmente classificar todos os moradores do sexo masculino como integrantes de domicílios chefiados por homens.
 
 O procedimento correto é:
+
 1. Identificar a pessoa responsável pelo domicílio.
 2. Consultar o sexo dessa pessoa.
 3. Classificar o domicílio de acordo com essa informação.
+
 Outra ressalva conceitual: pessoa responsável pelo domicílio não é necessariamente sinônimo de chefe de família. Um domicílio pode conter mais de uma família. Portanto, é importante definir se a pesquisa pretende comparar domicílios ou famílias e manter essa unidade de análise ao longo do trabalho.
 
 ## Explorando as variáveis no R
