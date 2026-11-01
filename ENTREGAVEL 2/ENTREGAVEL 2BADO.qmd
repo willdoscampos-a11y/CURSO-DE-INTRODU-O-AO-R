@@ -1,5 +1,3 @@
-
-
 ---
 title: "Introdução e interpretação das variáveis"
 subtitle: "Conhecendo os microdados da PNAD Contínua"
@@ -9,6 +7,7 @@ format:
   html:
     toc: true
     number-sections: true
+
   pdf:
     documentclass: article
     pdf-engine: xelatex
@@ -19,13 +18,26 @@ format:
       - bottom=20mm
       - left=20mm
       - right=20mm
+    colorlinks: true
+    include-in-header:
+      - text: |
+          \usepackage{etoolbox}
+          \makeatletter
+          \providecommand{\subtitle}[1]{%
+            \apptocmd{\@title}{%
+              \par\vspace{0.4em}
+              {\Large\bfseries #1\par}
+            }{}{}
+          }
+          \makeatother
 
 execute:
   echo: true
   eval: false
 ---
 
-#1.1. O que são variáveis e por que precisamos interpretá-las?
+
+## O que são variáveis e por que precisamos interpretá-las?
 Antes de iniciar qualquer análise estatística, é necessário compreender quais informações estão disponíveis na base de dados e o que cada uma delas representa.
 
 Uma variável é uma característica observada para cada unidade de análise de uma pesquisa. Na PNAD Contínua, por exemplo, podemos encontrar informações sobre idade, escolaridade, rendimento, condição de ocupação e características dos domicílios.
@@ -40,7 +52,7 @@ Cada pergunta precisa ser associada a uma ou mais variáveis disponíveis na bas
 
 Uma observação importante: não basta encontrar uma variável com um nome aparentemente adequado. É necessário verificar sua definição, população de referência, período de coleta, categorias de resposta e unidade de medida.
 
-#1.2. O que é um dicionário de variáveis?
+## O que é um dicionário de variáveis?
 Um dicionário de variáveis é um documento que descreve as informações presentes em uma base de dados. Ele funciona como um guia para compreender e utilizar corretamente cada variável.
 
 Normalmente, apresenta informações como:
@@ -58,7 +70,7 @@ Isso é importante pois:
 - Torna a análise reproduzível por outros pesquisadores.
 
 
-##1.2.1. Como ler um dicionário de variáveis?
+### Como ler um dicionário de variáveis?
 Ao abrir o dicionário, você encontrará códigos que identificam as variáveis e suas respectivas descrições.
 
 | Código | Descrição |
@@ -77,36 +89,41 @@ Para interpretar corretamente essas informações, é necessário observar três
 
 Por exemplo, uma variável sobre sexo pode apresentar valores numéricos que representam categorias de resposta. O número não possui significado isoladamente: é a documentação que informa o que cada código representa.
 
-#1.3. Tipos de variáveis e unidades de medida
+## Tipos de variáveis e unidades de medida
 As variáveis podem assumir diferentes formatos, e reconhecer essas diferenças é essencial para escolher os procedimentos estatísticos adequados.
 
-Variáveis qualitativas
+### Variáveis qualitativas
 Representam características ou categorias. Podem ser divididas em:
 - Nominais: categorias sem uma ordem natural, como sexo, região geográfica e cor ou raça.
 - Ordinais: categorias que apresentam uma ordem, como faixas de escolaridade ou classes de rendimento.
-Variáveis quantitativas
+### Variáveis quantitativas
 Representam valores numéricos e podem ser divididas em:
 - Discretas: assumem valores contáveis, como número de moradores no domicílio.
 - Contínuas: podem assumir diferentes valores dentro de um intervalo, como rendimento mensal.
+
 É importante não confundir o formato numérico de uma variável com seu significado estatístico. Uma variável que utiliza os números 1, 2, 3 e 4 para representar regiões brasileiras continua sendo qualitativa, pois os números são apenas códigos de identificação.
-Unidades de medida
+
+### Unidades de medida
 Também é necessário identificar a unidade em que cada característica é registrada.
-Informação	Unidade de medida
-Idade	Anos
-Escolaridade	Anos de estudo ou nível de instrução
-Rendimento	Reais (R$)
-Número de moradores	Pessoas
-Região	Categoria geográfica
+
+| Informação | Unidade de medida |
+|---|---|
+| Idade | Anos |
+| Escolaridade | Anos de estudo ou nível de instrução |
+| Rendimento | Reais (R$) |
+| Número de moradores | Pessoas |
+| Região | Categoria geográfica 
 
 Essa distinção é especialmente importante na análise de renda. Um rendimento mensal domiciliar total não representa a mesma coisa que um rendimento domiciliar per capita.
 O primeiro considera a renda total do domicílio; o segundo considera a renda em relação ao número de moradores, conforme a definição específica do indicador.
 
-#1.4. Aplicando os conceitos à nossa pesquisa
+## Aplicando os conceitos à nossa pesquisa
 Agora que conhecemos os conceitos básicos, podemos identificar as variáveis necessárias para investigar diferenças de renda entre domicílios chefiados por homens e mulheres.
 
 Para o nosso exercício, utilizaremos os microdados da PNAD Contínua de 2024, referentes à primeira visita domiciliar anual.
 
 A seleção inicial de variáveis contempla:
+
 | Código | Informação investigada | Utilidade na pesquisa |
 |---|---|---|
 | UF | Unidade da Federação | Identificar a localização geográfica |
@@ -119,7 +136,7 @@ A seleção inicial de variáveis contempla:
 | VD5001 | Indicador de rendimento domiciliar | Investigar a renda |
 | VD5002 | Indicador de rendimento domiciliar per capita | Investigar a renda por morador |
 | VD5004 | Indicador de rendimento domiciliar | Complementar a análise de renda |
-| VD5005 | Indicador de rendimento domiciliar per capita | Complementar a análise de renda |
+| VD5005 | Indicador de rendimento domiciliar per capita | Complementar a análise de renda 
 
 A tabela acima é uma seleção inicial de trabalho. As descrições completas de VD5001, VD5002, VD5004 e VD5005, inclusive a distinção entre rendimento efetivo e habitual e os critérios de inclusão de rendimentos, devem ser transcritas do dicionário específico da edição anual de 2024 antes da publicação do e-book. Não se deve tratar esses indicadores como equivalentes.
 Atenção: quem é considerado chefe do domicílio?
@@ -136,11 +153,12 @@ O procedimento correto é:
 2. Consultar o sexo dessa pessoa.
 3. Classificar o domicílio de acordo com essa informação.
 Outra ressalva conceitual: pessoa responsável pelo domicílio não é necessariamente sinônimo de chefe de família. Um domicílio pode conter mais de uma família. Portanto, é importante definir se a pesquisa pretende comparar domicílios ou famílias e manter essa unidade de análise ao longo do trabalho.
-1.6. Explorando as variáveis no R
+
+## Explorando as variáveis no R
 Até aqui, aprendemos a consultar a documentação. Agora vamos começar a relacionar essas informações com o banco de dados.
 
 Como estamos utilizando o R, podemos verificar quais variáveis estão disponíveis e observar os valores registrados.
-Passo 1 — Carregar os dados
+### Passo 1 — Carregar os dados
 No exemplo, consideramos que a base já foi carregada com o pacote PNADcIBGE, utilizando a função get_pnadc().
 
 ```{r}
@@ -158,7 +176,7 @@ head(dados_pnad)
 names(dados_pnad)
 ```
 
-Passo 2 — Consultar uma variável específica
+### Passo 2 — Consultar uma variável específica
 Vamos começar pela variável V2005, que identifica a condição do morador no domicílio.
 ```{r}
 # Visualizar os valores registrados
@@ -168,7 +186,8 @@ table(dados_pnad$V2005, useNA = "ifany")
 O comando table() apresenta a frequência de cada valor encontrado na variável.
 
 O argumento useNA = "ifany" permite identificar se existem observações ausentes (NA).
-Passo 3 — Consultar os códigos e suas categorias
+
+### Passo 3 — Consultar os códigos e suas categorias
 Podemos utilizar os atributos da variável para verificar se os rótulos foram carregados junto com os dados:
 ```{r}
 # Consultar os atributos da variável
@@ -184,7 +203,8 @@ table(dados_pnad$V2007, useNA = "ifany")
 ```
 
 Importante: a frequência dos códigos não substitui a consulta ao dicionário. É necessário verificar na documentação o significado de cada categoria antes de interpretar os resultados.
-Passo 4 — Identificar a pessoa responsável pelo domicílio
+
+### Passo 4 — Identificar a pessoa responsável pelo domicílio
 Podemos utilizar a variável V2005 para identificar os registros correspondentes à pessoa responsável:
 ```{r}
 # Selecionar pessoas responsáveis
@@ -198,23 +218,23 @@ A partir dessa seleção, podemos consultar a variável V2007 para identificar o
 
 Esse será um dos primeiros passos para construir nossa classificação de domicílios chefiados por homens e mulheres.
 
-#1.5. Cuidados metodológicos antes de prosseguir
+## Cuidados metodológicos antes de prosseguir
 Antes de iniciar as análises, precisamos considerar alguns aspectos importantes.
 
-##1. Unidade de observação
+### Unidade de observação
 
 Os microdados da PNAD Contínua apresentam registros individuais dos moradores. Isso significa que um mesmo domicílio pode aparecer em várias linhas, uma para cada morador.
 
 Se o objetivo é comparar rendimentos domiciliares, precisamos tomar cuidado para não contabilizar o mesmo domicílio várias vezes.
 
-##2. Valores ausentes e códigos especiais
+### Valores ausentes e códigos especiais
 
 Algumas variáveis podem apresentar códigos que representam situações específicas, como informação ignorada ou não aplicável. Esses códigos não devem ser interpretados automaticamente como valores reais.
 
-##3. Rendimentos nominais e reais
+### Rendimentos nominais e reais
 
 Os valores monetários precisam ser interpretados considerando o período de referência. Se o objetivo for comparar rendimentos de diferentes anos, será necessário realizar o deflacionamento.
 
-##4. Pesos amostrais
+### Pesos amostrais
 
 A PNAD Contínua é uma pesquisa por amostragem probabilística. Portanto, para produzir estimativas representativas da população brasileira, é necessário considerar os pesos amostrais e o desenho da pesquisa. Não basta calcular médias simples dos registros e tratá-las como estimativas populacionais.
