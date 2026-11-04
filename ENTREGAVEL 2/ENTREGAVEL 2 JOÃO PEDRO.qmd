@@ -1,1 +1,167 @@
-O broder vai delegar tarefa pro joão pedro e ele ira desenvolver aqui
+---
+title: "Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa"
+lang: pt-BR
+
+format:
+  html:
+    toc: true
+    number-sections: true
+
+  pdf:
+    documentclass: article
+    pdf-engine: xelatex
+    toc: true
+    number-sections: true
+    geometry:
+      - top=20mm
+      - bottom=20mm
+      - left=20mm
+      - right=20mm
+    colorlinks: true
+    include-in-header:
+      - text: |
+          \usepackage{titling}
+          \pretitle{\begin{center}\Huge\bfseries}
+          \posttitle{\par}
+          \preauthor{\begin{center}}
+          \postauthor{\end{center}}
+          \predate{\begin{center}}
+          \postdate{\end{center}\par}
+          \makeatletter
+          \renewcommand{\maketitlehookb}{%
+            \par\vspace{0.5em}
+            {\fontsize{16}{20}\selectfont\bfseries
+            Conhecendo os microdados da PNAD Contínua\par}
+            \vspace{1em}
+          }
+          \makeatother
+
+execute:
+  echo: true
+  eval: false
+---
+
+## Por que criar uma base de dados separada para nossa pesquisa?
+As bases disponibilizadas pelo IBGE, como os microdados da PNAD Contínua, possuem uma grande quantidade de informações, muitas das quais podem não ter relação direta com o objetivo da pesquisa.
+Por isso, em vez de realizar todas as operações diretamente sobre a base original, recomenda-se criar uma cópia contendo somente as informações necessárias para o desenvolvimento do artigo.
+
+Essa prática apresenta algumas vantagens:  
+- **Preservação dos dados originais:** mantém a base disponibilizada pelo IBGE intacta, permitindo retornar aos dados originais caso alguma transformação seja realizada incorretamente.  
+- **Organização:** concentra as informações relevantes em um único objeto, facilitando a localização e utilização das variáveis.  
+- **Eficiência:** reduz a quantidade de informações que o R precisa manipular, podendo melhorar o desempenho das operações.  
+- **Reprodutibilidade:** facilita a identificação das variáveis utilizadas e dos procedimentos realizados durante o tratamento dos dados.  
+
+É importante compreender que a nova base não representa uma alteração nos dados originais, mas uma versão reduzida e organizada, construída especificamente para responder à pergunta de pesquisa.
+
+## Por que padronizar os nomes das variáveis?
+Os nomes utilizados pelo IBGE seguem uma estrutura própria de identificação. Embora sejam importantes para manter a organização dos microdados, códigos como V2009, V2007 e V2005 não permitem identificar imediatamente o conteúdo de cada variável.
+Ao substituir esses códigos por nomes mais intuitivos, facilitamos a leitura e a interpretação dos comandos utilizados no R.
+Por exemplo, imagine um código que calcula a média de idade dos indivíduos:
+
+```{r}
+mean(pnad$V2009, na.rm = TRUE)
+```
+
+Embora o comando esteja correto, é necessário consultar o dicionário da PNAD para identificar o significado de V2009.
+Após a padronização, o mesmo comando pode ser escrito da seguinte maneira:
+
+```{r}
+mean(base_trabalho$idade, na.rm = TRUE)
+```
+
+A segunda versão é mais intuitiva, pois permite compreender imediatamente qual informação está sendo utilizada.
+Além disso, a padronização evita inconsistências na escrita dos nomes, facilita o trabalho em equipe e torna o código mais acessível para outros pesquisadores.
+
+## Qual padrão de nomenclatura utilizar?
+Não existe uma única convenção obrigatória para nomear variáveis no R. Entretanto, é recomendável escolher um padrão e utilizá-lo durante todo o desenvolvimento da pesquisa.
+Para trabalhos acadêmicos que envolvem manipulação e análise de dados, recomendamos o padrão `snake_case`. Nesse formato, os nomes são escritos em letras minúsculas, sem acentos, sem espaços e com palavras separadas por `underline (_)`.
+
+| Evitar | Recomendado |
+|---|---|
+| `V2009` | `idade` |
+| `SEXO` | `sexo` |
+| `Renda Familia` | `renda_familiar` |
+| `IdadeMorador` | `idade_morador` |
+| `RendaPerCapita` | `renda_per_capita` |
+| `Escolaridade` | `escolaridade` |
+
+[*Padrão recomendado: snake_case*]{style="color: green"}
+
+# Renomeando as variáveis para a base de dados da pesquisa
+Vamos criar uma nova base de dados contendo apenas as variáveis que serão utilizadas na pesquisa, já atribuindo nomes padronizados durante a seleção. Essa abordagem é mais adequada porque combina duas etapas importantes do tratamento dos dados: a seleção das variáveis relevantes (data selection) e a padronização da nomenclatura (data cleaning).
+
+Considerando que o objetivo de um artigo é relacionado a uma pergunta específica, a base original da PNAD provavelmente conterá muitas variáveis que não serão utilizadas diretamente na análise. Contribuindo para a redução de erros, pois diminui a possibilidade de utilizar acidentalmente variáveis inadequadas durante as análises.
+
+## Como renomear as variáveis com o R na prática?
+Vamos considerar algumas variáveis que poderiam ser utilizadas no estudo:
+
+| Variável PNAD | Descrição | Nome padronizado |
+|---|---|---|
+| `V2009` | Idade do morador | `idade` |
+| `V2007` | Sexo | `sexo` |
+| `V2005` | Condição no domicílio | `condicao_domicilio` |
+| `VD5002` | Rendimento domiciliar per capita | `renda_per_capita` |
+
+O exemplo abaixo utiliza a função `select()` do pacote `dplyr`, que permite selecionar e renomear variáveis simultaneamente.  
+[**Observação:**]{style="color: red"} Considerando que o pacote `dplyr` já está instalado no R. Caso ainda não esteja instalado utilize o comando `install.packages("dplyr")` uma vez.
+
+```{r}
+# Carregar o pacote
+library(dplyr)
+
+# Criar uma base específica para a pesquisa
+base_trabalho <- pnad %>%
+  select(
+    idade = V2009,
+    sexo = V2007,
+    condicao_domicilio = V2005,
+    renda_per_capita = VD5002
+  )
+```
+
+Nesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados.
+**Atenção:** as variáveis apresentadas são exemplos para demonstrar o procedimento. A escolha definitiva deve considerar o dicionário da edição da PNAD utilizada e, principalmente, qual tema será abordado em seu projeto.
+
+# Resumo: Expandindo para nossa pesquisa e o resultado da padronização.
+Utilizando da relação de variáveis relevante para nossa pesquisa construimos nossa base de dados, utilizando da padronização no padrão `snake_case`. Para isso, no R:
+
+```{r}
+library(dplyr)
+
+base_trabalho <- pnad %>%
+  select(
+    uf = UF,
+    numero_moradores = V2001,
+    ordem_morador = V2003,
+    condicao_domicilio = V2005,
+    sexo = V2007,
+    idade = V2009,
+    anos_estudo = VD3005,
+    rendimento_domiciliar = VD5001,
+    rendimento_per_capita = VD5002,
+    rendimento_domiciliar_2 = VD5004,
+    rendimento_per_capita_2 = VD5005
+  )
+```
+
+Agora temos a base de dados `base_trabalho`, que contém as informações relevantes para seguirmos com o desenvolvimento da pesquisa.
+
+Para termos maior praticidade a tabela a seguir apresenta a correspondência entre os códigos originais das variáveis, as informações que representam e os respectivos nomes que serão utilizados ao longo do desenvolvimento da pesquisa.
+
+## Tabela de correspondência das variáveis
+
+| Código original | Informação investigada | Nome padronizado |
+|:---|:---|:---|
+| `UF` | Unidade da Federação | `uf` |
+| `V2001` | Número de pessoas no domicílio | `numero_moradores` |
+| `V2003` | Número de ordem do morador | `ordem_morador` |
+| `V2005` | Condição no domicílio | `condicao_domicilio` |
+| `V2007` | Sexo do morador | `sexo` |
+| `V2009` | Idade | `idade` |
+| `VD3005` | Anos de estudo | `anos_estudo` |
+| `VD5001` | Indicador de rendimento domiciliar | `rendimento_domiciliar` |
+| `VD5002` | Indicador de rendimento domiciliar per capita | `rendimento_per_capita` |
+| `VD5004` | Indicador de rendimento domiciliar | `rendimento_domiciliar_2` |
+| `VD5005` | Indicador de rendimento domiciliar per capita | `rendimento_per_capita_2` |
+
+*Fonte: Elaboração própria, com base no dicionário de variáveis da PNAD Contínua/IBGE.*

@@ -1,0 +1,332 @@
+[
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html",
+    "title": "7  Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa",
+    "section": "",
+    "text": "7.1 Por que criar uma base de dados separada para nossa pesquisa?\nAs bases disponibilizadas pelo IBGE, como os microdados da PNAD Contínua, possuem uma grande quantidade de informações, muitas das quais podem não ter relação direta com o objetivo da pesquisa. Por isso, em vez de realizar todas as operações diretamente sobre a base original, recomenda-se criar uma cópia contendo somente as informações necessárias para o desenvolvimento do artigo.\nEssa prática apresenta algumas vantagens:\n- Preservação dos dados originais: mantém a base disponibilizada pelo IBGE intacta, permitindo retornar aos dados originais caso alguma transformação seja realizada incorretamente.\n- Organização: concentra as informações relevantes em um único objeto, facilitando a localização e utilização das variáveis.\n- Eficiência: reduz a quantidade de informações que o R precisa manipular, podendo melhorar o desempenho das operações.\n- Reprodutibilidade: facilita a identificação das variáveis utilizadas e dos procedimentos realizados durante o tratamento dos dados.\nÉ importante compreender que a nova base não representa uma alteração nos dados originais, mas uma versão reduzida e organizada, construída especificamente para responder à pergunta de pesquisa.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#renomeando-variáveis-no-r-para-nomes-mais-compreensíveis",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#renomeando-variáveis-no-r-para-nomes-mais-compreensíveis",
+    "title": "7  Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada",
+    "section": "",
+    "text": "7.1.1 Por que renomear variáveis e utilizar uma base de dados da pesquisa?\n\n\n7.1.2 Por que criar uma base de trabalho separada?\nAs bases disponibilizadas pelo IBGE, como os microdados da PNAD Contínua, possuem uma grande quantidade de informações, muitas das quais podem não ter relação direta com o objetivo da pesquisa.\nPor isso, em vez de realizar todas as operações diretamente sobre a base original, recomenda-se criar uma cópia contendo somente as informações necessárias para o desenvolvimento do artigo.\nEssa prática apresenta algumas vantagens: - Preservação dos dados originais: mantém a base disponibilizada pelo IBGE intacta, permitindo retornar aos dados originais caso alguma transformação seja realizada incorretamente. - Organização: concentra as informações relevantes em um único objeto, facilitando a localização e utilização das variáveis. - Eficiência: reduz a quantidade de informações que o R precisa manipular, podendo melhorar o desempenho das operações. - Reprodutibilidade: facilita a identificação das variáveis utilizadas e dos procedimentos realizados durante o tratamento dos dados. É importante compreender que a nova base não representa uma alteração nos dados originais, mas uma versão reduzida e organizada, construída especificamente para responder à pergunta de pesquisa.\n\n\n7.1.3 Por que padronizar os nomes das variáveis?\nOs nomes utilizados pelo IBGE seguem uma estrutura própria de identificação. Embora sejam importantes para manter a organização dos microdados, códigos como V2009, V2007 e V2005 não permitem identificar imediatamente o conteúdo de cada variável.\nAo substituir esses códigos por nomes mais intuitivos, facilitamos a leitura e a interpretação dos comandos utilizados no R.\nPor exemplo, imagine um código que calcula a média de idade dos indivíduos:\n\nmean(pnad$V2009, na.rm = TRUE)\n\nEmbora o comando esteja correto, é necessário consultar o dicionário da PNAD para identificar o significado de V2009.\nApós a padronização, o mesmo comando pode ser escrito da seguinte maneira:\n\nmean(base_trabalho$idade, na.rm = TRUE)\n\nA segunda versão é mais intuitiva, pois permite compreender imediatamente qual informação está sendo utilizada.\nAlém disso, a padronização evita inconsistências na escrita dos nomes, facilita o trabalho em equipe e torna o código mais acessível para outros pesquisadores.\n\n\n7.1.4 Qual padrão de nomenclatura utilizar?\nNão existe uma única convenção obrigatória para nomear variáveis no R. Entretanto, é recomendável escolher um padrão e utilizá-lo durante todo o desenvolvimento da pesquisa.\nPara trabalhos acadêmicos que envolvem manipulação e análise de dados, recomendamos o padrão snake_case.\nNesse formato, os nomes são escritos em letras minúsculas, sem acentos, sem espaços e com palavras separadas por underline (_).\n\n\n\nEvitar\nRecomendado\n\n\n\n\nV2009\nidade\n\n\nSEXO\nsexo\n\n\nRenda Familia\nrenda_familiar\n\n\nIdadeMorador\nidade_morador\n\n\nRendaPerCapita\nrenda_per_capita\n\n\nEscolaridade\nescolaridade\n\n\n\nPadrão recomendado: snake_case\nLetras minúsculas, sem acentos, sem espaços e com palavras separadas por underline (_).\n\n\n7.1.5 Renomeando as variáveis para a base de dados da pesquisa\nVamos criar uma nova base de dados contendo apenas as variáveis que serão utilizadas na pesquisa, já atribuindo nomes padronizados durante a seleção. Essa abordagem é mais adequada porque combina duas etapas importantes do tratamento dos dados: a seleção das variáveis relevantes (data selection) e a padronização da nomenclatura (data cleaning).\nConsiderando que o objetivo de um artigo é relacionado a uma pergunta específica, a base original da PNAD provavelmente conterá muitas variáveis que não serão utilizadas diretamente na análise.\nEntão, criar uma base específica para o projeto apresenta algumas vantagens: - Organização: mantém apenas as informações relevantes para responder à pergunta de pesquisa. - Clareza: permite trabalhar com nomes intuitivos, facilitando a interpretação dos comandos. - Desempenho: reduz o volume de dados manipulados pelo R, especialmente quando se trabalha com grandes bases da PNAD. - Reprodutibilidade: permite identificar com facilidade quais variáveis foram selecionadas e utilizadas na pesquisa. - Redução de erros: diminui a possibilidade de utilizar acidentalmente variáveis inadequadas durante as análises.\n\n\n7.1.6 Como renomear as variáveis na prática com R\nVamos considerar algumas variáveis que poderiam ser utilizadas no estudo:\n\n\n\nVariável PNAD\nDescrição\nNome padronizado\n\n\n\n\nV2009\nIdade do morador\nidade\n\n\nV2007\nSexo\nsexo\n\n\nV2005\nCondição no domicílio\ncondicao_domicilio\n\n\nVD5002\nRendimento domiciliar per capita\nrenda_per_capita\n\n\n\nO exemplo abaixo utiliza a função select() do pacote dplyr, que permite selecionar e renomear variáveis simultaneamente.\n\n# Carregar o pacote\nlibrary(dplyr)\n\n# Criar uma base específica para a pesquisa\nbase_trabalho &lt;- pnad %&gt;%\n  select(\n    idade = V2009,\n    sexo = V2007,\n    condicao_domicilio = V2005,\n    renda_per_capita = VD5002\n  )\n\nNesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html",
+    "href": "ENTREGAVEL 1.html",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "",
+    "text": "2 Importação da PNAD Contínua no Positron\nNeste entregável, vamos aprender a instalar e carregar o pacote PNADcIBGE, selecionar o ano e o trimestre de interesse, importar os dados da PNAD Contínua e verificar o resultado no R usando o Positron.\nExemplo didático: primeiro trimestre de 2024.\nPré-requisitos: R instalado, Positron, conexão com a internet e espaço disponível em disco.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#etapa-1-instalar-o-pacote",
+    "href": "ENTREGAVEL 1.html#etapa-1-instalar-o-pacote",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.1 Etapa 1 — Instalar o pacote",
+    "text": "2.1 Etapa 1 — Instalar o pacote\nO pacote PNADcIBGE permite acessar dados da PNAD Contínua a partir do R. A instalação precisa ser feita apenas se o pacote ainda não estiver instalado.\n\ninstall.packages(\"PNADcIBGE\")\n\nDica: execute esse comando no console R do Positron uma vez; não é necessário reinstalar o pacote a cada sessão.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#etapa-2-carregar-o-pacote",
+    "href": "ENTREGAVEL 1.html#etapa-2-carregar-o-pacote",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.2 Etapa 2 — Carregar o pacote",
+    "text": "2.2 Etapa 2 — Carregar o pacote\nEm uma nova sessão do R, carregue o pacote instalado com library().\n\nlibrary(PNADcIBGE)",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#etapa-3-definir-os-parâmetros-da-consulta",
+    "href": "ENTREGAVEL 1.html#etapa-3-definir-os-parâmetros-da-consulta",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.3 Etapa 3 — Definir os parâmetros da consulta",
+    "text": "2.3 Etapa 3 — Definir os parâmetros da consulta\nAntes de buscar os dados, defina o ano e o trimestre que deseja consultar. No R, o operador &lt;- atribui um valor a um objeto.\n\nano &lt;- 2024\ntrimestre &lt;- 1  # valores válidos: 1, 2, 3 ou 4\n\nNeste exemplo, estamos solicitando o primeiro trimestre de 2024. Para consultar outro período, modifique esses dois valores.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#etapa-4-baixar-e-importar-a-pnad-contínua",
+    "href": "ENTREGAVEL 1.html#etapa-4-baixar-e-importar-a-pnad-contínua",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.4 Etapa 4 — Baixar e importar a PNAD Contínua",
+    "text": "2.4 Etapa 4 — Baixar e importar a PNAD Contínua\nA função get_pnadc() é utilizada para obter os dados. O operador :: indica explicitamente o pacote ao qual a função pertence. A opção design = TRUE solicita um objeto com informações do desenho amostral da pesquisa.\n\npnad &lt;- PNADcIBGE::get_pnadc(\n  year = ano,\n  quarter = trimestre,\n  design = TRUE\n)\n\nAtenção: a primeira execução pode demorar, porque envolve download de dados. É preciso ter internet e espaço no disco.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#etapa-5-conferir-o-resultado",
+    "href": "ENTREGAVEL 1.html#etapa-5-conferir-o-resultado",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.5 Etapa 5 — Conferir o resultado",
+    "text": "2.5 Etapa 5 — Conferir o resultado\nDepois da importação, confira a classe do objeto, seu resumo, os nomes das variáveis, as dimensões da base e as primeiras observações.\n\nclass(pnad)                  # classe do objeto importado\nsummary(pnad)                # resumo do desenho amostral\nnames(pnad$variables)[1:20]  # primeiras 20 variáveis\ndim(pnad$variables)           # número de linhas e colunas\nhead(pnad$variables)         # primeiras observações\n\nEsses comandos ajudam a verificar a estrutura do objeto importado antes de iniciar as análises.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 1.html#encerramento",
+    "href": "ENTREGAVEL 1.html#encerramento",
+    "title": "1  Entregável 1 — Importação da PNAD Contínua no Positron",
+    "section": "2.6 Encerramento",
+    "text": "2.6 Encerramento\nNeste capítulo, você viu o fluxo básico de importação da PNAD Contínua no Positron: instalar o pacote → carregá-lo → definir o período → importar → conferir os dados. Os exemplos usam o primeiro trimestre de 2024; o procedimento pode ser adaptado para outros trimestres.",
+    "crumbs": [
+      "ENTREGAVEL 1",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Entregável 1 — Importação da PNAD Contínua no Positron</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "",
+    "text": "2.1 O que são variáveis e por que precisamos interpretá-las?\nAntes de iniciar qualquer análise estatística, é necessário compreender quais informações estão disponíveis na base de dados e o que cada uma delas representa.\nUma variável é uma característica observada para cada unidade de análise de uma pesquisa. Na PNAD Contínua, por exemplo, podemos encontrar informações sobre idade, escolaridade, rendimento, condição de ocupação e características dos domicílios.\nEm uma pesquisa sobre diferenças de renda entre famílias chefiadas por homens e mulheres, algumas perguntas orientam a escolha das variáveis:\nCada pergunta precisa ser associada a uma ou mais variáveis disponíveis na base de dados.\nUma observação importante: não basta encontrar uma variável com um nome aparentemente adequado. É necessário verificar sua definição, população de referência, período de coleta, categorias de resposta e unidade de medida.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#o-que-são-variáveis-e-por-que-precisamos-interpretá-las",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#o-que-são-variáveis-e-por-que-precisamos-interpretá-las",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "",
+    "text": "Qual é a renda do domicílio?\nQuem é considerado responsável pelo domicílio?\nEm qual região do Brasil o domicílio está localizado?\nQual é a escolaridade dos moradores?\nQuantas pessoas compõem o domicílio?",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#o-que-é-um-dicionário-de-variáveis",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#o-que-é-um-dicionário-de-variáveis",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "2.2 O que é um dicionário de variáveis?",
+    "text": "2.2 O que é um dicionário de variáveis?\nUm dicionário de variáveis é um documento que descreve as informações presentes em uma base de dados. Ele funciona como um guia para compreender e utilizar corretamente cada variável.\nNormalmente, apresenta informações como: Nome da variável, descrição, tipo de variável (numérica, categórica, textual), Categorias (valores ou respostas possíveis), unidade de medida e população de referência\nPor exemplo, imagine que uma base apresente a variável V2009. Sem consultar a documentação, o pesquisador não sabe necessariamente o que esse código representa. Ao consultar o dicionário, descobre que se trata de uma informação sobre idade. Essa consulta permite compreender o significado dos dados e evita interpretações equivocadas.\nIsso é importante pois:\n\nEvita confundir variáveis com nomes ou códigos semelhantes.\nPermite identificar quais informações são adequadas aos objetivos da pesquisa.\nAjuda a reconhecer valores ausentes e categorias especiais.\nFacilita a interpretação dos resultados.\nTorna a análise reproduzível por outros pesquisadores.\n\n\n2.2.1 Como ler um dicionário de variáveis?\nAo abrir o dicionário, você encontrará códigos que identificam as variáveis e suas respectivas descrições.\n\n\n\nCódigo\nDescrição\n\n\n\n\nV2009\nIdade do morador na data de referência\n\n\nV2007\nSexo do morador\n\n\nV2005\nCondição no domicílio\n\n\n\nPara interpretar corretamente essas informações, é necessário observar três elementos:\n\nCódigo da variável: é o identificador utilizado no banco de dados e nos comandos do R.\nDescrição: explica qual característica está sendo investigada.\nCategorias ou valores possíveis: indicam como as respostas foram registradas.\n\nPor exemplo, uma variável sobre sexo pode apresentar valores numéricos que representam categorias de resposta. O número não possui significado isoladamente: é a documentação que informa o que cada código representa.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#tipos-de-variáveis-e-unidades-de-medida",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#tipos-de-variáveis-e-unidades-de-medida",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "2.3 Tipos de variáveis e unidades de medida",
+    "text": "2.3 Tipos de variáveis e unidades de medida\nAs variáveis podem assumir diferentes formatos, e reconhecer essas diferenças é essencial para escolher os procedimentos estatísticos adequados.\n\n2.3.1 Variáveis qualitativas\nRepresentam características ou categorias. Podem ser divididas em:\n\nNominais: categorias sem uma ordem natural, como sexo, região geográfica e cor ou raça.\nOrdinais: categorias que apresentam uma ordem, como faixas de escolaridade ou classes de rendimento.\n\n\n\n2.3.2 Variáveis quantitativas\nRepresentam valores numéricos e podem ser divididas em:\n\nDiscretas: assumem valores contáveis, como número de moradores no domicílio.\nContínuas: podem assumir diferentes valores dentro de um intervalo, como rendimento mensal.\n\nÉ importante não confundir o formato numérico de uma variável com seu significado estatístico. Uma variável que utiliza os números 1, 2, 3 e 4 para representar regiões brasileiras continua sendo qualitativa, pois os números são apenas códigos de identificação.\n\n\n2.3.3 Unidades de medida\nTambém é necessário identificar a unidade em que cada característica é registrada.\n\n\n\nInformação\nUnidade de medida\n\n\n\n\nIdade\nAnos\n\n\nEscolaridade\nAnos de estudo ou nível de instrução\n\n\nRendimento\nReais (R$)\n\n\nNúmero de moradores\nPessoas\n\n\nRegião\nCategoria geográfica\n\n\n\nEssa distinção é especialmente importante na análise de renda. Um rendimento mensal domiciliar total não representa a mesma coisa que um rendimento domiciliar per capita. O primeiro considera a renda total do domicílio; o segundo considera a renda em relação ao número de moradores, conforme a definição específica do indicador.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#aplicando-os-conceitos-à-nossa-pesquisa",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#aplicando-os-conceitos-à-nossa-pesquisa",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "2.4 Aplicando os conceitos à nossa pesquisa",
+    "text": "2.4 Aplicando os conceitos à nossa pesquisa\nAgora que conhecemos os conceitos básicos, podemos identificar as variáveis necessárias para investigar diferenças de renda entre domicílios chefiados por homens e mulheres.\nPara o nosso exercício, utilizaremos os microdados da PNAD Contínua de 2024, referentes à primeira visita domiciliar anual.\nA seleção inicial de variáveis contempla:\n\n\n\n\n\n\n\n\nCódigo\nInformação investigada\nUtilidade na pesquisa\n\n\n\n\nUF\nUnidade da Federação\nIdentificar a localização geográfica\n\n\nV2001\nNúmero de pessoas no domicílio\nAnalisar a composição domiciliar\n\n\nV2003\nNúmero de ordem do morador\nIdentificar registros individuais\n\n\nV2005\nCondição no domicílio\nIdentificar a pessoa responsável\n\n\nV2007\nSexo do morador\nIdentificar o sexo da pessoa responsável\n\n\nV2009\nIdade\nCaracterizar os moradores\n\n\nVD3005\nAnos de estudo\nInvestigar a escolaridade\n\n\nVD5001\nIndicador de rendimento domiciliar\nInvestigar a renda\n\n\nVD5002\nIndicador de rendimento domiciliar per capita\nInvestigar a renda por morador\n\n\nVD5004\nIndicador de rendimento domiciliar\nComplementar a análise de renda\n\n\nVD5005\nIndicador de rendimento domiciliar per capita\nComplementar a análise de renda\n\n\n\nA tabela acima é uma seleção inicial de trabalho. As descrições completas de VD5001, VD5002, VD5004 e VD5005, inclusive a distinção entre rendimento efetivo e habitual e os critérios de inclusão de rendimentos, devem ser transcritas do dicionário específico da edição anual de 2024 antes da publicação do e-book. Não se deve tratar esses indicadores como equivalentes. Atenção: quem é considerado chefe do domicílio? Esse é um dos pontos metodológicos mais importantes da pesquisa.\nA PNAD Contínua utiliza o conceito de pessoa responsável pelo domicílio. A variável V2005 identifica a relação de cada morador com essa pessoa.\nNa documentação, o código 01 corresponde à pessoa responsável pelo domicílio. Assim, podemos identificar quem é responsável e, em seguida, consultar seu sexo por meio da variável V2007.\nIsso significa que não devemos simplesmente classificar todos os moradores do sexo masculino como integrantes de domicílios chefiados por homens.\nO procedimento correto é:\n\nIdentificar a pessoa responsável pelo domicílio.\nConsultar o sexo dessa pessoa.\nClassificar o domicílio de acordo com essa informação.\n\nOutra ressalva conceitual: pessoa responsável pelo domicílio não é necessariamente sinônimo de chefe de família. Um domicílio pode conter mais de uma família. Portanto, é importante definir se a pesquisa pretende comparar domicílios ou famílias e manter essa unidade de análise ao longo do trabalho.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#explorando-as-variáveis-no-r",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#explorando-as-variáveis-no-r",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "2.5 Explorando as variáveis no R",
+    "text": "2.5 Explorando as variáveis no R\nAté aqui, aprendemos a consultar a documentação. Agora vamos começar a relacionar essas informações com o banco de dados.\nComo estamos utilizando o R, podemos verificar quais variáveis estão disponíveis e observar os valores registrados. ### Passo 1 — Carregar os dados No exemplo, consideramos que a base já foi carregada com o pacote PNADcIBGE, utilizando a função get_pnadc().\n\n# Visualizar a estrutura da base\nstr(dados_pnad)\n\n\n# Visualizar as primeiras observações\nhead(dados_pnad)\n\n\n# Consultar os nomes das variáveis\nnames(dados_pnad)\n\n\n2.5.1 Passo 2 — Consultar uma variável específica\nVamos começar pela variável V2005, que identifica a condição do morador no domicílio.\n\n# Visualizar os valores registrados\ntable(dados_pnad$V2005, useNA = \"ifany\")\n\nO comando table() apresenta a frequência de cada valor encontrado na variável.\nO argumento useNA = “ifany” permite identificar se existem observações ausentes (NA).\n\n\n2.5.2 Passo 3 — Consultar os códigos e suas categorias\nPodemos utilizar os atributos da variável para verificar se os rótulos foram carregados junto com os dados:\n\n# Consultar os atributos da variável\nattributes(dados_pnad$V2005)\n\nSe a variável possuir rótulos associados, eles poderão aparecer nos atributos.\nTambém podemos visualizar a distribuição de uma variável de interesse:\n\n# Frequência por sexo\ntable(dados_pnad$V2007, useNA = \"ifany\")\n\nImportante: a frequência dos códigos não substitui a consulta ao dicionário. É necessário verificar na documentação o significado de cada categoria antes de interpretar os resultados.\n\n\n2.5.3 Passo 4 — Identificar a pessoa responsável pelo domicílio\nPodemos utilizar a variável V2005 para identificar os registros correspondentes à pessoa responsável:\n\n# Selecionar pessoas responsáveis\nresponsaveis &lt;- dados_pnad |&gt;\n  dplyr::filter(V2005 == \"01\")\n\nO exemplo pressupõe que a variável esteja armazenada como texto. Se estiver numérica, utilize V2005 == 1. Antes de executar, confira a classe da variável com class(dados_pnad$V2005).\nA partir dessa seleção, podemos consultar a variável V2007 para identificar o sexo das pessoas responsáveis.\nEsse será um dos primeiros passos para construir nossa classificação de domicílios chefiados por homens e mulheres.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#cuidados-metodológicos-antes-de-prosseguir",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2BADO.html#cuidados-metodológicos-antes-de-prosseguir",
+    "title": "2  Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua",
+    "section": "2.6 Cuidados metodológicos antes de prosseguir",
+    "text": "2.6 Cuidados metodológicos antes de prosseguir\nAntes de iniciar as análises, precisamos considerar alguns aspectos importantes.\n\n2.6.1 Unidade de observação\nOs microdados da PNAD Contínua apresentam registros individuais dos moradores. Isso significa que um mesmo domicílio pode aparecer em várias linhas, uma para cada morador.\nSe o objetivo é comparar rendimentos domiciliares, precisamos tomar cuidado para não contabilizar o mesmo domicílio várias vezes.\n\n\n2.6.2 Valores ausentes e códigos especiais\nAlgumas variáveis podem apresentar códigos que representam situações específicas, como informação ignorada ou não aplicável. Esses códigos não devem ser interpretados automaticamente como valores reais.\n\n\n2.6.3 Rendimentos nominais e reais\nOs valores monetários precisam ser interpretados considerando o período de referência. Se o objetivo for comparar rendimentos de diferentes anos, será necessário realizar o deflacionamento.\n\n\n2.6.4 Pesos amostrais\nA PNAD Contínua é uma pesquisa por amostragem probabilística. Portanto, para produzir estimativas representativas da população brasileira, é necessário considerar os pesos amostrais e o desenho da pesquisa. Não basta calcular médias simples dos registros e tratá-las como estimativas populacionais.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2DAVI.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2DAVI.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro davi e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>ENTREGAVEL 2DAVI.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro lucas e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>ENTREGAVEL 2LUCAS.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro mestre e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>ENTREGAVEL 2MESTRE.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro broder e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>ENTREGAVEL 2WILLIAM.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 3/ENTREGAVEL 2DAVI.html",
+    "href": "ENTREGAVEL 3/ENTREGAVEL 2DAVI.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro davi e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 3",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>ENTREGAVEL 2DAVI.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.html",
+    "href": "ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro joão pedro e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 3",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>ENTREGAVEL 3JOÃO PEDRO.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 3/ENTREGAVEL 3LUCAS.html",
+    "href": "ENTREGAVEL 3/ENTREGAVEL 3LUCAS.html",
+    "title": "E-book de Introdução ao R",
+    "section": "",
+    "text": "O broder vai delegar tarefa pro lucas e ele ira desenvolver aqui",
+    "crumbs": [
+      "ENTREGAVEL 3",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>ENTREGAVEL 3LUCAS.html</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#por-que-renomear-variáveis-e-utilizar-uma-base-de-dados-específica-para-o-projeto",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#por-que-renomear-variáveis-e-utilizar-uma-base-de-dados-específica-para-o-projeto",
+    "title": "7  Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto",
+    "section": "",
+    "text": "7.1.1 Por que criar uma base de trabalho separada para o projeto?\nAs bases disponibilizadas pelo IBGE, como os microdados da PNAD Contínua, possuem uma grande quantidade de informações, muitas das quais podem não ter relação direta com o objetivo da pesquisa. Por isso, em vez de realizar todas as operações diretamente sobre a base original, recomenda-se criar uma cópia contendo somente as informações necessárias para o desenvolvimento do artigo.\nEssa prática apresenta algumas vantagens: - Preservação dos dados originais: mantém a base disponibilizada pelo IBGE intacta, permitindo retornar aos dados originais caso alguma transformação seja realizada incorretamente. - Organização: concentra as informações relevantes em um único objeto, facilitando a localização e utilização das variáveis. - Eficiência: reduz a quantidade de informações que o R precisa manipular, podendo melhorar o desempenho das operações. - Reprodutibilidade: facilita a identificação das variáveis utilizadas e dos procedimentos realizados durante o tratamento dos dados. É importante compreender que a nova base não representa uma alteração nos dados originais, mas uma versão reduzida e organizada, construída especificamente para responder à pergunta de pesquisa.\n\n\n7.1.2 Por que padronizar os nomes das variáveis?\nOs nomes utilizados pelo IBGE seguem uma estrutura própria de identificação. Embora sejam importantes para manter a organização dos microdados, códigos como V2009, V2007 e V2005 não permitem identificar imediatamente o conteúdo de cada variável.\nAo substituir esses códigos por nomes mais intuitivos, facilitamos a leitura e a interpretação dos comandos utilizados no R. Por exemplo, imagine um código que calcula a média de idade dos indivíduos:\n\nmean(pnad$V2009, na.rm = TRUE)\n\nEmbora o comando esteja correto, é necessário consultar o dicionário da PNAD para identificar o significado de V2009. Após a padronização, o mesmo comando pode ser escrito da seguinte maneira:\n\nmean(base_trabalho$idade, na.rm = TRUE)\n\nA segunda versão é mais intuitiva, pois permite compreender imediatamente qual informação está sendo utilizada.\nAlém disso, a padronização evita inconsistências na escrita dos nomes, facilita o trabalho em equipe e torna o código mais acessível para outros pesquisadores.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#qual-padrão-de-nomenclatura-utilizar",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#qual-padrão-de-nomenclatura-utilizar",
+    "title": "7  Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa",
+    "section": "7.3 Qual padrão de nomenclatura utilizar?",
+    "text": "7.3 Qual padrão de nomenclatura utilizar?\nNão existe uma única convenção obrigatória para nomear variáveis no R. Entretanto, é recomendável escolher um padrão e utilizá-lo durante todo o desenvolvimento da pesquisa. Para trabalhos acadêmicos que envolvem manipulação e análise de dados, recomendamos o padrão snake_case. Nesse formato, os nomes são escritos em letras minúsculas, sem acentos, sem espaços e com palavras separadas por underline (_).\n\n\n\nEvitar\nRecomendado\n\n\n\n\nV2009\nidade\n\n\nSEXO\nsexo\n\n\nRenda Familia\nrenda_familiar\n\n\nIdadeMorador\nidade_morador\n\n\nRendaPerCapita\nrenda_per_capita\n\n\nEscolaridade\nescolaridade\n\n\n\nPadrão recomendado: snake_case",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#renomeando-as-variáveis-para-a-base-de-dados-da-pesquisa",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#renomeando-as-variáveis-para-a-base-de-dados-da-pesquisa",
+    "title": "7  Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto",
+    "section": "7.3 Renomeando as variáveis para a base de dados da pesquisa",
+    "text": "7.3 Renomeando as variáveis para a base de dados da pesquisa\nVamos criar uma nova base de dados contendo apenas as variáveis que serão utilizadas na pesquisa, já atribuindo nomes padronizados durante a seleção. Essa abordagem é mais adequada porque combina duas etapas importantes do tratamento dos dados: a seleção das variáveis relevantes (data selection) e a padronização da nomenclatura (data cleaning).\nConsiderando que o objetivo de um artigo é relacionado a uma pergunta específica, a base original da PNAD provavelmente conterá muitas variáveis que não serão utilizadas diretamente na análise.\nEntão, criar uma base específica para o projeto apresenta algumas vantagens: - Organização: mantém apenas as informações relevantes para responder à pergunta de pesquisa. - Clareza: permite trabalhar com nomes intuitivos, facilitando a interpretação dos comandos. - Desempenho: reduz o volume de dados manipulados pelo R, especialmente quando se trabalha com grandes bases da PNAD. - Reprodutibilidade: permite identificar com facilidade quais variáveis foram selecionadas e utilizadas na pesquisa. - Redução de erros: diminui a possibilidade de utilizar acidentalmente variáveis inadequadas durante as análises.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#como-renomear-as-variáveis-na-prática-com-r",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#como-renomear-as-variáveis-na-prática-com-r",
+    "title": "7  Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto",
+    "section": "7.4 Como renomear as variáveis na prática com R",
+    "text": "7.4 Como renomear as variáveis na prática com R\nVamos considerar algumas variáveis que poderiam ser utilizadas no estudo:\n\n\n\nVariável PNAD\nDescrição\nNome padronizado\n\n\n\n\nV2009\nIdade do morador\nidade\n\n\nV2007\nSexo\nsexo\n\n\nV2005\nCondição no domicílio\ncondicao_domicilio\n\n\nVD5002\nRendimento domiciliar per capita\nrenda_per_capita\n\n\n\nO exemplo abaixo utiliza a função select() do pacote dplyr, que permite selecionar e renomear variáveis simultaneamente.\n\n# Carregar o pacote\nlibrary(dplyr)\n\n# Criar uma base específica para a pesquisa\nbase_trabalho &lt;- pnad %&gt;%\n  select(\n    idade = V2009,\n    sexo = V2007,\n    condicao_domicilio = V2005,\n    renda_per_capita = VD5002\n  )\n\nNesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para o projeto</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#por-que-padronizar-os-nomes-das-variáveis",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#por-que-padronizar-os-nomes-das-variáveis",
+    "title": "7  Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa",
+    "section": "7.2 Por que padronizar os nomes das variáveis?",
+    "text": "7.2 Por que padronizar os nomes das variáveis?\nOs nomes utilizados pelo IBGE seguem uma estrutura própria de identificação. Embora sejam importantes para manter a organização dos microdados, códigos como V2009, V2007 e V2005 não permitem identificar imediatamente o conteúdo de cada variável. Ao substituir esses códigos por nomes mais intuitivos, facilitamos a leitura e a interpretação dos comandos utilizados no R. Por exemplo, imagine um código que calcula a média de idade dos indivíduos:\n\nmean(pnad$V2009, na.rm = TRUE)\n\nEmbora o comando esteja correto, é necessário consultar o dicionário da PNAD para identificar o significado de V2009. Após a padronização, o mesmo comando pode ser escrito da seguinte maneira:\n\nmean(base_trabalho$idade, na.rm = TRUE)\n\nA segunda versão é mais intuitiva, pois permite compreender imediatamente qual informação está sendo utilizada. Além disso, a padronização evita inconsistências na escrita dos nomes, facilita o trabalho em equipe e torna o código mais acessível para outros pesquisadores.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#tabela-de-correspondência-das-variáveis",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#tabela-de-correspondência-das-variáveis",
+    "title": "7  Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa",
+    "section": "9.1 Tabela de correspondência das variáveis",
+    "text": "9.1 Tabela de correspondência das variáveis\n\n\n\n\n\n\n\n\nCódigo original\nInformação investigada\nNome padronizado\n\n\n\n\nUF\nUnidade da Federação\nuf\n\n\nV2001\nNúmero de pessoas no domicílio\nnumero_moradores\n\n\nV2003\nNúmero de ordem do morador\nordem_morador\n\n\nV2005\nCondição no domicílio\ncondicao_domicilio\n\n\nV2007\nSexo do morador\nsexo\n\n\nV2009\nIdade\nidade\n\n\nVD3005\nAnos de estudo\nanos_estudo\n\n\nVD5001\nIndicador de rendimento domiciliar\nrendimento_domiciliar\n\n\nVD5002\nIndicador de rendimento domiciliar per capita\nrendimento_per_capita\n\n\nVD5004\nIndicador de rendimento domiciliar\nrendimento_domiciliar_2\n\n\nVD5005\nIndicador de rendimento domiciliar per capita\nrendimento_per_capita_2\n\n\n\nFonte: Elaboração própria, com base no dicionário de variáveis da PNAD Contínua/IBGE.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span>"
+    ]
+  },
+  {
+    "objectID": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#como-renomear-as-variáveis-com-o-r-na-prática",
+    "href": "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html#como-renomear-as-variáveis-com-o-r-na-prática",
+    "title": "7  Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa",
+    "section": "8.1 Como renomear as variáveis com o R na prática?",
+    "text": "8.1 Como renomear as variáveis com o R na prática?\nVamos considerar algumas variáveis que poderiam ser utilizadas no estudo:\n\n\n\nVariável PNAD\nDescrição\nNome padronizado\n\n\n\n\nV2009\nIdade do morador\nidade\n\n\nV2007\nSexo\nsexo\n\n\nV2005\nCondição no domicílio\ncondicao_domicilio\n\n\nVD5002\nRendimento domiciliar per capita\nrenda_per_capita\n\n\n\nO exemplo abaixo utiliza a função select() do pacote dplyr, que permite selecionar e renomear variáveis simultaneamente.\nObservação: Considerando que o pacote dplyr já está instalado no R. Caso ainda não esteja instalado utilize o comando install.packages(\"dplyr\") uma vez.\n\n# Carregar o pacote\nlibrary(dplyr)\n\n# Criar uma base específica para a pesquisa\nbase_trabalho &lt;- pnad %&gt;%\n  select(\n    idade = V2009,\n    sexo = V2007,\n    condicao_domicilio = V2005,\n    renda_per_capita = VD5002\n  )\n\nNesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados. Atenção: as variáveis apresentadas são exemplos para demonstrar o procedimento. A escolha definitiva deve considerar o dicionário da edição da PNAD utilizada e, principalmente, qual tema será abordado em seu projeto.",
+    "crumbs": [
+      "ENTREGAVEL 2",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span>"
+    ]
+  }
+]
