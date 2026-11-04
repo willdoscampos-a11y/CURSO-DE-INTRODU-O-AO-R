@@ -16,11 +16,9 @@ book:
     - part: "ENTREGAVEL 2"
       chapters:
         - "ENTREGAVEL 2/ENTREGAVEL 2BADO.qmd"
-        - "ENTREGAVEL 2/ENTREGAVEL 2DAVI.qmd"
-        - "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.qmd"
-        - "ENTREGAVEL 2/ENTREGAVEL 2MESTRE.qmd"
         - "ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.qmd"
         - "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.qmd"
+        - "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.qmd"
 
     - part: "ENTREGAVEL 3"
       chapters:
