@@ -1,6 +1,6 @@
 # Dicionário das variáveis selecionadas
 
-A tabela consolida os códigos selecionados na seção de renomeação para a PNAD Contínua anual de 2024, primeira visita. O tipo indica a classificação estatística da variável, e não sua classe de armazenamento no R. Os códigos iniciados por `VD` identificam variáveis derivadas disponibilizadas pelo próprio IBGE.
+A tabela consolida os códigos selecionados na seção de renomeação para a PNAD Contínua anual de 2024. O tipo indica a classificação estatística da variável. Os códigos iniciados por `VD` identificam variáveis derivadas disponibilizadas pelo próprio IBGE.
 
 | Código original | Descrição | Tipo da variável |
 |:---|:---|:---|
