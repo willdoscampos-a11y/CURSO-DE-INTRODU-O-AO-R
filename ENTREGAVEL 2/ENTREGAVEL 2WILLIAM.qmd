@@ -1,1 +1,298 @@
-O broder vai delegar tarefa pro broder e ele ira desenvolver aqui
+# Seleção das variáveis para a análise de renda
+
+## 1. Introdução
+
+No Entregável 1, aprendemos a importar os microdados da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua), disponibilizados pelo Instituto Brasileiro de Geografia e Estatística (IBGE).
+
+Agora que sabemos como obter os dados, precisamos entender quais informações são necessárias para realizar nossa análise.
+
+A PNAD Contínua contém diversas variáveis relacionadas às características da população brasileira, como idade, sexo, cor ou raça, escolaridade, ocupação e rendimento.
+
+Entretanto, nem todas essas variáveis serão utilizadas em nosso estudo.
+
+Neste capítulo, aprenderemos a selecionar as variáveis mais relevantes para comparar a renda entre diferentes grupos da população.
+
+Ao final desta aula, o leitor será capaz de:
+
+- Identificar variáveis relevantes para uma análise de renda.
+- Entender a importância de cada variável selecionada.
+- Localizar essas variáveis dentro da base da PNAD utilizando R.
+- Verificar quais informações estão disponíveis para futuras análises.
+
+## 2. O que queremos investigar?
+
+Antes de selecionar as variáveis, precisamos definir o objetivo da análise.
+
+Neste exemplo, nosso objetivo será investigar como o rendimento do trabalho pode variar conforme características individuais e sociais.
+
+Podemos formular algumas perguntas:
+
+- Homens e mulheres apresentam diferenças de rendimento?
+- O rendimento varia conforme a idade?
+- Pessoas com diferentes níveis de escolaridade apresentam rendimentos distintos?
+- Existem diferenças de rendimento entre grupos de cor ou raça?
+- O rendimento varia entre estados brasileiros?
+
+Para responder a essas perguntas, precisamos identificar as variáveis correspondentes na PNAD Contínua.
+
+## 3. Escolhendo as variáveis necessárias
+
+Uma variável representa uma característica ou informação registrada na base de dados.
+
+Na PNAD Contínua, cada variável possui um código de identificação.
+
+Por exemplo, a variável `V2009` representa a idade dos moradores.
+
+Para nossa análise, selecionaremos inicialmente as seguintes variáveis:
+
+| Código | Variável | Finalidade |
+|---|---|---|
+| VD4019 | Rendimento mensal habitual de todos os trabalhos | Analisar o rendimento do trabalho |
+| V2007 | Sexo | Comparar rendimentos entre homens e mulheres |
+| V2009 | Idade | Investigar diferenças de rendimento entre faixas etárias |
+| V2010 | Cor ou raça | Comparar rendimentos entre grupos de cor ou raça |
+| VD3004 | Nível de instrução | Investigar diferenças de rendimento por escolaridade |
+| UF | Unidade da Federação | Comparar rendimentos entre estados |
+| VD4002 | Condição de ocupação | Identificar a condição de ocupação dos indivíduos |
+
+Essas variáveis constituem uma seleção inicial para o estudo.
+
+A escolha definitiva deverá considerar a população que queremos analisar e a documentação correspondente ao período da pesquisa.
+
+## 4. Por que escolhemos cada variável?
+
+### 4.1. Rendimento do trabalho — VD4019
+
+A variável `VD4019` corresponde ao rendimento mensal habitual de todos os trabalhos.
+
+Ela será uma das principais variáveis de nossa análise, pois representa a informação de rendimento que queremos comparar entre diferentes grupos.
+
+Por exemplo, poderemos investigar se o rendimento habitual do trabalho apresenta diferenças entre homens e mulheres.
+
+É importante observar que essa variável se refere ao rendimento do trabalho, e não necessariamente à renda total recebida pelo indivíduo de todas as fontes.
+
+### 4.2. Sexo — V2007
+
+A variável `V2007` identifica o sexo registrado na pesquisa.
+
+Ela permite organizar os indivíduos em grupos e, posteriormente, comparar seus rendimentos.
+
+Por exemplo, poderemos estudar diferenças de rendimento entre homens e mulheres.
+
+A comparação dos rendimentos entre os grupos permitirá descrever diferenças observadas nos dados, sem que isso, isoladamente, demonstre suas causas.
+
+### 4.3. Idade — V2009
+
+A variável `V2009` registra a idade do indivíduo em anos.
+
+A idade é importante porque pessoas em diferentes momentos da vida podem apresentar características distintas de participação no mercado de trabalho.
+
+Posteriormente, poderemos organizar as idades em faixas etárias para realizar comparações.
+
+### 4.4. Cor ou raça — V2010
+
+A variável `V2010` registra a cor ou raça declarada na pesquisa.
+
+Ela possibilita comparar rendimentos entre diferentes grupos populacionais.
+
+Essa informação é relevante para estudar desigualdades socioeconômicas, sempre considerando as limitações de uma análise descritiva.
+
+### 4.5. Escolaridade — VD3004
+
+A variável `VD3004` representa o nível de instrução.
+
+A escolaridade é uma característica importante nas análises do mercado de trabalho, pois permite observar diferenças de rendimento entre indivíduos com diferentes níveis educacionais.
+
+Podemos investigar, por exemplo, se pessoas com ensino superior completo apresentam rendimentos diferentes daqueles observados em outros níveis de instrução.
+
+### 4.6. Unidade da Federação — UF
+
+A variável `UF` identifica a Unidade da Federação correspondente ao registro.
+
+Ela permite realizar comparações entre estados brasileiros.
+
+Isso é importante porque os mercados de trabalho e as condições econômicas podem apresentar diferenças regionais.
+
+### 4.7. Condição de ocupação — VD4002
+
+A variável `VD4002` informa a condição de ocupação.
+
+Essa informação ajuda a identificar a situação dos indivíduos em relação à ocupação, sendo importante para definir a população de interesse na análise de rendimentos do trabalho.
+
+No Entregável 3, poderão ser estabelecidos os critérios de seleção dos registros para a análise.
+
+## 5. Como localizar as variáveis no R?
+
+Agora que escolhemos as variáveis necessárias, precisamos verificar se elas estão disponíveis na base importada no Entregável 1.
+
+Lembre-se de que utilizamos o objeto `pnad` para armazenar os dados da pesquisa.
+
+Quando o objeto é importado com `design = TRUE`, ele contém informações sobre o desenho amostral da pesquisa, além das variáveis utilizadas na análise.
+
+Nos exemplos a seguir, consideramos que o objeto `pnad` já foi criado na sessão R.
+
+### 5.1. Visualizando os nomes das variáveis
+
+O primeiro passo é utilizar a função `names()`.
+
+```{r}
+#| eval: false
+
+names(pnad$variables)
+```
+
+Esse comando apresenta os nomes das variáveis disponíveis na base.
+
+**Entendendo o código:**
+
+- `pnad`: objeto que contém os dados importados.
+- `$variables`: acessa as variáveis armazenadas no objeto.
+- `names()`: retorna os nomes das colunas.
+
+Como a PNAD possui muitas variáveis, a lista apresentada pode ser extensa.
+
+### 5.2. Visualizando apenas as primeiras variáveis
+
+Podemos utilizar a função `head()` para mostrar somente os primeiros nomes.
+
+```{r}
+#| eval: false
+
+head(names(pnad$variables), 20)
+```
+
+Nesse exemplo, o argumento `20` determina que serão mostrados os primeiros vinte nomes.
+
+Esse procedimento facilita uma inspeção inicial da estrutura da base.
+
+### 5.3. Procurando uma variável específica
+
+Se quisermos verificar se a variável de idade está presente, podemos utilizar o operador `%in%`.
+
+```{r}
+#| eval: false
+
+"V2009" %in% names(pnad$variables)
+```
+
+O comando verifica se o nome `V2009` está entre os nomes das variáveis.
+
+Se o resultado for:
+
+`TRUE`
+
+Isso significa que a variável foi encontrada.
+
+Se o resultado for:
+
+`FALSE`
+
+Isso significa que ela não está presente com esse nome no objeto consultado.
+
+### 5.4. Verificando todas as variáveis selecionadas
+
+Em vez de procurar uma variável por vez, podemos criar uma lista com todos os códigos necessários.
+
+```{r}
+#| eval: false
+
+variaveis_escolhidas <- c(
+  "VD4019",
+  "V2007",
+  "V2009",
+  "V2010",
+  "VD3004",
+  "UF",
+  "VD4002"
+)
+
+variaveis_escolhidas %in% names(pnad$variables)
+```
+
+**Entendendo o código:**
+
+- `c()` reúne os nomes das variáveis em um vetor.
+- `<-` atribui esse vetor ao objeto `variaveis_escolhidas`.
+- `%in%` verifica se cada elemento aparece na lista de nomes da base.
+
+O R retornará valores `TRUE` ou `FALSE`, permitindo identificar quais códigos foram encontrados.
+
+### 5.5. Identificando quais variáveis estão ausentes
+
+Também podemos descobrir quais variáveis escolhidas não foram encontradas.
+
+```{r}
+#| eval: false
+
+setdiff(
+  variaveis_escolhidas,
+  names(pnad$variables)
+)
+```
+
+A função `setdiff()` identifica os elementos da primeira lista que não aparecem na segunda.
+
+Se o resultado for:
+
+`character(0)`
+
+Isso significa que nenhum dos códigos selecionados está ausente da lista de nomes.
+
+Caso apareçam códigos, será necessário verificar a documentação e a disponibilidade das variáveis na base utilizada.
+
+### 5.6. Verificando os tipos de dados
+
+Depois de localizar as variáveis, podemos consultar seus tipos no R.
+
+```{r}
+#| eval: false
+
+sapply(
+  pnad$variables[
+    variaveis_escolhidas
+  ],
+  class
+)
+```
+
+Esse comando consulta a classe de cada variável selecionada.
+
+Entre os tipos que podem aparecer estão:
+
+- `numeric`: valores numéricos.
+- `integer`: números inteiros.
+- `character`: textos.
+- `factor`: categorias representadas como fatores.
+
+É importante distinguir o tipo de armazenamento no R do significado estatístico da variável.
+
+Por exemplo, uma variável categórica pode ser armazenada por meio de códigos numéricos.
+
+## 6. Conferindo nossa seleção
+
+Ao longo desta aula, identificamos sete variáveis inicialmente relevantes para a análise de rendimentos.
+
+Também aprendemos a utilizar funções do R para verificar quais códigos aparecem na base e consultar seus tipos.
+
+Antes de continuar o projeto, é importante conferir:
+
+- Se todos os códigos escolhidos estão presentes na PNAD utilizada.
+- Se as descrições correspondem à documentação do IBGE.
+- Se as variáveis são adequadas às perguntas da pesquisa.
+- Se existem informações ausentes ou particularidades que precisam ser consideradas.
+
+Essa conferência é importante para evitar problemas nas próximas etapas.
+
+## 7. Conclusão
+
+Neste capítulo, aprendemos a selecionar variáveis da PNAD Contínua para uma análise de renda entre diferentes grupos populacionais.
+
+Primeiro, definimos as perguntas que queremos investigar.
+
+Em seguida, escolhemos as variáveis que poderão ajudar a respondê-las e justificamos a importância de cada uma.
+
+Por fim, apresentamos comandos em R para localizar os códigos e verificar sua disponibilidade na base importada.
+
+A seleção e a identificação das variáveis constituem uma etapa essencial para organizar o banco de dados antes de realizar análises estatísticas.
+
+Na próxima seção do Entregável 2, serão apresentadas técnicas para renomear e padronizar as variáveis, facilitando sua utilização nos códigos das etapas seguintes.
