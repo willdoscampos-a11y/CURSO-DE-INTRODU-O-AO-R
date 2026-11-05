@@ -1,1 +1,19 @@
-O broder vai delegar tarefa pro lucas e ele ira desenvolver aqui
+# Dicionário das variáveis selecionadas
+
+A tabela consolida os códigos selecionados na seção de renomeação para a PNAD Contínua anual de 2024, primeira visita. O tipo indica a classificação estatística da variável, e não sua classe de armazenamento no R. Os códigos iniciados por `VD` identificam variáveis derivadas disponibilizadas pelo próprio IBGE.
+
+| Código original | Descrição | Tipo da variável |
+|:---|:---|:---|
+| `UF` | Unidade da Federação. | Qualitativa nominal |
+| `V2001` | Número de pessoas no domicílio. | Quantitativa discreta |
+| `V2003` | Número de ordem do morador: identificador do registro individual no domicílio. | Qualitativa nominal (identificador) |
+| `V2005` | Condição do morador no domicílio, em relação à pessoa responsável. | Qualitativa nominal |
+| `V2007` | Sexo do morador. | Qualitativa nominal |
+| `V2009` | Idade do morador na data de referência, em anos completos. | Quantitativa discreta |
+| `VD3005` | Anos de estudo das pessoas de 5 anos ou mais de idade, padronizados para o ensino fundamental com duração de 9 anos; categorias de “sem instrução e menos de 1 ano de estudo” a “16 anos ou mais de estudo”. | Qualitativa ordinal (categorias ordenadas de anos de estudo) |
+| `VD5001` | Rendimento efetivo domiciliar, em R$, excluindo rendimentos em cartão/tíquete transporte ou alimentação e rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+| `VD5002` | Rendimento efetivo domiciliar per capita, em R$, excluindo rendimentos em cartão/tíquete transporte ou alimentação e rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+| `VD5004` | Rendimento efetivo domiciliar, em R$, incluindo rendimentos em cartão/tíquete transporte ou alimentação e excluindo rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+| `VD5005` | Rendimento efetivo domiciliar per capita, em R$, incluindo rendimentos em cartão/tíquete transporte ou alimentação e excluindo rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+
+*Fonte: Elaboração própria, com descrições baseadas no [Dicionário dos microdados da PNAD Contínua anual de 2024, primeira visita, versão de 19/11/2025 — IBGE](https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Visita_1/Documentacao/dicionario_PNADC_microdados_2024_visita1_20251119.xls). A classificação estatística foi elaborada para esta tabela.*
