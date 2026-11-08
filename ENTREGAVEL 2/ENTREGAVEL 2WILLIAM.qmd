@@ -10,7 +10,7 @@ A PNAD Contínua contém diversas variáveis relacionadas às características d
 
 Entretanto, nem todas essas variáveis serão utilizadas em nosso estudo.
 
-Neste capítulo, aprenderemos a selecionar as variáveis mais relevantes para comparar a renda entre diferentes grupos da população.
+Neste capítulo, aprenderemos a selecionar as variáveis mais relevantes para comparar a renda de domicílios chefiados por mulheres e por homens.
 
 Ao final desta aula, o leitor será capaz de:
 
@@ -23,15 +23,16 @@ Ao final desta aula, o leitor será capaz de:
 
 Antes de selecionar as variáveis, precisamos definir o objetivo da análise.
 
-Neste exemplo, nosso objetivo será investigar como o rendimento do trabalho pode variar conforme características individuais e sociais.
+Neste exemplo, nosso objetivo é investigar se existe diferença de renda
+entre domicílios chefiados por mulheres e por homens.
 
 Podemos formular algumas perguntas:
 
-- Homens e mulheres apresentam diferenças de rendimento?
-- O rendimento varia conforme a idade?
-- Pessoas com diferentes níveis de escolaridade apresentam rendimentos distintos?
-- Existem diferenças de rendimento entre grupos de cor ou raça?
-- O rendimento varia entre estados brasileiros?
+- Domicílios chefiados por mulheres têm renda diferente dos chefiados por homens?
+- A renda domiciliar per capita varia conforme a idade da pessoa responsável?
+- A escolaridade da pessoa responsável está associada à renda do domicílio?
+- A renda varia entre os estados brasileiros?
+- O número de moradores altera a comparação entre renda total e renda per capita?
 
 Para responder a essas perguntas, precisamos identificar as variáveis correspondentes na PNAD Contínua.
 
@@ -46,14 +47,16 @@ Por exemplo, a variável `V2009` representa a idade dos moradores.
 Para nossa análise, selecionaremos inicialmente as seguintes variáveis:
 
 | Código | Variável | Finalidade |
-|---|---|---|
-| VD4019 | Rendimento mensal habitual de todos os trabalhos | Analisar o rendimento do trabalho |
-| V2007 | Sexo | Comparar rendimentos entre homens e mulheres |
-| V2009 | Idade | Investigar diferenças de rendimento entre faixas etárias |
-| V2010 | Cor ou raça | Comparar rendimentos entre grupos de cor ou raça |
-| VD3004 | Nível de instrução | Investigar diferenças de rendimento por escolaridade |
-| UF | Unidade da Federação | Comparar rendimentos entre estados |
-| VD4002 | Condição de ocupação | Identificar a condição de ocupação dos indivíduos |
+|--------|----------|------------|
+| UF | Unidade da Federação | Comparar estados |
+| V2001 | Número de pessoas no domicílio | Analisar a composição domiciliar |
+| V2003 | Número de ordem do morador | Identificar registros individuais |
+| V2005 | Condição no domicílio | Identificar a pessoa responsável |
+| V2007 | Sexo | Identificar o sexo da pessoa responsável |
+| V2009 | Idade | Caracterizar os moradores |
+| VD3005 | Anos de estudo | Investigar a escolaridade |
+| VD5001 | Rendimento domiciliar | Investigar a renda do domicílio |
+| VD5002 | Rendimento domiciliar per capita | Investigar a renda por morador |
 
 Essas variáveis constituem uma seleção inicial para o estudo.
 
@@ -61,65 +64,76 @@ A escolha definitiva deverá considerar a população que queremos analisar e a 
 
 ## 4. Por que escolhemos cada variável?
 
-### 4.1. Rendimento do trabalho — VD4019
+### 4.1. Unidade da Federação: UF
 
-A variável `VD4019` corresponde ao rendimento mensal habitual de todos os trabalhos.
+A variável `UF` identifica a Unidade da Federação em que o domicílio está localizado.
 
-Ela será uma das principais variáveis de nossa análise, pois representa a informação de rendimento que queremos comparar entre diferentes grupos.
+Ela permite comparar a renda entre estados brasileiros. Isso é importante porque os mercados de trabalho e as condições econômicas variam entre regiões, e essas diferenças podem influenciar a comparação entre domicílios chefiados por homens e por mulheres.
 
-Por exemplo, poderemos investigar se o rendimento habitual do trabalho apresenta diferenças entre homens e mulheres.
+### 4.2. Número de pessoas no domicílio: V2001
 
-É importante observar que essa variável se refere ao rendimento do trabalho, e não necessariamente à renda total recebida pelo indivíduo de todas as fontes.
+A variável `V2001` informa quantas pessoas compõem o domicílio.
 
-### 4.2. Sexo — V2007
+Ela é importante porque a renda total de um domicílio não tem o mesmo significado para uma pessoa que mora sozinha e para uma família com cinco moradores. Com essa informação, conseguimos analisar a composição domiciliar e entender a diferença entre renda total e renda por morador.
+
+### 4.3. Número de ordem do morador: V2003
+
+A variável `V2003` é um identificador do morador dentro do domicílio.
+
+Como os microdados da PNAD Contínua trazem uma linha para cada morador, essa variável ajuda a distinguir os registros individuais. Ela não mede nenhuma característica da pessoa: seu valor serve apenas para identificação, e não deve ser usado em cálculos estatísticos.
+
+### 4.4. Condição no domicílio: V2005
+
+A variável `V2005` identifica a relação de cada morador com a pessoa responsável pelo domicílio.
+
+Na documentação, o código `01` corresponde à pessoa responsável. Por isso, ela é a variável-chave para identificar quem será considerado a chefia do domicílio na nossa pesquisa.
+
+É importante lembrar que pessoa responsável pelo domicílio não é, necessariamente, sinônimo de chefe de família, pois um mesmo domicílio pode conter mais de uma família. Nesta pesquisa, a unidade de análise é o **domicílio**, e essa definição deve ser mantida ao longo de todo o trabalho.
+
+### 4.5. Sexo: V2007
 
 A variável `V2007` identifica o sexo registrado na pesquisa.
 
-Ela permite organizar os indivíduos em grupos e, posteriormente, comparar seus rendimentos.
+Ela não deve ser usada isoladamente para classificar os domicílios. Não podemos classificar todos os moradores do sexo masculino como integrantes de domicílios chefiados por homens. O procedimento correto é:
 
-Por exemplo, poderemos estudar diferenças de rendimento entre homens e mulheres.
+1. Identificar a pessoa responsável pelo domicílio (`V2005`).
+2. Consultar o sexo dessa pessoa (`V2007`).
+3. Classificar o domicílio de acordo com essa informação.
 
-A comparação dos rendimentos entre os grupos permitirá descrever diferenças observadas nos dados, sem que isso, isoladamente, demonstre suas causas.
+Assim, `V2005` e `V2007` são usadas em conjunto para construir a variável central da nossa análise.
 
-### 4.3. Idade — V2009
+### 4.6. Idade: V2009
 
-A variável `V2009` registra a idade do indivíduo em anos.
+A variável `V2009` registra a idade do morador, em anos completos.
 
-A idade é importante porque pessoas em diferentes momentos da vida podem apresentar características distintas de participação no mercado de trabalho.
+A idade da pessoa responsável é relevante porque a renda tende a variar ao longo do ciclo de vida. Posteriormente, poderemos organizar as idades em faixas etárias para realizar comparações e usá-las como característica de controle.
 
-Posteriormente, poderemos organizar as idades em faixas etárias para realizar comparações.
+### 4.7. Anos de estudo: VD3005
 
-### 4.4. Cor ou raça — V2010
+A variável `VD3005` informa os anos de estudo das pessoas de 5 anos ou mais de idade.
 
-A variável `V2010` registra a cor ou raça declarada na pesquisa.
+A escolaridade é uma característica importante nas análises de renda, pois está associada às oportunidades no mercado de trabalho. Ao observar a escolaridade da pessoa responsável, poderemos verificar se uma eventual diferença de renda entre os domicílios persiste quando comparamos pessoas com níveis de estudo semelhantes.
 
-Ela possibilita comparar rendimentos entre diferentes grupos populacionais.
+Os anos de estudo são organizados em categorias ordenadas. Por isso, devemos conferir no dicionário como a variável está codificada antes de utilizá-la.
 
-Essa informação é relevante para estudar desigualdades socioeconômicas, sempre considerando as limitações de uma análise descritiva.
+### 4.8. Rendimento domiciliar: VD5001
 
-### 4.5. Escolaridade — VD3004
+A variável `VD5001` é um indicador de **rendimento domiciliar**, isto é, relaciona-se à renda do domicílio como um todo, e não à renda de uma pessoa específica.
 
-A variável `VD3004` representa o nível de instrução.
+Ela será uma das principais variáveis da pesquisa, pois representa a informação que queremos comparar entre domicílios chefiados por homens e por mulheres.
 
-A escolaridade é uma característica importante nas análises do mercado de trabalho, pois permite observar diferenças de rendimento entre indivíduos com diferentes níveis educacionais.
+É importante observar que esse rendimento **não se limita ao rendimento do trabalho de quem chefia o domicílio**: ele reúne os rendimentos dos moradores, de acordo com os critérios de inclusão definidos pelo IBGE. A descrição completa, inclusive o tipo de rendimento considerado (habitual ou efetivo) e quais moradores ficam de fora do cálculo, deve ser conferida no dicionário da edição utilizada.
 
-Podemos investigar, por exemplo, se pessoas com ensino superior completo apresentam rendimentos diferentes daqueles observados em outros níveis de instrução.
+### 4.9. Rendimento domiciliar per capita: VD5002
 
-### 4.6. Unidade da Federação — UF
+A variável `VD5002` é o indicador de **rendimento domiciliar per capita**, ou seja, o rendimento do domicílio em relação ao número de moradores, conforme a definição do IBGE.
 
-A variável `UF` identifica a Unidade da Federação correspondente ao registro.
+Ela é importante porque um rendimento domiciliar total não representa a mesma coisa que um rendimento por morador. Dois domicílios com a mesma renda total podem ter condições de vida muito diferentes se tiverem números diferentes de moradores.
 
-Ela permite realizar comparações entre estados brasileiros.
+Por isso, `VD5001` e `VD5002` não devem ser tratadas como equivalentes: a primeira mede a renda total do domicílio, e a segunda, a renda por morador. Em nossa análise, poderemos compará-las para verificar se as conclusões mudam conforme o indicador escolhido.
 
-Isso é importante porque os mercados de trabalho e as condições econômicas podem apresentar diferenças regionais.
 
-### 4.7. Condição de ocupação — VD4002
 
-A variável `VD4002` informa a condição de ocupação.
-
-Essa informação ajuda a identificar a situação dos indivíduos em relação à ocupação, sendo importante para definir a população de interesse na análise de rendimentos do trabalho.
-
-No Entregável 3, poderão ser estabelecidos os critérios de seleção dos registros para a análise.
 
 ## 5. Como localizar as variáveis no R?
 
@@ -255,6 +269,7 @@ sapply(
 )
 ```
 
+Observe especialmente a classe de `V2005`. Se ela aparecer como `factor` ou `character`, o filtro da pessoa responsável será `V2005 == "01"`; se for numérica, será `V2005 == 1`.
 Esse comando consulta a classe de cada variável selecionada.
 
 Entre os tipos que podem aparecer estão:
@@ -270,7 +285,7 @@ Por exemplo, uma variável categórica pode ser armazenada por meio de códigos 
 
 ## 6. Conferindo nossa seleção
 
-Ao longo desta aula, identificamos sete variáveis inicialmente relevantes para a análise de rendimentos.
+Ao longo desta aula, identificamos nove variáveis inicialmente relevantes para a análise da renda domiciliar.
 
 Também aprendemos a utilizar funções do R para verificar quais códigos aparecem na base e consultar seus tipos.
 
@@ -284,12 +299,12 @@ Antes de continuar o projeto, é importante conferir:
 Essa conferência é importante para evitar problemas nas próximas etapas.
 
 ## 7. Conclusão
-
-Neste capítulo, aprendemos a selecionar variáveis da PNAD Contínua para uma análise de renda entre diferentes grupos populacionais.
+Neste capítulo, aprendemos a selecionar variáveis da PNAD Contínua para comparar a renda de domicílios chefiados por mulheres e por homens.
 
 Primeiro, definimos as perguntas que queremos investigar.
 
 Em seguida, escolhemos as variáveis que poderão ajudar a respondê-las e justificamos a importância de cada uma.
+Destacamos que a variável central da pesquisa, a chefia do domicílio, não existe pronta na base: ela será construída combinando `V2005` (pessoa responsável) e `V2007` (sexo), o que será feito no Entregável 3.
 
 Por fim, apresentamos comandos em R para localizar os códigos e verificar sua disponibilidade na base importada.
 

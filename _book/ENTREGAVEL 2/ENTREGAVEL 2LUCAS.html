@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.19">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>entregavel-2lucas – E-book de Introdução ao R</title>
+<title>5&nbsp; Dicionário das variáveis selecionadas – E-book de Introdução ao R</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -36,15 +36,15 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" rel="next">
-<link href="../ENTREGAVEL 2/ENTREGAVEL 2DAVI.html" rel="prev">
+<link href="../ENTREGAVEL 3/ENTREGAVEL 2DAVI.html" rel="next">
+<link href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-c574c73dd0d0ff61020859ffc61752ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -76,6 +76,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -88,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2LUCAS.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -153,32 +182,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2DAVI.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2LUCAS.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2MESTRE.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2WILLIAM.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></span></a>
   </div>
 </li>
       </ul>
@@ -195,37 +212,37 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 2DAVI.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3bado.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3bado.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3bado.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3JOÃO PEDRO.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3JOÃO PEDRO.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3LUCAS.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3LUCAS.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3LUCAS.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3mestre.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3mestre.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3mestre.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3william.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3william.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3william.html</span></span></a>
   </div>
 </li>
       </ul>
@@ -239,12 +256,91 @@ ul.task-list li input[type="checkbox"] {
         
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2LUCAS.html</span></a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<p>O broder vai delegar tarefa pro lucas e ele ira desenvolver aqui</p>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A tabela consolida os códigos selecionados na seção de renomeação para a PNAD Contínua anual de 2024. O tipo indica a classificação estatística da variável. Os códigos iniciados por <code>VD</code> identificam variáveis derivadas disponibilizadas pelo próprio IBGE.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Código original</th>
+<th style="text-align: left;">Descrição</th>
+<th style="text-align: left;">Tipo da variável</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>UF</code></td>
+<td style="text-align: left;">Unidade da Federação.</td>
+<td style="text-align: left;">Qualitativa nominal</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V2001</code></td>
+<td style="text-align: left;">Número de pessoas no domicílio.</td>
+<td style="text-align: left;">Quantitativa discreta</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>V2003</code></td>
+<td style="text-align: left;">Número de ordem do morador: identificador do registro individual no domicílio.</td>
+<td style="text-align: left;">Qualitativa nominal (identificador)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V2005</code></td>
+<td style="text-align: left;">Condição do morador no domicílio, em relação à pessoa responsável.</td>
+<td style="text-align: left;">Qualitativa nominal</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>V2007</code></td>
+<td style="text-align: left;">Sexo do morador.</td>
+<td style="text-align: left;">Qualitativa nominal</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>V2009</code></td>
+<td style="text-align: left;">Idade do morador na data de referência, em anos completos.</td>
+<td style="text-align: left;">Quantitativa discreta</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>VD3005</code></td>
+<td style="text-align: left;">Anos de estudo das pessoas de 5 anos ou mais de idade, padronizados para o ensino fundamental com duração de 9 anos; categorias de “sem instrução e menos de 1 ano de estudo” a “16 anos ou mais de estudo”.</td>
+<td style="text-align: left;">Qualitativa ordinal (categorias ordenadas de anos de estudo)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>VD5001</code></td>
+<td style="text-align: left;">Rendimento efetivo domiciliar, em R<span class="math inline">\(, excluindo rendimentos em cartão/tíquete transporte ou alimentação e rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+| `VD5002` | Rendimento efetivo domiciliar per capita, em R\)</span>, excluindo rendimentos em cartão/tíquete transporte ou alimentação e rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos.</td>
+<td style="text-align: left;">Quantitativa contínua</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>VD5004</code></td>
+<td style="text-align: left;">Rendimento efetivo domiciliar, em R<span class="math inline">\(, incluindo rendimentos em cartão/tíquete transporte ou alimentação e excluindo rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos. | Quantitativa contínua |
+| `VD5005` | Rendimento efetivo domiciliar per capita, em R\)</span>, incluindo rendimentos em cartão/tíquete transporte ou alimentação e excluindo rendimentos de pensionistas, empregados domésticos e parentes de empregados domésticos.</td>
+<td style="text-align: left;">Quantitativa contínua</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -651,13 +747,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../ENTREGAVEL 2/ENTREGAVEL 2DAVI.html" class="pagination-link" aria-label="ENTREGAVEL 2DAVI.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span>
+      <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="pagination-link" aria-label="Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" class="pagination-link" aria-label="ENTREGAVEL 2MESTRE.html">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2MESTRE.html</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../ENTREGAVEL 3/ENTREGAVEL 2DAVI.html" class="pagination-link" aria-label="ENTREGAVEL 2DAVI.html">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

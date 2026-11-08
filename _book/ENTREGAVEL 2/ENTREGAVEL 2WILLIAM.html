@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.10.19">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>entregavel-2william – E-book de Introdução ao R</title>
+<title>3&nbsp; Seleção das variáveis para a análise de renda – E-book de Introdução ao R</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -37,14 +72,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
 <link href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" rel="next">
-<link href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" rel="prev">
+<link href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-c574c73dd0d0ff61020859ffc61752ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
@@ -88,7 +123,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2WILLIAM.html</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -153,32 +188,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2DAVI.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2LUCAS.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2MESTRE.html</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2WILLIAM.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></span></a>
   </div>
 </li>
       </ul>
@@ -195,37 +218,37 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 2DAVI.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3bado.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3bado.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3bado.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3JOÃO PEDRO.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3JOÃO PEDRO.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3LUCAS.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3LUCAS.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3LUCAS.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3mestre.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3mestre.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3mestre.html</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../ENTREGAVEL 3/ENTREGAVEL 3william.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3william.html</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3william.html</span></span></a>
   </div>
 </li>
       </ul>
@@ -235,18 +258,349 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introdução" id="toc-introdução" class="nav-link active" data-scroll-target="#introdução"><span class="header-section-number">3.1</span> 1. Introdução</a></li>
+  <li><a href="#o-que-queremos-investigar" id="toc-o-que-queremos-investigar" class="nav-link" data-scroll-target="#o-que-queremos-investigar"><span class="header-section-number">3.2</span> 2. O que queremos investigar?</a></li>
+  <li><a href="#escolhendo-as-variáveis-necessárias" id="toc-escolhendo-as-variáveis-necessárias" class="nav-link" data-scroll-target="#escolhendo-as-variáveis-necessárias"><span class="header-section-number">3.3</span> 3. Escolhendo as variáveis necessárias</a></li>
+  <li><a href="#por-que-escolhemos-cada-variável" id="toc-por-que-escolhemos-cada-variável" class="nav-link" data-scroll-target="#por-que-escolhemos-cada-variável"><span class="header-section-number">3.4</span> 4. Por que escolhemos cada variável?</a>
+  <ul class="collapse">
+  <li><a href="#unidade-da-federação-uf" id="toc-unidade-da-federação-uf" class="nav-link" data-scroll-target="#unidade-da-federação-uf"><span class="header-section-number">3.4.1</span> 4.1. Unidade da Federação: UF</a></li>
+  <li><a href="#número-de-pessoas-no-domicílio-v2001" id="toc-número-de-pessoas-no-domicílio-v2001" class="nav-link" data-scroll-target="#número-de-pessoas-no-domicílio-v2001"><span class="header-section-number">3.4.2</span> 4.2. Número de pessoas no domicílio: V2001</a></li>
+  <li><a href="#número-de-ordem-do-morador-v2003" id="toc-número-de-ordem-do-morador-v2003" class="nav-link" data-scroll-target="#número-de-ordem-do-morador-v2003"><span class="header-section-number">3.4.3</span> 4.3. Número de ordem do morador: V2003</a></li>
+  <li><a href="#condição-no-domicílio-v2005" id="toc-condição-no-domicílio-v2005" class="nav-link" data-scroll-target="#condição-no-domicílio-v2005"><span class="header-section-number">3.4.4</span> 4.4. Condição no domicílio: V2005</a></li>
+  <li><a href="#sexo-v2007" id="toc-sexo-v2007" class="nav-link" data-scroll-target="#sexo-v2007"><span class="header-section-number">3.4.5</span> 4.5. Sexo: V2007</a></li>
+  <li><a href="#idade-v2009" id="toc-idade-v2009" class="nav-link" data-scroll-target="#idade-v2009"><span class="header-section-number">3.4.6</span> 4.6. Idade: V2009</a></li>
+  <li><a href="#anos-de-estudo-vd3005" id="toc-anos-de-estudo-vd3005" class="nav-link" data-scroll-target="#anos-de-estudo-vd3005"><span class="header-section-number">3.4.7</span> 4.7. Anos de estudo: VD3005</a></li>
+  <li><a href="#rendimento-domiciliar-vd5001" id="toc-rendimento-domiciliar-vd5001" class="nav-link" data-scroll-target="#rendimento-domiciliar-vd5001"><span class="header-section-number">3.4.8</span> 4.8. Rendimento domiciliar: VD5001</a></li>
+  <li><a href="#rendimento-domiciliar-per-capita-vd5002" id="toc-rendimento-domiciliar-per-capita-vd5002" class="nav-link" data-scroll-target="#rendimento-domiciliar-per-capita-vd5002"><span class="header-section-number">3.4.9</span> 4.9. Rendimento domiciliar per capita: VD5002</a></li>
+  </ul></li>
+  <li><a href="#como-localizar-as-variáveis-no-r" id="toc-como-localizar-as-variáveis-no-r" class="nav-link" data-scroll-target="#como-localizar-as-variáveis-no-r"><span class="header-section-number">3.5</span> 5. Como localizar as variáveis no R?</a>
+  <ul class="collapse">
+  <li><a href="#visualizando-os-nomes-das-variáveis" id="toc-visualizando-os-nomes-das-variáveis" class="nav-link" data-scroll-target="#visualizando-os-nomes-das-variáveis"><span class="header-section-number">3.5.1</span> 5.1. Visualizando os nomes das variáveis</a></li>
+  <li><a href="#visualizando-apenas-as-primeiras-variáveis" id="toc-visualizando-apenas-as-primeiras-variáveis" class="nav-link" data-scroll-target="#visualizando-apenas-as-primeiras-variáveis"><span class="header-section-number">3.5.2</span> 5.2. Visualizando apenas as primeiras variáveis</a></li>
+  <li><a href="#procurando-uma-variável-específica" id="toc-procurando-uma-variável-específica" class="nav-link" data-scroll-target="#procurando-uma-variável-específica"><span class="header-section-number">3.5.3</span> 5.3. Procurando uma variável específica</a></li>
+  <li><a href="#verificando-todas-as-variáveis-selecionadas" id="toc-verificando-todas-as-variáveis-selecionadas" class="nav-link" data-scroll-target="#verificando-todas-as-variáveis-selecionadas"><span class="header-section-number">3.5.4</span> 5.4. Verificando todas as variáveis selecionadas</a></li>
+  <li><a href="#identificando-quais-variáveis-estão-ausentes" id="toc-identificando-quais-variáveis-estão-ausentes" class="nav-link" data-scroll-target="#identificando-quais-variáveis-estão-ausentes"><span class="header-section-number">3.5.5</span> 5.5. Identificando quais variáveis estão ausentes</a></li>
+  <li><a href="#verificando-os-tipos-de-dados" id="toc-verificando-os-tipos-de-dados" class="nav-link" data-scroll-target="#verificando-os-tipos-de-dados"><span class="header-section-number">3.5.6</span> 5.6. Verificando os tipos de dados</a></li>
+  </ul></li>
+  <li><a href="#conferindo-nossa-seleção" id="toc-conferindo-nossa-seleção" class="nav-link" data-scroll-target="#conferindo-nossa-seleção"><span class="header-section-number">3.6</span> 6. Conferindo nossa seleção</a></li>
+  <li><a href="#conclusão" id="toc-conclusão" class="nav-link" data-scroll-target="#conclusão"><span class="header-section-number">3.7</span> 7. Conclusão</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2WILLIAM.html</span></a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<p>O broder vai delegar tarefa pro broder e ele ira desenvolver aqui</p>
+    
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<section id="introdução" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="introdução"><span class="header-section-number">3.1</span> 1. Introdução</h2>
+<p>No Entregável 1, aprendemos a importar os microdados da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua), disponibilizados pelo Instituto Brasileiro de Geografia e Estatística (IBGE).</p>
+<p>Agora que sabemos como obter os dados, precisamos entender quais informações são necessárias para realizar nossa análise.</p>
+<p>A PNAD Contínua contém diversas variáveis relacionadas às características da população brasileira, como idade, sexo, cor ou raça, escolaridade, ocupação e rendimento.</p>
+<p>Entretanto, nem todas essas variáveis serão utilizadas em nosso estudo.</p>
+<p>Neste capítulo, aprenderemos a selecionar as variáveis mais relevantes para comparar a renda de domicílios chefiados por mulheres e por homens.</p>
+<p>Ao final desta aula, o leitor será capaz de:</p>
+<ul>
+<li>Identificar variáveis relevantes para uma análise de renda.</li>
+<li>Entender a importância de cada variável selecionada.</li>
+<li>Localizar essas variáveis dentro da base da PNAD utilizando R.</li>
+<li>Verificar quais informações estão disponíveis para futuras análises.</li>
+</ul>
+</section>
+<section id="o-que-queremos-investigar" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="o-que-queremos-investigar"><span class="header-section-number">3.2</span> 2. O que queremos investigar?</h2>
+<p>Antes de selecionar as variáveis, precisamos definir o objetivo da análise.</p>
+<p>Neste exemplo, nosso objetivo é investigar se existe diferença de renda entre domicílios chefiados por mulheres e por homens.</p>
+<p>Podemos formular algumas perguntas:</p>
+<ul>
+<li>Domicílios chefiados por mulheres têm renda diferente dos chefiados por homens?</li>
+<li>A renda domiciliar per capita varia conforme a idade da pessoa responsável?</li>
+<li>A escolaridade da pessoa responsável está associada à renda do domicílio?</li>
+<li>A renda varia entre os estados brasileiros?</li>
+<li>O número de moradores altera a comparação entre renda total e renda per capita?</li>
+</ul>
+<p>Para responder a essas perguntas, precisamos identificar as variáveis correspondentes na PNAD Contínua.</p>
+</section>
+<section id="escolhendo-as-variáveis-necessárias" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="escolhendo-as-variáveis-necessárias"><span class="header-section-number">3.3</span> 3. Escolhendo as variáveis necessárias</h2>
+<p>Uma variável representa uma característica ou informação registrada na base de dados.</p>
+<p>Na PNAD Contínua, cada variável possui um código de identificação.</p>
+<p>Por exemplo, a variável <code>V2009</code> representa a idade dos moradores.</p>
+<p>Para nossa análise, selecionaremos inicialmente as seguintes variáveis:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 33%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Código</th>
+<th>Variável</th>
+<th>Finalidade</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>UF</td>
+<td>Unidade da Federação</td>
+<td>Comparar estados</td>
+</tr>
+<tr class="even">
+<td>V2001</td>
+<td>Número de pessoas no domicílio</td>
+<td>Analisar a composição domiciliar</td>
+</tr>
+<tr class="odd">
+<td>V2003</td>
+<td>Número de ordem do morador</td>
+<td>Identificar registros individuais</td>
+</tr>
+<tr class="even">
+<td>V2005</td>
+<td>Condição no domicílio</td>
+<td>Identificar a pessoa responsável</td>
+</tr>
+<tr class="odd">
+<td>V2007</td>
+<td>Sexo</td>
+<td>Identificar o sexo da pessoa responsável</td>
+</tr>
+<tr class="even">
+<td>V2009</td>
+<td>Idade</td>
+<td>Caracterizar os moradores</td>
+</tr>
+<tr class="odd">
+<td>VD3005</td>
+<td>Anos de estudo</td>
+<td>Investigar a escolaridade</td>
+</tr>
+<tr class="even">
+<td>VD5001</td>
+<td>Rendimento domiciliar</td>
+<td>Investigar a renda do domicílio</td>
+</tr>
+<tr class="odd">
+<td>VD5002</td>
+<td>Rendimento domiciliar per capita</td>
+<td>Investigar a renda por morador</td>
+</tr>
+</tbody>
+</table>
+<p>Essas variáveis constituem uma seleção inicial para o estudo.</p>
+<p>A escolha definitiva deverá considerar a população que queremos analisar e a documentação correspondente ao período da pesquisa.</p>
+</section>
+<section id="por-que-escolhemos-cada-variável" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="por-que-escolhemos-cada-variável"><span class="header-section-number">3.4</span> 4. Por que escolhemos cada variável?</h2>
+<section id="unidade-da-federação-uf" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="unidade-da-federação-uf"><span class="header-section-number">3.4.1</span> 4.1. Unidade da Federação: UF</h3>
+<p>A variável <code>UF</code> identifica a Unidade da Federação em que o domicílio está localizado.</p>
+<p>Ela permite comparar a renda entre estados brasileiros. Isso é importante porque os mercados de trabalho e as condições econômicas variam entre regiões, e essas diferenças podem influenciar a comparação entre domicílios chefiados por homens e por mulheres.</p>
+</section>
+<section id="número-de-pessoas-no-domicílio-v2001" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="número-de-pessoas-no-domicílio-v2001"><span class="header-section-number">3.4.2</span> 4.2. Número de pessoas no domicílio: V2001</h3>
+<p>A variável <code>V2001</code> informa quantas pessoas compõem o domicílio.</p>
+<p>Ela é importante porque a renda total de um domicílio não tem o mesmo significado para uma pessoa que mora sozinha e para uma família com cinco moradores. Com essa informação, conseguimos analisar a composição domiciliar e entender a diferença entre renda total e renda por morador.</p>
+</section>
+<section id="número-de-ordem-do-morador-v2003" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="número-de-ordem-do-morador-v2003"><span class="header-section-number">3.4.3</span> 4.3. Número de ordem do morador: V2003</h3>
+<p>A variável <code>V2003</code> é um identificador do morador dentro do domicílio.</p>
+<p>Como os microdados da PNAD Contínua trazem uma linha para cada morador, essa variável ajuda a distinguir os registros individuais. Ela não mede nenhuma característica da pessoa: seu valor serve apenas para identificação, e não deve ser usado em cálculos estatísticos.</p>
+</section>
+<section id="condição-no-domicílio-v2005" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="condição-no-domicílio-v2005"><span class="header-section-number">3.4.4</span> 4.4. Condição no domicílio: V2005</h3>
+<p>A variável <code>V2005</code> identifica a relação de cada morador com a pessoa responsável pelo domicílio.</p>
+<p>Na documentação, o código <code>01</code> corresponde à pessoa responsável. Por isso, ela é a variável-chave para identificar quem será considerado a chefia do domicílio na nossa pesquisa.</p>
+<p>É importante lembrar que pessoa responsável pelo domicílio não é, necessariamente, sinônimo de chefe de família, pois um mesmo domicílio pode conter mais de uma família. Nesta pesquisa, a unidade de análise é o <strong>domicílio</strong>, e essa definição deve ser mantida ao longo de todo o trabalho.</p>
+</section>
+<section id="sexo-v2007" class="level3" data-number="3.4.5">
+<h3 data-number="3.4.5" class="anchored" data-anchor-id="sexo-v2007"><span class="header-section-number">3.4.5</span> 4.5. Sexo: V2007</h3>
+<p>A variável <code>V2007</code> identifica o sexo registrado na pesquisa.</p>
+<p>Ela não deve ser usada isoladamente para classificar os domicílios. Não podemos classificar todos os moradores do sexo masculino como integrantes de domicílios chefiados por homens. O procedimento correto é:</p>
+<ol type="1">
+<li>Identificar a pessoa responsável pelo domicílio (<code>V2005</code>).</li>
+<li>Consultar o sexo dessa pessoa (<code>V2007</code>).</li>
+<li>Classificar o domicílio de acordo com essa informação.</li>
+</ol>
+<p>Assim, <code>V2005</code> e <code>V2007</code> são usadas em conjunto para construir a variável central da nossa análise.</p>
+</section>
+<section id="idade-v2009" class="level3" data-number="3.4.6">
+<h3 data-number="3.4.6" class="anchored" data-anchor-id="idade-v2009"><span class="header-section-number">3.4.6</span> 4.6. Idade: V2009</h3>
+<p>A variável <code>V2009</code> registra a idade do morador, em anos completos.</p>
+<p>A idade da pessoa responsável é relevante porque a renda tende a variar ao longo do ciclo de vida. Posteriormente, poderemos organizar as idades em faixas etárias para realizar comparações e usá-las como característica de controle.</p>
+</section>
+<section id="anos-de-estudo-vd3005" class="level3" data-number="3.4.7">
+<h3 data-number="3.4.7" class="anchored" data-anchor-id="anos-de-estudo-vd3005"><span class="header-section-number">3.4.7</span> 4.7. Anos de estudo: VD3005</h3>
+<p>A variável <code>VD3005</code> informa os anos de estudo das pessoas de 5 anos ou mais de idade.</p>
+<p>A escolaridade é uma característica importante nas análises de renda, pois está associada às oportunidades no mercado de trabalho. Ao observar a escolaridade da pessoa responsável, poderemos verificar se uma eventual diferença de renda entre os domicílios persiste quando comparamos pessoas com níveis de estudo semelhantes.</p>
+<p>Os anos de estudo são organizados em categorias ordenadas. Por isso, devemos conferir no dicionário como a variável está codificada antes de utilizá-la.</p>
+</section>
+<section id="rendimento-domiciliar-vd5001" class="level3" data-number="3.4.8">
+<h3 data-number="3.4.8" class="anchored" data-anchor-id="rendimento-domiciliar-vd5001"><span class="header-section-number">3.4.8</span> 4.8. Rendimento domiciliar: VD5001</h3>
+<p>A variável <code>VD5001</code> é um indicador de <strong>rendimento domiciliar</strong>, isto é, relaciona-se à renda do domicílio como um todo, e não à renda de uma pessoa específica.</p>
+<p>Ela será uma das principais variáveis da pesquisa, pois representa a informação que queremos comparar entre domicílios chefiados por homens e por mulheres.</p>
+<p>É importante observar que esse rendimento <strong>não se limita ao rendimento do trabalho de quem chefia o domicílio</strong>: ele reúne os rendimentos dos moradores, de acordo com os critérios de inclusão definidos pelo IBGE. A descrição completa, inclusive o tipo de rendimento considerado (habitual ou efetivo) e quais moradores ficam de fora do cálculo, deve ser conferida no dicionário da edição utilizada.</p>
+</section>
+<section id="rendimento-domiciliar-per-capita-vd5002" class="level3" data-number="3.4.9">
+<h3 data-number="3.4.9" class="anchored" data-anchor-id="rendimento-domiciliar-per-capita-vd5002"><span class="header-section-number">3.4.9</span> 4.9. Rendimento domiciliar per capita: VD5002</h3>
+<p>A variável <code>VD5002</code> é o indicador de <strong>rendimento domiciliar per capita</strong>, ou seja, o rendimento do domicílio em relação ao número de moradores, conforme a definição do IBGE.</p>
+<p>Ela é importante porque um rendimento domiciliar total não representa a mesma coisa que um rendimento por morador. Dois domicílios com a mesma renda total podem ter condições de vida muito diferentes se tiverem números diferentes de moradores.</p>
+<p>Por isso, <code>VD5001</code> e <code>VD5002</code> não devem ser tratadas como equivalentes: a primeira mede a renda total do domicílio, e a segunda, a renda por morador. Em nossa análise, poderemos compará-las para verificar se as conclusões mudam conforme o indicador escolhido.</p>
+</section>
+</section>
+<section id="como-localizar-as-variáveis-no-r" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="como-localizar-as-variáveis-no-r"><span class="header-section-number">3.5</span> 5. Como localizar as variáveis no R?</h2>
+<p>Agora que escolhemos as variáveis necessárias, precisamos verificar se elas estão disponíveis na base importada no Entregável 1.</p>
+<p>Lembre-se de que utilizamos o objeto <code>pnad</code> para armazenar os dados da pesquisa.</p>
+<p>Quando o objeto é importado com <code>design = TRUE</code>, ele contém informações sobre o desenho amostral da pesquisa, além das variáveis utilizadas na análise.</p>
+<p>Nos exemplos a seguir, consideramos que o objeto <code>pnad</code> já foi criado na sessão R.</p>
+<section id="visualizando-os-nomes-das-variáveis" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="visualizando-os-nomes-das-variáveis"><span class="header-section-number">3.5.1</span> 5.1. Visualizando os nomes das variáveis</h3>
+<p>O primeiro passo é utilizar a função <code>names()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(pnad<span class="sc">$</span>variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Esse comando apresenta os nomes das variáveis disponíveis na base.</p>
+<p><strong>Entendendo o código:</strong></p>
+<ul>
+<li><code>pnad</code>: objeto que contém os dados importados.</li>
+<li><code>$variables</code>: acessa as variáveis armazenadas no objeto.</li>
+<li><code>names()</code>: retorna os nomes das colunas.</li>
+</ul>
+<p>Como a PNAD possui muitas variáveis, a lista apresentada pode ser extensa.</p>
+</section>
+<section id="visualizando-apenas-as-primeiras-variáveis" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="visualizando-apenas-as-primeiras-variáveis"><span class="header-section-number">3.5.2</span> 5.2. Visualizando apenas as primeiras variáveis</h3>
+<p>Podemos utilizar a função <code>head()</code> para mostrar somente os primeiros nomes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">names</span>(pnad<span class="sc">$</span>variables), <span class="dv">20</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nesse exemplo, o argumento <code>20</code> determina que serão mostrados os primeiros vinte nomes.</p>
+<p>Esse procedimento facilita uma inspeção inicial da estrutura da base.</p>
+</section>
+<section id="procurando-uma-variável-específica" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="procurando-uma-variável-específica"><span class="header-section-number">3.5.3</span> 5.3. Procurando uma variável específica</h3>
+<p>Se quisermos verificar se a variável de idade está presente, podemos utilizar o operador <code>%in%</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="st">"V2009"</span> <span class="sc">%in%</span> <span class="fu">names</span>(pnad<span class="sc">$</span>variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>O comando verifica se o nome <code>V2009</code> está entre os nomes das variáveis.</p>
+<p>Se o resultado for:</p>
+<p><code>TRUE</code></p>
+<p>Isso significa que a variável foi encontrada.</p>
+<p>Se o resultado for:</p>
+<p><code>FALSE</code></p>
+<p>Isso significa que ela não está presente com esse nome no objeto consultado.</p>
+</section>
+<section id="verificando-todas-as-variáveis-selecionadas" class="level3" data-number="3.5.4">
+<h3 data-number="3.5.4" class="anchored" data-anchor-id="verificando-todas-as-variáveis-selecionadas"><span class="header-section-number">3.5.4</span> 5.4. Verificando todas as variáveis selecionadas</h3>
+<p>Em vez de procurar uma variável por vez, podemos criar uma lista com todos os códigos necessários.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>variaveis_escolhidas <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"VD4019"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V2007"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V2009"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"V2010"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"VD3004"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"UF"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"VD4002"</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>variaveis_escolhidas <span class="sc">%in%</span> <span class="fu">names</span>(pnad<span class="sc">$</span>variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><strong>Entendendo o código:</strong></p>
+<ul>
+<li><code>c()</code> reúne os nomes das variáveis em um vetor.</li>
+<li><code>&lt;-</code> atribui esse vetor ao objeto <code>variaveis_escolhidas</code>.</li>
+<li><code>%in%</code> verifica se cada elemento aparece na lista de nomes da base.</li>
+</ul>
+<p>O R retornará valores <code>TRUE</code> ou <code>FALSE</code>, permitindo identificar quais códigos foram encontrados.</p>
+</section>
+<section id="identificando-quais-variáveis-estão-ausentes" class="level3" data-number="3.5.5">
+<h3 data-number="3.5.5" class="anchored" data-anchor-id="identificando-quais-variáveis-estão-ausentes"><span class="header-section-number">3.5.5</span> 5.5. Identificando quais variáveis estão ausentes</h3>
+<p>Também podemos descobrir quais variáveis escolhidas não foram encontradas.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  variaveis_escolhidas,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(pnad<span class="sc">$</span>variables)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A função <code>setdiff()</code> identifica os elementos da primeira lista que não aparecem na segunda.</p>
+<p>Se o resultado for:</p>
+<p><code>character(0)</code></p>
+<p>Isso significa que nenhum dos códigos selecionados está ausente da lista de nomes.</p>
+<p>Caso apareçam códigos, será necessário verificar a documentação e a disponibilidade das variáveis na base utilizada.</p>
+</section>
+<section id="verificando-os-tipos-de-dados" class="level3" data-number="3.5.6">
+<h3 data-number="3.5.6" class="anchored" data-anchor-id="verificando-os-tipos-de-dados"><span class="header-section-number">3.5.6</span> 5.6. Verificando os tipos de dados</h3>
+<p>Depois de localizar as variáveis, podemos consultar seus tipos no R.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  pnad<span class="sc">$</span>variables[</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    variaveis_escolhidas</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  ],</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  class</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Observe especialmente a classe de <code>V2005</code>. Se ela aparecer como <code>factor</code> ou <code>character</code>, o filtro da pessoa responsável será <code>V2005 == "01"</code>; se for numérica, será <code>V2005 == 1</code>. Esse comando consulta a classe de cada variável selecionada.</p>
+<p>Entre os tipos que podem aparecer estão:</p>
+<ul>
+<li><code>numeric</code>: valores numéricos.</li>
+<li><code>integer</code>: números inteiros.</li>
+<li><code>character</code>: textos.</li>
+<li><code>factor</code>: categorias representadas como fatores.</li>
+</ul>
+<p>É importante distinguir o tipo de armazenamento no R do significado estatístico da variável.</p>
+<p>Por exemplo, uma variável categórica pode ser armazenada por meio de códigos numéricos.</p>
+</section>
+</section>
+<section id="conferindo-nossa-seleção" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="conferindo-nossa-seleção"><span class="header-section-number">3.6</span> 6. Conferindo nossa seleção</h2>
+<p>Ao longo desta aula, identificamos nove variáveis inicialmente relevantes para a análise da renda domiciliar.</p>
+<p>Também aprendemos a utilizar funções do R para verificar quais códigos aparecem na base e consultar seus tipos.</p>
+<p>Antes de continuar o projeto, é importante conferir:</p>
+<ul>
+<li>Se todos os códigos escolhidos estão presentes na PNAD utilizada.</li>
+<li>Se as descrições correspondem à documentação do IBGE.</li>
+<li>Se as variáveis são adequadas às perguntas da pesquisa.</li>
+<li>Se existem informações ausentes ou particularidades que precisam ser consideradas.</li>
+</ul>
+<p>Essa conferência é importante para evitar problemas nas próximas etapas.</p>
+</section>
+<section id="conclusão" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="conclusão"><span class="header-section-number">3.7</span> 7. Conclusão</h2>
+<p>Neste capítulo, aprendemos a selecionar variáveis da PNAD Contínua para comparar a renda de domicílios chefiados por mulheres e por homens.</p>
+<p>Primeiro, definimos as perguntas que queremos investigar.</p>
+<p>Em seguida, escolhemos as variáveis que poderão ajudar a respondê-las e justificamos a importância de cada uma. Destacamos que a variável central da pesquisa, a chefia do domicílio, não existe pronta na base: ela será construída combinando <code>V2005</code> (pessoa responsável) e <code>V2007</code> (sexo), o que será feito no Entregável 3.</p>
+<p>Por fim, apresentamos comandos em R para localizar os códigos e verificar sua disponibilidade na base importada.</p>
+<p>A seleção e a identificação das variáveis constituem uma etapa essencial para organizar o banco de dados antes de realizar análises estatísticas.</p>
+<p>Na próxima seção do Entregável 2, serão apresentadas técnicas para renomear e padronizar as variáveis, facilitando sua utilização nos códigos das etapas seguintes.</p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -651,13 +1005,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../ENTREGAVEL 2/ENTREGAVEL 2MESTRE.html" class="pagination-link" aria-label="ENTREGAVEL 2MESTRE.html">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2MESTRE.html</span></span>
+      <a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html" class="pagination-link" aria-label="Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="pagination-link" aria-label="Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada">
-        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Renomeando as variáveis de forma padronizada</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="pagination-link" aria-label="Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
