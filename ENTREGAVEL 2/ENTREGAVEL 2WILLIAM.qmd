@@ -1,25 +1,6 @@
 # Seleção das variáveis para a análise de renda
 
-## 1. Introdução
-
-No Entregável 1, aprendemos a importar os microdados da Pesquisa Nacional por Amostra de Domicílios Contínua (PNAD Contínua), disponibilizados pelo Instituto Brasileiro de Geografia e Estatística (IBGE).
-
-Agora que sabemos como obter os dados, precisamos entender quais informações são necessárias para realizar nossa análise.
-
-A PNAD Contínua contém diversas variáveis relacionadas às características da população brasileira, como idade, sexo, cor ou raça, escolaridade, ocupação e rendimento.
-
-Entretanto, nem todas essas variáveis serão utilizadas em nosso estudo.
-
-Neste capítulo, aprenderemos a selecionar as variáveis mais relevantes para comparar a renda de domicílios chefiados por mulheres e por homens.
-
-Ao final desta aula, o leitor será capaz de:
-
-- Identificar variáveis relevantes para uma análise de renda.
-- Entender a importância de cada variável selecionada.
-- Localizar essas variáveis dentro da base da PNAD utilizando R.
-- Verificar quais informações estão disponíveis para futuras análises.
-
-## 2. O que queremos investigar?
+## O que queremos investigar?
 
 Antes de selecionar as variáveis, precisamos definir o objetivo da análise.
 
@@ -36,53 +17,43 @@ Podemos formular algumas perguntas:
 
 Para responder a essas perguntas, precisamos identificar as variáveis correspondentes na PNAD Contínua.
 
-## 3. Escolhendo as variáveis necessárias
-
-Uma variável representa uma característica ou informação registrada na base de dados.
-
-Na PNAD Contínua, cada variável possui um código de identificação.
-
-Por exemplo, a variável `V2009` representa a idade dos moradores.
+## Escolhendo as variáveis necessárias
 
 Para nossa análise, selecionaremos inicialmente as seguintes variáveis:
 
-| Código | Variável | Finalidade |
-|--------|----------|------------|
-| UF | Unidade da Federação | Comparar estados |
-| V2001 | Número de pessoas no domicílio | Analisar a composição domiciliar |
-| V2003 | Número de ordem do morador | Identificar registros individuais |
-| V2005 | Condição no domicílio | Identificar a pessoa responsável |
-| V2007 | Sexo | Identificar o sexo da pessoa responsável |
-| V2009 | Idade | Caracterizar os moradores |
-| VD3005 | Anos de estudo | Investigar a escolaridade |
-| VD5001 | Rendimento domiciliar | Investigar a renda do domicílio |
-| VD5002 | Rendimento domiciliar per capita | Investigar a renda por morador |
+| Código | Nome padronizado | Descrição | Tipo | Nível |
+|---|---|---|---|---|
+| UF | uf | Unidade da Federação | Qualitativa nominal | Domicílio |
+| V2001 | numero_moradores | Número de pessoas no domicílio | Quantitativa discreta | Domicílio |
+| V2005 | condicao_domicilio | Condição do morador em relação à pessoa responsável | Qualitativa nominal | Pessoa |
+| V2007 | sexo | Sexo do morador | Qualitativa nominal | Pessoa |
+| V2009 | idade | Idade em anos completos | Quantitativa discreta | Pessoa |
+| V2010 | cor_raca | Cor ou raça declarada | Qualitativa nominal | Pessoa |
+| VD3005 | anos_estudo | Anos de estudo (pessoas de 5 anos ou mais), em categorias ordenadas | Qualitativa ordinal | Pessoa |
+| VD4001 | condicao_forca_trabalho | Condição em relação à força de trabalho | Qualitativa nominal | Pessoa |
+| VD4002 | condicao_ocupacao | Condição de ocupação (só para quem está na força de trabalho) | Qualitativa nominal | Pessoa |
+| VD5001 | renda_domiciliar | Rendimento domiciliar, em R\$ (completar com o dicionário de 2024) | Quantitativa contínua | Domicílio |
+| VD5002 | renda_per_capita | Rendimento domiciliar per capita, em R\$ | Quantitativa contínua | Domicílio |
 
 Essas variáveis constituem uma seleção inicial para o estudo.
 
 A escolha definitiva deverá considerar a população que queremos analisar e a documentação correspondente ao período da pesquisa.
 
-## 4. Por que escolhemos cada variável?
+## Por que escolhemos cada variável?
 
-### 4.1. Unidade da Federação: UF
+### Unidade da Federação: UF
 
 A variável `UF` identifica a Unidade da Federação em que o domicílio está localizado.
 
 Ela permite comparar a renda entre estados brasileiros. Isso é importante porque os mercados de trabalho e as condições econômicas variam entre regiões, e essas diferenças podem influenciar a comparação entre domicílios chefiados por homens e por mulheres.
 
-### 4.2. Número de pessoas no domicílio: V2001
+### Número de pessoas no domicílio: V2001
 
 A variável `V2001` informa quantas pessoas compõem o domicílio.
 
 Ela é importante porque a renda total de um domicílio não tem o mesmo significado para uma pessoa que mora sozinha e para uma família com cinco moradores. Com essa informação, conseguimos analisar a composição domiciliar e entender a diferença entre renda total e renda por morador.
 
-### 4.3. Número de ordem do morador: V2003
-
-A variável `V2003` é um identificador do morador dentro do domicílio.
-
-Como os microdados da PNAD Contínua trazem uma linha para cada morador, essa variável ajuda a distinguir os registros individuais. Ela não mede nenhuma característica da pessoa: seu valor serve apenas para identificação, e não deve ser usado em cálculos estatísticos.
-
-### 4.4. Condição no domicílio: V2005
+### Condição no domicílio: V2005
 
 A variável `V2005` identifica a relação de cada morador com a pessoa responsável pelo domicílio.
 
@@ -90,7 +61,7 @@ Na documentação, o código `01` corresponde à pessoa responsável. Por isso, 
 
 É importante lembrar que pessoa responsável pelo domicílio não é, necessariamente, sinônimo de chefe de família, pois um mesmo domicílio pode conter mais de uma família. Nesta pesquisa, a unidade de análise é o **domicílio**, e essa definição deve ser mantida ao longo de todo o trabalho.
 
-### 4.5. Sexo: V2007
+### Sexo: V2007
 
 A variável `V2007` identifica o sexo registrado na pesquisa.
 
@@ -102,13 +73,19 @@ Ela não deve ser usada isoladamente para classificar os domicílios. Não podem
 
 Assim, `V2005` e `V2007` são usadas em conjunto para construir a variável central da nossa análise.
 
-### 4.6. Idade: V2009
+### Idade: V2009
 
 A variável `V2009` registra a idade do morador, em anos completos.
 
 A idade da pessoa responsável é relevante porque a renda tende a variar ao longo do ciclo de vida. Posteriormente, poderemos organizar as idades em faixas etárias para realizar comparações e usá-las como característica de controle.
 
-### 4.7. Anos de estudo: VD3005
+## Cor ou raça: V2010
+
+A variável `V2010` representa a Cor ou raça dos moradores dos domicílios pesquisados, que pode ser branca, preta, amarela, parda ou indígena.
+
+Ela é o controle mais usado em estudos de desigualdade de renda no Brasil. A diferença entre domicílios chefiados por mulheres e por homens pode ser em parte uma diferença racial, e sem essa variável a comparação fica incompleta.
+
+### Anos de estudo: VD3005
 
 A variável `VD3005` informa os anos de estudo das pessoas de 5 anos ou mais de idade.
 
@@ -116,7 +93,25 @@ A escolaridade é uma característica importante nas análises de renda, pois es
 
 Os anos de estudo são organizados em categorias ordenadas. Por isso, devemos conferir no dicionário como a variável está codificada antes de utilizá-la.
 
-### 4.8. Rendimento domiciliar: VD5001
+### Condição em relação à força de trabalho: VD4001
+
+A variável `VD4001`classifica as pessoas em idade de trabalhar em dois grupos: as que estão na força de trabalho (trabalhando ou procurando trabalho) e as que estão fora dela (por exemplo, aposentados, estudantes e pessoas que cuidam de afazeres domésticos).
+
+Ela é importante porque nos permite conhecer a situação da pessoa responsável pelo domicílio diante do mercado de trabalho. Como `VD4001` cobre tanto quem está na força de trabalho quanto quem está fora dela, é a variável mais adequada para descrever a situação de toda a população de pessoas responsáveis, sem perder casos.
+
+Ela também é a base para a variável seguinte, `VD4002`, que detalha a situação de quem está na força de trabalho.
+
+### Condição de ocupação: VD4002
+
+A variável `VD4002`informa se a pessoa que está na força de trabalho está ocupada ou desocupada.
+
+Ela deve ser usada com cuidado, porque só é preenchida para pessoas na força de trabalho. Para quem está fora dela, como aposentados e pensionistas, o valor aparece como `NA` (informação ausente). Esses `NA` não indicam erro nos dados: significam que a pergunta não se aplica àquela pessoa.
+
+Isso é relevante para a nossa pesquisa, pois muitas pessoas responsáveis por domicílios estão fora da força de trabalho. Se filtrarmos ou analisarmos apenas os registros com `VD4002` preenchida, podemos excluir parte importante dos domicílios e alterar a comparação entre os chefiados por mulheres e por homens.
+
+Por isso, usaremos `VD4002` em conjunto com `VD4001`: a segunda mostra quem está dentro ou fora da força de trabalho, e a primeira detalha a situação de quem está dentro.
+
+### Rendimento domiciliar: VD5001
 
 A variável `VD5001` é um indicador de **rendimento domiciliar**, isto é, relaciona-se à renda do domicílio como um todo, e não à renda de uma pessoa específica.
 
@@ -124,7 +119,7 @@ Ela será uma das principais variáveis da pesquisa, pois representa a informaç
 
 É importante observar que esse rendimento **não se limita ao rendimento do trabalho de quem chefia o domicílio**: ele reúne os rendimentos dos moradores, de acordo com os critérios de inclusão definidos pelo IBGE. A descrição completa, inclusive o tipo de rendimento considerado (habitual ou efetivo) e quais moradores ficam de fora do cálculo, deve ser conferida no dicionário da edição utilizada.
 
-### 4.9. Rendimento domiciliar per capita: VD5002
+### Rendimento domiciliar per capita: VD5002
 
 A variável `VD5002` é o indicador de **rendimento domiciliar per capita**, ou seja, o rendimento do domicílio em relação ao número de moradores, conforme a definição do IBGE.
 
@@ -133,9 +128,7 @@ Ela é importante porque um rendimento domiciliar total não representa a mesma 
 Por isso, `VD5001` e `VD5002` não devem ser tratadas como equivalentes: a primeira mede a renda total do domicílio, e a segunda, a renda por morador. Em nossa análise, poderemos compará-las para verificar se as conclusões mudam conforme o indicador escolhido.
 
 
-
-
-## 5. Como localizar as variáveis no R?
+## Como localizar as variáveis no R?
 
 Agora que escolhemos as variáveis necessárias, precisamos verificar se elas estão disponíveis na base importada no Entregável 1.
 
@@ -145,7 +138,7 @@ Quando o objeto é importado com `design = TRUE`, ele contém informações sobr
 
 Nos exemplos a seguir, consideramos que o objeto `pnad` já foi criado na sessão R.
 
-### 5.1. Visualizando os nomes das variáveis
+### Visualizando os nomes das variáveis
 
 O primeiro passo é utilizar a função `names()`.
 
@@ -165,7 +158,7 @@ Esse comando apresenta os nomes das variáveis disponíveis na base.
 
 Como a PNAD possui muitas variáveis, a lista apresentada pode ser extensa.
 
-### 5.2. Visualizando apenas as primeiras variáveis
+### Visualizando apenas as primeiras variáveis
 
 Podemos utilizar a função `head()` para mostrar somente os primeiros nomes.
 
@@ -179,7 +172,7 @@ Nesse exemplo, o argumento `20` determina que serão mostrados os primeiros vint
 
 Esse procedimento facilita uma inspeção inicial da estrutura da base.
 
-### 5.3. Procurando uma variável específica
+### Procurando uma variável específica
 
 Se quisermos verificar se a variável de idade está presente, podemos utilizar o operador `%in%`.
 
@@ -203,7 +196,7 @@ Se o resultado for:
 
 Isso significa que ela não está presente com esse nome no objeto consultado.
 
-### 5.4. Verificando todas as variáveis selecionadas
+### Verificando todas as variáveis selecionadas
 
 Em vez de procurar uma variável por vez, podemos criar uma lista com todos os códigos necessários.
 
@@ -211,13 +204,16 @@ Em vez de procurar uma variável por vez, podemos criar uma lista com todos os c
 #| eval: false
 
 variaveis_escolhidas <- c(
-  "VD4019",
+  "V2001",
+  "V2005",
   "V2007",
   "V2009",
-  "V2010",
-  "VD3004",
-  "UF",
-  "VD4002"
+  "V2010" ,
+  "VD3005",
+  "VD4001" , 
+  "VD4002" ,
+  "VD5001" ,
+  "VD5002"
 )
 
 variaveis_escolhidas %in% names(pnad$variables)
@@ -231,7 +227,7 @@ variaveis_escolhidas %in% names(pnad$variables)
 
 O R retornará valores `TRUE` ou `FALSE`, permitindo identificar quais códigos foram encontrados.
 
-### 5.5. Identificando quais variáveis estão ausentes
+### Identificando quais variáveis estão ausentes
 
 Também podemos descobrir quais variáveis escolhidas não foram encontradas.
 
@@ -254,7 +250,7 @@ Isso significa que nenhum dos códigos selecionados está ausente da lista de no
 
 Caso apareçam códigos, será necessário verificar a documentação e a disponibilidade das variáveis na base utilizada.
 
-### 5.6. Verificando os tipos de dados
+### Verificando os tipos de dados
 
 Depois de localizar as variáveis, podemos consultar seus tipos no R.
 
@@ -283,7 +279,7 @@ Entre os tipos que podem aparecer estão:
 
 Por exemplo, uma variável categórica pode ser armazenada por meio de códigos numéricos.
 
-## 6. Conferindo nossa seleção
+## Conferindo nossa seleção
 
 Ao longo desta aula, identificamos nove variáveis inicialmente relevantes para a análise da renda domiciliar.
 
@@ -297,17 +293,3 @@ Antes de continuar o projeto, é importante conferir:
 - Se existem informações ausentes ou particularidades que precisam ser consideradas.
 
 Essa conferência é importante para evitar problemas nas próximas etapas.
-
-## 7. Conclusão
-Neste capítulo, aprendemos a selecionar variáveis da PNAD Contínua para comparar a renda de domicílios chefiados por mulheres e por homens.
-
-Primeiro, definimos as perguntas que queremos investigar.
-
-Em seguida, escolhemos as variáveis que poderão ajudar a respondê-las e justificamos a importância de cada uma.
-Destacamos que a variável central da pesquisa, a chefia do domicílio, não existe pronta na base: ela será construída combinando `V2005` (pessoa responsável) e `V2007` (sexo), o que será feito no Entregável 3.
-
-Por fim, apresentamos comandos em R para localizar os códigos e verificar sua disponibilidade na base importada.
-
-A seleção e a identificação das variáveis constituem uma etapa essencial para organizar o banco de dados antes de realizar análises estatísticas.
-
-Na próxima seção do Entregável 2, serão apresentadas técnicas para renomear e padronizar as variáveis, facilitando sua utilização nos códigos das etapas seguintes.

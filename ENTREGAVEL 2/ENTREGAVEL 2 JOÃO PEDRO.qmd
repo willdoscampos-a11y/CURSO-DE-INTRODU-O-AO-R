@@ -46,6 +46,7 @@ As bases disponibilizadas pelo IBGE, como os microdados da PNAD Contínua, possu
 Por isso, em vez de realizar todas as operações diretamente sobre a base original, recomenda-se criar uma cópia contendo somente as informações necessárias para o desenvolvimento do artigo.
 
 Essa prática apresenta algumas vantagens:  
+
 - **Preservação dos dados originais:** mantém a base disponibilizada pelo IBGE intacta, permitindo retornar aos dados originais caso alguma transformação seja realizada incorretamente.  
 - **Organização:** concentra as informações relevantes em um único objeto, facilitando a localização e utilização das variáveis.  
 - **Eficiência:** reduz a quantidade de informações que o R precisa manipular, podendo melhorar o desempenho das operações.  
@@ -72,7 +73,7 @@ mean(base_trabalho$idade, na.rm = TRUE)
 A segunda versão é mais intuitiva, pois permite compreender imediatamente qual informação está sendo utilizada.
 Além disso, a padronização evita inconsistências na escrita dos nomes, facilita o trabalho em equipe e torna o código mais acessível para outros pesquisadores.
 
-## Qual padrão de nomenclatura utilizar?
+### Qual padrão de nomenclatura utilizar?
 Não existe uma única convenção obrigatória para nomear variáveis no R. Entretanto, é recomendável escolher um padrão e utilizá-lo durante todo o desenvolvimento da pesquisa.
 Para trabalhos acadêmicos que envolvem manipulação e análise de dados, recomendamos o padrão `snake_case`. Nesse formato, os nomes são escritos em letras minúsculas, sem acentos, sem espaços e com palavras separadas por `underline (_)`.
 
@@ -87,19 +88,18 @@ Para trabalhos acadêmicos que envolvem manipulação e análise de dados, recom
 
 [*Padrão recomendado: snake_case*]{style="color: green"}
 
-# Renomeando as variáveis para a base de dados da pesquisa
+## Renomeando as variáveis para a base de dados da pesquisa
 Vamos criar uma nova base de dados contendo apenas as variáveis que serão utilizadas na pesquisa, já atribuindo nomes padronizados durante a seleção. Essa abordagem é mais adequada porque combina duas etapas importantes do tratamento dos dados: a seleção das variáveis relevantes (data selection) e a padronização da nomenclatura (data cleaning).
 
 Considerando que o objetivo de um artigo é relacionado a uma pergunta específica, a base original da PNAD provavelmente conterá muitas variáveis que não serão utilizadas diretamente na análise. Contribuindo para a redução de erros, pois diminui a possibilidade de utilizar acidentalmente variáveis inadequadas durante as análises.
 
-## Como renomear as variáveis com o R na prática?
+### Como renomear as variáveis com o R na prática?
 Vamos considerar algumas variáveis que poderiam ser utilizadas no estudo:
 
 | Variável PNAD | Descrição | Nome padronizado |
 |---|---|---|
 | `V2009` | Idade do morador | `idade` |
 | `V2007` | Sexo | `sexo` |
-| `V2005` | Condição no domicílio | `condicao_domicilio` |
 | `VD5002` | Rendimento domiciliar per capita | `renda_per_capita` |
 
 O exemplo abaixo utiliza a função `select()` do pacote `dplyr`, que permite selecionar e renomear variáveis simultaneamente.  
@@ -114,7 +114,6 @@ base_trabalho <- pnad %>%
   select(
     idade = V2009,
     sexo = V2007,
-    condicao_domicilio = V2005,
     renda_per_capita = VD5002
   )
 ```
@@ -122,7 +121,7 @@ base_trabalho <- pnad %>%
 Nesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados.
 **Atenção:** as variáveis apresentadas são exemplos para demonstrar o procedimento. A escolha definitiva deve considerar o dicionário da edição da PNAD utilizada e, principalmente, qual tema será abordado em seu projeto.
 
-# Resumo: Expandindo para nossa pesquisa e o resultado da padronização.
+## Resumo: Expandindo para nossa pesquisa e o resultado da padronização.
 Utilizando da relação de variáveis relevante para nossa pesquisa construimos nossa base de dados, utilizando da padronização no padrão `snake_case`. Para isso, no R:
 
 ```{r}
@@ -132,15 +131,15 @@ base_trabalho <- pnad %>%
   select(
     uf = UF,
     numero_moradores = V2001,
-    ordem_morador = V2003,
     condicao_domicilio = V2005,
     sexo = V2007,
     idade = V2009,
+    cor_ou_raça = V2010 , 
     anos_estudo = VD3005,
+    condicao_forca_trabalho = VD4001 ,
+    condicao_ocupacao = VD4002 ,
     rendimento_domiciliar = VD5001,
     rendimento_per_capita = VD5002,
-    rendimento_domiciliar_2 = VD5004,
-    rendimento_per_capita_2 = VD5005
   )
 ```
 
@@ -159,9 +158,10 @@ Para termos maior praticidade a tabela a seguir apresenta a correspondência ent
 | `V2007` | Sexo do morador | `sexo` |
 | `V2009` | Idade | `idade` |
 | `VD3005` | Anos de estudo | `anos_estudo` |
+| `VD4001` | Condição em relação à força de trabalho | `condicao_forca_trabalho` |
+| `VD4002` | Condição de ocupação (fora da força de trabalho) | `condicao_ocupacao` | 
 | `VD5001` | Indicador de rendimento domiciliar | `rendimento_domiciliar` |
 | `VD5002` | Indicador de rendimento domiciliar per capita | `rendimento_per_capita` |
-| `VD5004` | Indicador de rendimento domiciliar | `rendimento_domiciliar_2` |
-| `VD5005` | Indicador de rendimento domiciliar per capita | `rendimento_per_capita_2` |
+
 
 *Fonte: Elaboração própria, com base no dicionário de variáveis da PNAD Contínua/IBGE.*
