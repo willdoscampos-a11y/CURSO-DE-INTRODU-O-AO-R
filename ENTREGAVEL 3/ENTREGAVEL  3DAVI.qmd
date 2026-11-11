@@ -1,41 +1,5 @@
----
-title: "Filtrar a População e Construir a Variável Central"
-lang: pt-BR
+# Filtrar a População e Construir a Variável Central
 
-format:
-  pdf:
-    documentclass: article
-    pdf-engine: xelatex
-    toc: true
-    number-sections: true
-    geometry:
-      - top=20mm
-      - bottom=20mm
-      - left=20mm
-      - right=20mm
-    colorlinks: true
-    include-in-header:
-      - text: |
-          \usepackage{titling}
-          \pretitle{\begin{center}\Huge\bfseries}
-          \posttitle{\par}
-          \preauthor{\begin{center}}
-          \postauthor{\end{center}}
-          \predate{\begin{center}}
-          \postdate{\end{center}\par}
-          \makeatletter
-          \renewcommand{\maketitlehookb}{%
-            \par\vspace{0.5em}
-            {\fontsize{16}{20}\selectfont\bfseries
-            Filtrando a População e Construindo a Variável Central na PNAD Contínua\par}
-            \vspace{1em}
-          }
-          \makeatother
-
-execute:
-  echo: true
-  eval: true
----
 Neste entregável, avançamos para o tratamento e manipulação dos microdados da PNAD Contínua. Agora que selecionamos e padronizamos nossas variáveis no Entregável 2, aprenderemos a utilizar as funções fundamentais do pacote `dplyr` (`filter()`, `mutate()` e `case_when()`), entenderemos a relevância do desenho amostral no manuseio da base (`pnad$variables`) e construiremos a variável central da nossa pesquisa: a chefia do domicílio.
 
 ---
