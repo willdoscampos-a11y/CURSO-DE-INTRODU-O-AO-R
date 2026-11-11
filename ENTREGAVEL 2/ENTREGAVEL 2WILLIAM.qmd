@@ -128,49 +128,7 @@ Ela é importante porque um rendimento domiciliar total não representa a mesma 
 Por isso, `VD5001` e `VD5002` não devem ser tratadas como equivalentes: a primeira mede a renda total do domicílio, e a segunda, a renda por morador. Em nossa análise, poderemos compará-las para verificar se as conclusões mudam conforme o indicador escolhido.
 
 
-## Como localizar as variáveis no R?
 
-Agora que escolhemos as variáveis necessárias, precisamos verificar se elas estão disponíveis na base importada no Entregável 1.
-
-Lembre-se de que utilizamos o objeto `pnad` para armazenar os dados da pesquisa.
-
-Quando o objeto é importado com `design = TRUE`, ele contém informações sobre o desenho amostral da pesquisa, além das variáveis utilizadas na análise.
-
-Nos exemplos a seguir, consideramos que o objeto `pnad` já foi criado na sessão R.
-
-### Visualizando os nomes das variáveis
-
-O primeiro passo é utilizar a função `names()`.
-
-```{r}
-#| eval: false
-
-names(pnad$variables)
-```
-
-Esse comando apresenta os nomes das variáveis disponíveis na base.
-
-**Entendendo o código:**
-
-- `pnad`: objeto que contém os dados importados.
-- `$variables`: acessa as variáveis armazenadas no objeto.
-- `names()`: retorna os nomes das colunas.
-
-Como a PNAD possui muitas variáveis, a lista apresentada pode ser extensa.
-
-### Visualizando apenas as primeiras variáveis
-
-Podemos utilizar a função `head()` para mostrar somente os primeiros nomes.
-
-```{r}
-#| eval: false
-
-head(names(pnad$variables), 20)
-```
-
-Nesse exemplo, o argumento `20` determina que serão mostrados os primeiros vinte nomes.
-
-Esse procedimento facilita uma inspeção inicial da estrutura da base.
 
 ### Procurando uma variável específica
 
