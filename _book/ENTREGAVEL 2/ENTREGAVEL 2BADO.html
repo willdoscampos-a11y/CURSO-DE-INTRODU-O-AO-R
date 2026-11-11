@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR" xml:lang="pt-BR"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua – E-book de Introdução ao R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html" rel="next">
+<link href="../ENTREGAVEL 1.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-c574c73dd0d0ff61020859ffc61752ee.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Nenhum resultado",
+    "search-matching-documents-text": "documentos correspondentes",
+    "search-copy-link-title": "Copiar link para a busca",
+    "search-hide-matches-text": "Esconder correspondências adicionais",
+    "search-more-match-text": "mais correspondência neste documento",
+    "search-more-matches-text": "mais correspondências neste documento",
+    "search-clear-button-title": "Limpar",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancelar",
+    "search-submit-button-title": "Enviar",
+    "search-label": "Procurar"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Procurar" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">E-book de Introdução ao R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Procurar"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Apresentação</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">ENTREGAVEL 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Entregável 1 — Importação da PNAD Contínua no Positron</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">ENTREGAVEL 2</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 2/ENTREGAVEL 2LUCAS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Dicionário das variáveis selecionadas</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">ENTREGAVEL 3</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Alternar seção">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 2DAVI.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">ENTREGAVEL 2DAVI.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 3bado.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3bado.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Ajustando nossos dados: Valores ausentes, limpeza e conversão de tipos de variáveis</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 3LUCAS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3LUCAS.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 3mestre.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3mestre.html</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ENTREGAVEL 3/ENTREGAVEL 3william.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">ENTREGAVEL 3william.html</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Índice</h2>
+   
+  <ul>
+  <li><a href="#o-que-são-variáveis-e-por-que-precisamos-interpretá-las" id="toc-o-que-são-variáveis-e-por-que-precisamos-interpretá-las" class="nav-link active" data-scroll-target="#o-que-são-variáveis-e-por-que-precisamos-interpretá-las"><span class="header-section-number">2.1</span> O que são variáveis e por que precisamos interpretá-las?</a></li>
+  <li><a href="#o-que-é-um-dicionário-de-variáveis" id="toc-o-que-é-um-dicionário-de-variáveis" class="nav-link" data-scroll-target="#o-que-é-um-dicionário-de-variáveis"><span class="header-section-number">2.2</span> O que é um dicionário de variáveis?</a>
+  <ul class="collapse">
+  <li><a href="#como-ler-um-dicionário-de-variáveis" id="toc-como-ler-um-dicionário-de-variáveis" class="nav-link" data-scroll-target="#como-ler-um-dicionário-de-variáveis"><span class="header-section-number">2.2.1</span> Como ler um dicionário de variáveis?</a></li>
+  </ul></li>
+  <li><a href="#tipos-de-variáveis-e-unidades-de-medida" id="toc-tipos-de-variáveis-e-unidades-de-medida" class="nav-link" data-scroll-target="#tipos-de-variáveis-e-unidades-de-medida"><span class="header-section-number">2.3</span> Tipos de variáveis e unidades de medida</a>
+  <ul class="collapse">
+  <li><a href="#variáveis-qualitativas" id="toc-variáveis-qualitativas" class="nav-link" data-scroll-target="#variáveis-qualitativas"><span class="header-section-number">2.3.1</span> Variáveis qualitativas</a></li>
+  <li><a href="#variáveis-quantitativas" id="toc-variáveis-quantitativas" class="nav-link" data-scroll-target="#variáveis-quantitativas"><span class="header-section-number">2.3.2</span> Variáveis quantitativas</a></li>
+  <li><a href="#unidades-de-medida" id="toc-unidades-de-medida" class="nav-link" data-scroll-target="#unidades-de-medida"><span class="header-section-number">2.3.3</span> Unidades de medida</a></li>
+  </ul></li>
+  <li><a href="#cuidados-metodológicos-antes-de-prosseguir" id="toc-cuidados-metodológicos-antes-de-prosseguir" class="nav-link" data-scroll-target="#cuidados-metodológicos-antes-de-prosseguir"><span class="header-section-number">2.4</span> Cuidados metodológicos antes de prosseguir</a>
+  <ul class="collapse">
+  <li><a href="#unidade-de-observação" id="toc-unidade-de-observação" class="nav-link" data-scroll-target="#unidade-de-observação"><span class="header-section-number">2.4.1</span> Unidade de observação</a></li>
+  <li><a href="#valores-ausentes-e-códigos-especiais" id="toc-valores-ausentes-e-códigos-especiais" class="nav-link" data-scroll-target="#valores-ausentes-e-códigos-especiais"><span class="header-section-number">2.4.2</span> Valores ausentes e códigos especiais</a></li>
+  <li><a href="#rendimentos-nominais-e-reais" id="toc-rendimentos-nominais-e-reais" class="nav-link" data-scroll-target="#rendimentos-nominais-e-reais"><span class="header-section-number">2.4.3</span> Rendimentos nominais e reais</a></li>
+  <li><a href="#pesos-amostrais" id="toc-pesos-amostrais" class="nav-link" data-scroll-target="#pesos-amostrais"><span class="header-section-number">2.4.4</span> Pesos amostrais</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html">ENTREGAVEL 2</a></li><li class="breadcrumb-item"><a href="../ENTREGAVEL 2/ENTREGAVEL 2BADO.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="o-que-são-variáveis-e-por-que-precisamos-interpretá-las" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="o-que-são-variáveis-e-por-que-precisamos-interpretá-las"><span class="header-section-number">2.1</span> O que são variáveis e por que precisamos interpretá-las?</h2>
+<p>Antes de iniciar qualquer análise estatística, é necessário compreender quais informações estão disponíveis na base de dados e o que cada uma delas representa.</p>
+<p>Uma variável é uma característica observada para cada unidade de análise de uma pesquisa. Na PNAD Contínua, por exemplo, podemos encontrar informações sobre idade, escolaridade, rendimento, condição de ocupação e características dos domicílios.</p>
+<p>Em uma pesquisa sobre diferenças de renda entre famílias chefiadas por homens e mulheres, algumas perguntas orientam a escolha das variáveis:</p>
+<ul>
+<li>Qual é a renda do domicílio?</li>
+<li>Quem é considerado responsável pelo domicílio?</li>
+<li>Em qual região do Brasil o domicílio está localizado?</li>
+<li>Qual é a escolaridade dos moradores?</li>
+<li>Quantas pessoas compõem o domicílio?</li>
+</ul>
+<p>Cada pergunta precisa ser associada a uma ou mais variáveis disponíveis na base de dados.</p>
+<p>Uma observação importante: não basta encontrar uma variável com um nome aparentemente adequado. É necessário verificar sua definição, população de referência, período de coleta, categorias de resposta e unidade de medida.</p>
+</section>
+<section id="o-que-é-um-dicionário-de-variáveis" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="o-que-é-um-dicionário-de-variáveis"><span class="header-section-number">2.2</span> O que é um dicionário de variáveis?</h2>
+<p>Um dicionário de variáveis é um documento que descreve as informações presentes em uma base de dados. Ele funciona como um guia para compreender e utilizar corretamente cada variável.</p>
+<p>Normalmente, apresenta informações como: Nome da variável, descrição, tipo de variável (numérica, categórica, textual), Categorias (valores ou respostas possíveis), unidade de medida e população de referência</p>
+<p>Por exemplo, imagine que uma base apresente a variável V2009. Sem consultar a documentação, o pesquisador não sabe necessariamente o que esse código representa. Ao consultar o dicionário, descobre que se trata de uma informação sobre idade. Essa consulta permite compreender o significado dos dados e evita interpretações equivocadas.</p>
+<p>Isso é importante pois:</p>
+<ul>
+<li>Evita confundir variáveis com nomes ou códigos semelhantes.</li>
+<li>Permite identificar quais informações são adequadas aos objetivos da pesquisa.</li>
+<li>Ajuda a reconhecer valores ausentes e categorias especiais.</li>
+<li>Facilita a interpretação dos resultados.</li>
+<li>Torna a análise reproduzível por outros pesquisadores.</li>
+</ul>
+<section id="como-ler-um-dicionário-de-variáveis" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="como-ler-um-dicionário-de-variáveis"><span class="header-section-number">2.2.1</span> Como ler um dicionário de variáveis?</h3>
+<p>Ao abrir o dicionário, você encontrará códigos que identificam as variáveis e suas respectivas descrições.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Código</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>V2009</td>
+<td>Idade do morador na data de referência</td>
+</tr>
+<tr class="even">
+<td>V2007</td>
+<td>Sexo do morador</td>
+</tr>
+<tr class="odd">
+<td>V2005</td>
+<td>Condição no domicílio</td>
+</tr>
+</tbody>
+</table>
+<p>Para interpretar corretamente essas informações, é necessário observar três elementos:</p>
+<ol type="1">
+<li><p>Código da variável: é o identificador utilizado no banco de dados e nos comandos do R.</p></li>
+<li><p>Descrição: explica qual característica está sendo investigada.</p></li>
+<li><p>Categorias ou valores possíveis: indicam como as respostas foram registradas.</p></li>
+</ol>
+<p>Por exemplo, uma variável sobre sexo pode apresentar valores numéricos que representam categorias de resposta. O número não possui significado isoladamente: é a documentação que informa o que cada código representa.</p>
+</section>
+</section>
+<section id="tipos-de-variáveis-e-unidades-de-medida" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="tipos-de-variáveis-e-unidades-de-medida"><span class="header-section-number">2.3</span> Tipos de variáveis e unidades de medida</h2>
+<p>As variáveis podem assumir diferentes formatos, e reconhecer essas diferenças é essencial para escolher os procedimentos estatísticos adequados.</p>
+<section id="variáveis-qualitativas" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="variáveis-qualitativas"><span class="header-section-number">2.3.1</span> Variáveis qualitativas</h3>
+<p>Representam características ou categorias. Podem ser divididas em:</p>
+<ul>
+<li>Nominais: categorias sem uma ordem natural, como sexo, região geográfica e cor ou raça.</li>
+<li>Ordinais: categorias que apresentam uma ordem, como faixas de escolaridade ou classes de rendimento.</li>
+</ul>
+</section>
+<section id="variáveis-quantitativas" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="variáveis-quantitativas"><span class="header-section-number">2.3.2</span> Variáveis quantitativas</h3>
+<p>Representam valores numéricos e podem ser divididas em:</p>
+<ul>
+<li>Discretas: assumem valores contáveis, como número de moradores no domicílio.</li>
+<li>Contínuas: podem assumir diferentes valores dentro de um intervalo, como rendimento mensal.</li>
+</ul>
+<p>É importante não confundir o formato numérico de uma variável com seu significado estatístico. Uma variável que utiliza os números 1, 2, 3 e 4 para representar regiões brasileiras continua sendo qualitativa, pois os números são apenas códigos de identificação.</p>
+</section>
+<section id="unidades-de-medida" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="unidades-de-medida"><span class="header-section-number">2.3.3</span> Unidades de medida</h3>
+<p>Também é necessário identificar a unidade em que cada característica é registrada.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Informação</th>
+<th>Unidade de medida</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Idade</td>
+<td>Anos</td>
+</tr>
+<tr class="even">
+<td>Escolaridade</td>
+<td>Anos de estudo ou nível de instrução</td>
+</tr>
+<tr class="odd">
+<td>Rendimento</td>
+<td>Reais (R$)</td>
+</tr>
+<tr class="even">
+<td>Número de moradores</td>
+<td>Pessoas</td>
+</tr>
+<tr class="odd">
+<td>Região</td>
+<td>Categoria geográfica</td>
+</tr>
+</tbody>
+</table>
+<p>Essa distinção é especialmente importante na análise de renda. Um rendimento mensal domiciliar total não representa a mesma coisa que um rendimento domiciliar per capita. O primeiro considera a renda total do domicílio; o segundo considera a renda em relação ao número de moradores, conforme a definição específica do indicador.</p>
+</section>
+</section>
+<section id="cuidados-metodológicos-antes-de-prosseguir" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="cuidados-metodológicos-antes-de-prosseguir"><span class="header-section-number">2.4</span> Cuidados metodológicos antes de prosseguir</h2>
+<p>Antes de iniciar as análises, precisamos considerar alguns aspectos importantes.</p>
+<section id="unidade-de-observação" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="unidade-de-observação"><span class="header-section-number">2.4.1</span> Unidade de observação</h3>
+<p>Os microdados da PNAD Contínua apresentam registros individuais dos moradores. Isso significa que um mesmo domicílio pode aparecer em várias linhas, uma para cada morador.</p>
+<p>Se o objetivo é comparar rendimentos domiciliares, precisamos tomar cuidado para não contabilizar o mesmo domicílio várias vezes.</p>
+</section>
+<section id="valores-ausentes-e-códigos-especiais" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="valores-ausentes-e-códigos-especiais"><span class="header-section-number">2.4.2</span> Valores ausentes e códigos especiais</h3>
+<p>Algumas variáveis podem apresentar códigos que representam situações específicas, como informação ignorada ou não aplicável. Esses códigos não devem ser interpretados automaticamente como valores reais.</p>
+</section>
+<section id="rendimentos-nominais-e-reais" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="rendimentos-nominais-e-reais"><span class="header-section-number">2.4.3</span> Rendimentos nominais e reais</h3>
+<p>Os valores monetários precisam ser interpretados considerando o período de referência. Se o objetivo for comparar rendimentos de diferentes anos, será necessário realizar o deflacionamento.</p>
+</section>
+<section id="pesos-amostrais" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="pesos-amostrais"><span class="header-section-number">2.4.4</span> Pesos amostrais</h3>
+<p>A PNAD Contínua é uma pesquisa por amostragem probabilística. Portanto, para produzir estimativas representativas da população brasileira, é necessário considerar os pesos amostrais e o desenho da pesquisa. Não basta calcular médias simples dos registros e tratá-las como estimativas populacionais.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copiada");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copiada");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../ENTREGAVEL 1.html" class="pagination-link" aria-label="Entregável 1 — Importação da PNAD Contínua no Positron">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Entregável 1 — Importação da PNAD Contínua no Positron</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.html" class="pagination-link" aria-label="Seleção das variáveis para a análise de renda">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Seleção das variáveis para a análise de renda</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

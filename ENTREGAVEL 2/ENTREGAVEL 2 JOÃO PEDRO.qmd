@@ -134,7 +134,7 @@ base_trabalho <- pnad %>%
     condicao_domicilio = V2005,
     sexo = V2007,
     idade = V2009,
-    cor_ou_raça = V2010 , 
+    cor_ou_raca = V2010 , 
     anos_estudo = VD3005,
     condicao_forca_trabalho = VD4001 ,
     condicao_ocupacao = VD4002 ,
