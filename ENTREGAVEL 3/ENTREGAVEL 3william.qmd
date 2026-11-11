@@ -1,0 +1,137 @@
+# Deflacionamento e pesos amostrais na PNAD Contínua
+
+Nesta aula, aprenderemos a transformar um rendimento nominal em rendimento real e a calcular médias considerando o desenho amostral da PNAD Contínua. Partiremos do objeto `pnad`, importado no Entregável 1 com `design = TRUE`. Assim, não precisamos antecipar as etapas de filtragem e limpeza das outras duplas.
+
+## Rendimento nominal e rendimento real
+
+**Rendimento nominal** é o valor registrado em reais no período da pesquisa, sem ajuste pela variação dos preços. **Rendimento real** é o valor ajustado para uma referência de preços, permitindo comparar o poder de compra entre períodos.
+
+A transformação é chamada de **deflacionamento**. Quando utilizamos o fator multiplicativo fornecido pelo IBGE, o cálculo é:
+
+\[
+\text{Renda real} = \text{Renda nominal} \times \text{Fator de deflação}
+\]
+
+A PNAD Contínua distingue dois fatores, de acordo com a definição do rendimento:
+
+- `Habitual`: para rendimentos habitualmente recebidos;
+- `Efetivo`: para rendimentos efetivamente recebidos.
+
+A escolha depende da variável analisada. Por exemplo, `VD4019` representa rendimento habitual de todos os trabalhos, enquanto `VD4020` representa rendimento efetivo de todos os trabalhos. Não devemos aplicar o mesmo fator indiscriminadamente.
+
+No Entregável 2, selecionamos **`VD5002`**, rendimento domiciliar *efetivo* per capita. Portanto, o fator correspondente é **`Efetivo`**:
+
+\[
+\text{Renda per capita real} = \text{VD5002} \times \text{Efetivo}
+\]
+
+O exemplo utiliza o fator incorporado à base pelo pacote `PNADcIBGE`. Seu nome e sua presença devem ser conferidos na edição utilizada; não devemos substituí-lo por um número arbitrário.
+
+## Conferindo o deflator e criando a renda real
+
+Antes de calcular, verificamos se a renda e o fator estão disponíveis:
+
+```{r}
+#| eval: false
+
+c("VD5002", "Efetivo") %in% names(pnad$variables)
+```
+
+O resultado esperado é `TRUE` para ambos. Se `Efetivo` não existir, precisamos verificar a importação e a disponibilização do deflator antes de continuar.
+
+Como `pnad` é um objeto de desenho amostral, utilizaremos **`update()`**, do pacote `survey`, para criar a variável sem descartar os pesos de replicação:
+
+```{r}
+#| eval: false
+
+library(survey)
+
+pnad_real <- update(
+  pnad,
+  renda_per_capita_real = VD5002 * Efetivo
+)
+
+head(pnad_real$variables$renda_per_capita_real)
+```
+
+O objeto `pnad_real` contém a nova variável `renda_per_capita_real` e mantém o desenho amostral do objeto original. Já `head()` mostra os primeiros valores para conferência. Nenhum resultado numérico é presumido nesta aula.
+
+### Logaritmo da renda (opcional)
+
+Em algumas análises, usamos `log()` para reduzir a escala de rendas muito altas. O logaritmo natural só pode ser aplicado a rendimentos **positivos**:
+
+```{r}
+#| eval: false
+
+pnad_real <- update(
+  pnad_real,
+  log_renda_real = log(ifelse(
+    renda_per_capita_real > 0,
+    renda_per_capita_real,
+    NA_real_
+  ))
+)
+```
+
+Assim, valores iguais a zero, negativos ou ausentes não recebem um logaritmo válido. A variável em log é opcional e não substitui a renda real em reais.
+
+## Por que utilizar pesos amostrais?
+
+A PNAD Contínua investiga uma **amostra**, não todos os moradores do Brasil. As observações têm pesos diferentes, e o desenho da pesquisa também influencia a precisão das estimativas.
+
+Por isso, a média aritmética obtida com `mean()` não deve ser tratada automaticamente como estimativa da população:
+
+```{r}
+#| eval: false
+
+# Média simples dos registros: não considera os pesos
+mean(pnad_real$variables$renda_per_capita_real, na.rm = TRUE)
+```
+
+No Entregável 1, `pnad` foi importado com `design = TRUE`, formando um objeto de desenho com pesos de replicação. O pacote `survey` utiliza essas informações para calcular estimativas e seus erros-padrão.
+
+## Estimando a renda média com `svymean()`
+
+```{r}
+#| eval: false
+
+media_renda <- svymean(
+  ~renda_per_capita_real,
+  design = pnad_real,
+  na.rm = TRUE
+)
+
+media_renda
+```
+
+O símbolo `~` identifica a variável analisada; `design` indica o objeto com os pesos e `na.rm = TRUE` permite desconsiderar valores ausentes na estimativa. O resultado apresenta a média estimada e seu **erro-padrão**, relacionado à incerteza da amostragem.
+
+**Atenção à interpretação:** neste exemplo, usamos todos os registros de pessoas presentes em `pnad`. Isso não equivale automaticamente a uma média calculada com uma observação por domicílio, que dependerá da definição da população de análise em outra parte do trabalho.
+
+## Comparando médias por grupos com `svyby()`
+
+A função `svyby()` calcula a mesma estatística separadamente por grupos. Como a variável de chefia será criada por outra dupla, usaremos aqui apenas `UF`, já apresentada no Entregável 2:
+
+```{r}
+#| eval: false
+
+media_por_uf <- svyby(
+  ~renda_per_capita_real,
+  ~UF,
+  design = pnad_real,
+  FUN = svymean,
+  na.rm = TRUE,
+  vartype = "se"
+)
+
+media_por_uf
+```
+
+Nesse comando, `~UF` define os grupos, `FUN = svymean` solicita a média de cada estado e `vartype = "se"` apresenta os erros-padrão. O cálculo continua considerando o desenho amostral.
+
+## Conclusão
+
+Nesta aula, distinguimos rendimento nominal e real, utilizamos o fator `Efetivo` correspondente à variável `VD5002` para criar `renda_per_capita_real` e apresentamos a transformação opcional `log()`. Também vimos que **`svymean()` e `svyby()` consideram o desenho amostral da PNAD**, ao contrário de uma média simples dos registros.
+
+Nos próximos usos desses resultados, será importante manter o fator de deflação adequado, preservar os pesos e interpretar corretamente a população representada. Esta seção não realiza a filtragem, a limpeza nem o fechamento coletivo da base.
+
