@@ -153,10 +153,10 @@ Para termos maior praticidade a tabela a seguir apresenta a correspondência ent
 |:---|:---|:---|
 | `UF` | Unidade da Federação | `uf` |
 | `V2001` | Número de pessoas no domicílio | `numero_moradores` |
-| `V2003` | Número de ordem do morador | `ordem_morador` |
 | `V2005` | Condição no domicílio | `condicao_domicilio` |
 | `V2007` | Sexo do morador | `sexo` |
 | `V2009` | Idade | `idade` |
+|`V2010`| Cor ou raça | `cor_ou_raça`| 
 | `VD3005` | Anos de estudo | `anos_estudo` |
 | `VD4001` | Condição em relação à força de trabalho | `condicao_forca_trabalho` |
 | `VD4002` | Condição de ocupação (fora da força de trabalho) | `condicao_ocupacao` | 
