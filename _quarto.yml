@@ -29,13 +29,13 @@ book:
 
     - part: "ENTREGAVEL 4"
       chapters:
-        - "ENTREGAVEL 4LUCAS.qmd"
-        - "ENTREGAVEL 4WILLIAM.qmd"
+        - "ENTREGAVEL 4/ENTREGAVEL 4LUCAS.qmd"
+        - "ENTREGAVEL 4/ENTREGAVEL 4WILLIAM.qmd"
 
 
     - part: "ENTREGAVEL 5"
       chapters:
-        - "ENTREGAVEL ALGUEM.qmd"
+        - "ENTREGAVEL 5/ENTREGAVEL ALGUEM.qmd"
 
 
 format:
