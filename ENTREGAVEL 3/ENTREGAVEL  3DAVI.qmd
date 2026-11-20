@@ -1,45 +1,8 @@
-
 ---
-title: "Filtrar a População e Construir a Variável Central"
-lang: pt-BR
-
-format:
-  html:
-    toc: true
-    number-sections: true
-
-  pdf:
-    documentclass: article
-    pdf-engine: xelatex
-    toc: true
-    number-sections: true
-    geometry:
-      - top=20mm
-      - bottom=20mm
-      - left=20mm
-      - right=20mm
-    colorlinks: true
-    include-in-header:
-      - text: |
-          \usepackage{titling}
-          \pretitle{\begin{center}\Huge\bfseries}
-          \posttitle{\par}
-          \preauthor{\begin{center}}
-          \postauthor{\end{center}}
-          \predate{\begin{center}}
-          \postdate{\end{center}\par}
-          \makeatletter
-          \renewcommand{\maketitlehookb}{%
-            \par\vspace{0.5em}
-            {\fontsize{16}{20}\selectfont\bfseries
-            Conhecendo os microdados da PNAD Contínua\par}
-            \vspace{1em}
-          }
-          \makeatother
-
+title: "?"
+format: pdf
 execute:
-  echo: true
-  eval: true
+  eval: false
 ---
 # Filtrar a População e Construir a Variável Central
 
@@ -191,12 +154,13 @@ Entretanto, como nossa pesquisa pretende analisar características domiciliares,
 #| label: filtrar-responsavel
 
 base_domicilios <- pnad$variables %>%
-  filter(V2005 %in% c("01", 1))
+  filter(V2005 == "Pessoa responsável pelo domicílio")
 ```
 
 Nesse trecho, o operador `%in%` verifica se os valores de `V2005` pertencem ao conjunto de possibilidades apresentado em `c("01", 1)`. A utilização das duas representações permite contemplar tanto códigos armazenados como texto quanto códigos armazenados como números.
 
 O resultado é atribuído ao objeto `base_domicilios`, que passa a conter somente as observações referentes às pessoas responsáveis pelos domicílios.
+
 
 **Por que isso é importante?**
 
@@ -213,21 +177,29 @@ Após identificar os responsáveis, precisamos organizar as informações que se
 
 base_domicilios <- base_domicilios %>%
   mutate(
+    # Renomeação das variáveis
     uf = UF,
     numero_moradores = V2001,
+    condicao_domicilio = V2005,
     idade_chefe = V2009,
-    renda_domiciliar = VD5001,
-    renda_per_capita = VD5002,
+    cor_ou_raca = V2010,
+    anos_estudo = VD3005,
+    condicao_forca_trabalho = VD4001,
+    condicao_ocupacao = VD4002,
+    rendimento_domiciliar = VD5001,
+    rendimento_per_capita = VD5002,
 
+    # Identificação do sexo da pessoa responsável
     sexo_responsavel = case_when(
-      V2007 %in% c("1", 1) ~ "Homem",
-      V2007 %in% c("2", 2) ~ "Mulher",
+      V2007 == "Homem" ~ "Homem",
+      V2007 == "Mulher" ~ "Mulher",
       TRUE ~ NA_character_
     ),
 
+    # Classificação do tipo de chefia
     chefia_feminina = case_when(
-      V2007 %in% c("2", 2) ~ "Mulher Chefe",
-      V2007 %in% c("1", 1) ~ "Homem Chefe",
+      V2007 == "Mulher" ~ "Mulher Chefe",
+      V2007 == "Homem" ~ "Homem Chefe",
       TRUE ~ NA_character_
     )
   )
@@ -240,8 +212,8 @@ As primeiras atribuições apenas criam nomes mais descritivos para as variávei
 | `uf` | `UF` | Unidade da Federação |
 | `numero_moradores` | `V2001` | Número de moradores |
 | `idade_chefe` | `V2009` | Idade do responsável |
-| `renda_domiciliar` | `VD5001` | Rendimento domiciliar |
-| `renda_per_capita` | `VD5002` | Rendimento domiciliar per capita |
+| `rendimento_domiciliar` | `VD5001` | Rendimento domiciliar |
+| `rendimento_per_capita` | `VD5002` | Rendimento domiciliar per capita |
 
 Em seguida, construímos duas variáveis relacionadas ao sexo da pessoa responsável.
 
@@ -299,6 +271,7 @@ Esses valores permitem observar a distribuição da chefia domiciliar entre home
 Por fim, podemos visualizar algumas observações da base tratada para verificar se as variáveis foram organizadas corretamente.
 
 ```{r}
+
 #| label: tabela-base-tratada
 
 knitr::kable(
@@ -307,19 +280,31 @@ knitr::kable(
       select(
         uf,
         numero_moradores,
+        condicao_domicilio,
         idade_chefe,
         sexo_responsavel,
         chefia_feminina,
-        renda_per_capita
+        cor_ou_raca,
+        anos_estudo,
+        condicao_forca_trabalho,
+        condicao_ocupacao,
+        rendimento_domiciliar,
+        rendimento_per_capita
       )
   ),
   col.names = c(
     "UF",
     "Nº Moradores",
-    "Idade Chefe",
-    "Sexo Responsável",
-    "Chefia Domiciliar",
-    "Renda Per Capita (R$)"
+    "Condição no Domicílio",
+    "Idade do Responsável",
+    "Sexo do Responsável",
+    "Classificação da Chefia",
+    "Cor ou Raça",
+    "Anos de Estudo",
+    "Condição na Força de Trabalho",
+    "Condição de Ocupação",
+    "Rendimento Domiciliar (R$)",
+    "Rendimento Per Capita (R$)"
   ),
   caption = "Amostra da base de dados tratada em nível de domicílio"
 )
@@ -331,6 +316,19 @@ Nesse último comando, utilizamos duas funções adicionais:
 - `select()`: seleciona apenas as colunas que desejamos apresentar, evitando exibir todas as variáveis disponíveis.
 
 Por fim, `knitr::kable()` organiza os dados selecionados em uma tabela formatada, adequada para apresentação no documento.
+
+```{r}
+#| label: salvar-base-intermediaria
+#| echo: false
+#| include: false
+
+dir.create("dados", showWarnings = FALSE)
+
+saveRDS(
+  base_domicilios,
+  "dados/base_domicilios.rds"
+)
+```
 
 ### Síntese da etapa
 

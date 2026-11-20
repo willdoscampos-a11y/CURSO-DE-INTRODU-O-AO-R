@@ -29,15 +29,8 @@ book:
 
     - part: "ENTREGAVEL 4"
       chapters:
-<<<<<<< HEAD
         - "ENTREGAVEL 4/ENTREGAVEL 4LUCAS.qmd"
         - "ENTREGAVEL 4/ENTREGAVEL 4WILLIAM.qmd"
-=======
-        - "ENTREGAVEL 4LUCAS.qmd"
-        - "ENTREGAVEL 4WILLIAM.qmd"
-        - "ENTREGAVEL 4MESTRE.qmd"
-      
->>>>>>> 427b41d1eeab93d45294183d84bb933ec26c20dd
 
 
     - part: "ENTREGAVEL 5"

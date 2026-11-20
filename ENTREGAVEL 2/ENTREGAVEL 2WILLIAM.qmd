@@ -1,3 +1,4 @@
+
 # Seleção das variáveis para a análise de renda
 
 ## O que queremos investigar?
@@ -32,7 +33,7 @@ Para nossa análise, selecionaremos inicialmente as seguintes variáveis:
 | VD3005 | anos_estudo | Anos de estudo (pessoas de 5 anos ou mais), em categorias ordenadas | Qualitativa ordinal | Pessoa |
 | VD4001 | condicao_forca_trabalho | Condição em relação à força de trabalho | Qualitativa nominal | Pessoa |
 | VD4002 | condicao_ocupacao | Condição de ocupação (só para quem está na força de trabalho) | Qualitativa nominal | Pessoa |
-| VD5001 | renda_domiciliar | Rendimento domiciliar, em R\$ (completar com o dicionário de 2024) | Quantitativa contínua | Domicílio |
+| VD5001 | renda_domiciliar | Rendimento domiciliar, em R\$  | Quantitativa contínua | Domicílio |
 | VD5002 | renda_per_capita | Rendimento domiciliar per capita, em R\$ | Quantitativa contínua | Domicílio |
 
 Essas variáveis constituem uma seleção inicial para o estudo.
@@ -166,11 +167,11 @@ variaveis_escolhidas <- c(
   "V2005",
   "V2007",
   "V2009",
-  "V2010" ,
+  "V2010",
   "VD3005",
-  "VD4001" , 
-  "VD4002" ,
-  "VD5001" ,
+  "VD4001", 
+  "VD4002",
+  "VD5001",
   "VD5002"
 )
 
@@ -251,3 +252,4 @@ Antes de continuar o projeto, é importante conferir:
 - Se existem informações ausentes ou particularidades que precisam ser consideradas.
 
 Essa conferência é importante para evitar problemas nas próximas etapas.
+

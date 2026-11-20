@@ -1,46 +1,4 @@
 
----
-title: "Introdução e interpretação das variáveis: Conhecendo os microdados da PNAD Contínua"
-lang: pt-BR
-
-format:
-  html:
-    toc: true
-    number-sections: true
-
-  pdf:
-    documentclass: article
-    pdf-engine: xelatex
-    toc: true
-    number-sections: true
-    geometry:
-      - top=20mm
-      - bottom=20mm
-      - left=20mm
-      - right=20mm
-    colorlinks: true
-    include-in-header:
-      - text: |
-          \usepackage{titling}
-          \pretitle{\begin{center}\Huge\bfseries}
-          \posttitle{\par}
-          \preauthor{\begin{center}}
-          \postauthor{\end{center}}
-          \predate{\begin{center}}
-          \postdate{\end{center}\par}
-          \makeatletter
-          \renewcommand{\maketitlehookb}{%
-            \par\vspace{0.5em}
-            {\fontsize{16}{20}\selectfont\bfseries
-            Conhecendo os microdados da PNAD Contínua\par}
-            \vspace{1em}
-          }
-          \makeatother
-
-execute:
-  echo: true
-  eval: false
----
 
 
 

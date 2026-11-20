@@ -1,43 +1,7 @@
 ---
-title: "Renomeando as variáveis de forma padronizada e armazenando-as em uma base de dados para nossa pesquisa"
-lang: pt-BR
-
-format:
-  html:
-    toc: true
-    number-sections: true
-
-  pdf:
-    documentclass: article
-    pdf-engine: xelatex
-    toc: true
-    number-sections: true
-    geometry:
-      - top=20mm
-      - bottom=20mm
-      - left=20mm
-      - right=20mm
-    colorlinks: true
-    include-in-header:
-      - text: |
-          \usepackage{titling}
-          \pretitle{\begin{center}\Huge\bfseries}
-          \posttitle{\par}
-          \preauthor{\begin{center}}
-          \postauthor{\end{center}}
-          \predate{\begin{center}}
-          \postdate{\end{center}\par}
-          \makeatletter
-          \renewcommand{\maketitlehookb}{%
-            \par\vspace{0.5em}
-            {\fontsize{16}{20}\selectfont\bfseries
-            Conhecendo os microdados da PNAD Contínua\par}
-            \vspace{1em}
-          }
-          \makeatother
-
+title: "?"
+format: pdf
 execute:
-  echo: true
   eval: false
 ---
 
@@ -59,14 +23,15 @@ Os nomes utilizados pelo IBGE seguem uma estrutura própria de identificação. 
 Ao substituir esses códigos por nomes mais intuitivos, facilitamos a leitura e a interpretação dos comandos utilizados no R.
 Por exemplo, imagine um código que calcula a média de idade dos indivíduos:
 
-```{r}
+
+
+#| eval: false
 mean(pnad$V2009, na.rm = TRUE)
-```
 
 Embora o comando esteja correto, é necessário consultar o dicionário da PNAD para identificar o significado de V2009.
 Após a padronização, o mesmo comando pode ser escrito da seguinte maneira:
 
-```{r}
+```
 mean(base_trabalho$idade, na.rm = TRUE)
 ```
 
@@ -106,6 +71,12 @@ O exemplo abaixo utiliza a função `select()` do pacote `dplyr`, que permite se
 [**Observação:**]{style="color: red"} Considerando que o pacote `dplyr` já está instalado no R. Caso ainda não esteja instalado utilize o comando `install.packages("dplyr")` uma vez.
 
 ```{r}
+#| label: carregar-base
+
+pnad <- readRDS("dados/pnad.rds")
+```
+
+```{r}
 # Carregar o pacote
 library(dplyr)
 
@@ -127,19 +98,19 @@ Utilizando da relação de variáveis relevante para nossa pesquisa construimos 
 ```{r}
 library(dplyr)
 
-base_trabalho <- pnad %>%
+base_trabalho <- pnad$variables %>%
   select(
     uf = UF,
     numero_moradores = V2001,
     condicao_domicilio = V2005,
     sexo = V2007,
     idade = V2009,
-    cor_ou_raca = V2010 , 
+    cor_ou_raca = V2010,
     anos_estudo = VD3005,
-    condicao_forca_trabalho = VD4001 ,
-    condicao_ocupacao = VD4002 ,
+    condicao_forca_trabalho = VD4001,
+    condicao_ocupacao = VD4002,
     rendimento_domiciliar = VD5001,
-    rendimento_per_capita = VD5002,
+    rendimento_per_capita = VD5002
   )
 ```
 

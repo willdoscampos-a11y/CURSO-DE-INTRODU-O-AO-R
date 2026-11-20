@@ -67,7 +67,7 @@ ano <- 2024
 entrevista <- 1
 ```
 
-Neste exemplo, utilizaremos a **PNAD Contínua anual de 2024, primeira entrevista**. Para consultar outro período, modifique esses dois valores.
+Neste exemplo, utilizaremos a **PNAD Contínua anual de 2024, quarta entrevista**. Para consultar outro período, modifique esses dois valores.
 
 A modalidade anual permite trabalhar com informações sobre rendimentos provenientes do trabalho e de outras fontes, necessárias à nossa pesquisa.
 
@@ -111,7 +111,7 @@ Após importar os dados da PNAD Contínua, precisamos verificar se a importaçã
 
 ### 1. Identificar o tipo de objeto — `class()`
 
-```r
+```{r}
 class(pnad)
 ```
 
@@ -131,7 +131,7 @@ No nosso caso, essa classe indica que os dados foram organizados em um objeto de
 
 ### 2. Consultar o resumo do objeto — `summary()`
 
-```r
+```{r}
 summary(pnad)
 ```
 
@@ -156,7 +156,7 @@ O formato e os detalhes efetivos podem ser diferentes. Os pontos representam inf
 
 ### 3. Conhecer os nomes das variáveis — `names()`
 
-```r
+```{r}
 names(pnad$variables)[1:20]
 ```
 
@@ -180,7 +180,7 @@ Essa lista é apenas um exemplo: os primeiros 20 nomes e sua ordem devem ser con
 
 ### 4. Verificar o tamanho da base — `dim()`
 
-```r
+```{r}
 dim(pnad$variables)
 ```
 
@@ -203,7 +203,7 @@ Os números reais dependerão da base importada.
 
 ### 5. Visualizar os primeiros registros — `head()`
 
-```r
+```{r}
 head(pnad$variables)
 ```
 
