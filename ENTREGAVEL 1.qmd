@@ -57,16 +57,21 @@ A função library() carrega um pacote previamente instalado, disponibilizando s
 
 Podemos pensar no install.packages() como um "instalador de um jogo" e no library() como "abrir o jogo para começar a jogar".
 
+
 # Etapa 3 — Definir os parâmetros da consulta
 
-Antes de buscar os dados, defina o ano e o trimestre que deseja consultar. No R, o operador `<-` atribui um valor a um objeto.
+Antes de buscar os dados, precisamos definir o ano e a entrevista que desejamos consultar. No R, o operador `<-` atribui um valor a um objeto.
 
 ```{r}
 ano <- 2024
-trimestre <- 1  # Trimestres disponíveis: 1, 2, 3 ou 4
+entrevista <- 1
 ```
 
-Neste exemplo, estamos solicitando o **primeiro trimestre de 2024**. Para consultar outro período, modifique esses dois valores.
+Neste exemplo, utilizaremos a **PNAD Contínua anual de 2024, primeira entrevista**. Para consultar outro período, modifique esses dois valores.
+
+A modalidade anual permite trabalhar com informações sobre rendimentos provenientes do trabalho e de outras fontes, necessárias à nossa pesquisa.
+
+O objeto `ano` guarda o ano da pesquisa, enquanto `entrevista` indica qual visita será utilizada.
 
 ## Etapa 4 — Baixar e importar a PNAD Contínua
 
@@ -77,10 +82,12 @@ Agora que definimos o ano e o trimestre, vamos utilizar a função get_pnadc() p
 ```{r}
 pnad <- PNADcIBGE::get_pnadc(
   year = ano,
-  quarter = trimestre,
+  interview = entrevista,
   design = TRUE
 )
 ```
+
+
 
 Entendendo cada parte do código:
 
@@ -92,7 +99,7 @@ get_pnadc(): é a função responsável por obter e importar os dados da PNAD Co
 
 year = ano: define o ano da pesquisa. Como anteriormente escrevemos ano <- 2024, serão utilizados os dados de 2024.
 
-quarter = trimestre: define o trimestre. Como escrevemos trimestre <- 1, será utilizado o primeiro trimestre.
+interview = entrevista: seleciona a visita da PNAD Contínua anual. Como definimos entrevista <- 1, utilizaremos a primeira entrevista.
 
 design = TRUE: solicita que os dados sejam organizados considerando o desenho amostral da PNAD, incluindo informações como pesos amostrais, importantes para produzir estimativas estatísticas adequadas à pesquisa.
 
