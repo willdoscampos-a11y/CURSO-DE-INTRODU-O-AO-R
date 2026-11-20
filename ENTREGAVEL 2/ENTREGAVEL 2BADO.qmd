@@ -129,8 +129,7 @@ Também é necessário identificar a unidade em que cada característica é regi
 
 Essa distinção é especialmente importante na análise de renda. Um rendimento mensal domiciliar total não representa a mesma coisa que um rendimento domiciliar per capita.
 O primeiro considera a renda total do domicílio; o segundo considera a renda em relação ao número de moradores, conforme a definição específica do indicador.
-
-
+git
 ## Cuidados metodológicos antes de prosseguir
 Antes de iniciar as análises, precisamos considerar alguns aspectos importantes.
 
