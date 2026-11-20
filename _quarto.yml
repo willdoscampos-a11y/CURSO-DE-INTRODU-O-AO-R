@@ -18,7 +18,6 @@ book:
         - "ENTREGAVEL 2/ENTREGAVEL 2BADO.qmd"
         - "ENTREGAVEL 2/ENTREGAVEL 2WILLIAM.qmd"
         - "ENTREGAVEL 2/ENTREGAVEL 2 JOÃO PEDRO.qmd"
-        - "ENTREGAVEL 2/ENTREGAVEL 2LUCAS.qmd"
 
     - part: "ENTREGAVEL 3"
       chapters:
@@ -27,6 +26,17 @@ book:
         - "ENTREGAVEL 3/ENTREGAVEL 3JOÃO PEDRO.qmd"
         - "ENTREGAVEL 3/ENTREGAVEL 3mestre.qmd"
         - "ENTREGAVEL 3/ENTREGAVEL 3william.qmd"
+
+    - part: "ENTREGAVEL 4"
+      chapters:
+        - "ENTREGAVEL 4LUCAS.qmd"
+        - "ENTREGAVEL 4WILLIAM.qmd"
+
+
+    - part: "ENTREGAVEL 5"
+      chapters:
+        - "ENTREGAVEL ALGUEM.qmd"
+
 
 format:
   pdf:
