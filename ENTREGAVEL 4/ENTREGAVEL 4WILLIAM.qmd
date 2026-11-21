@@ -1,0 +1,283 @@
+---
+title: "Entregável 4 — Introdução à análise exploratória e estatísticas descritivas"
+lang: pt-BR
+format: pdf
+execute:
+  echo: true
+  message: false
+  warning: false
+---
+
+# 4.1 — Introdução à análise exploratória de dados
+
+Nos entregáveis anteriores, importamos a **PNAD Contínua anual de 2024 (primeira entrevista)**, conhecemos suas variáveis e preparamos informações sobre os domicílios e seus responsáveis. Agora começaremos a **análise exploratória de dados (AED)**: uma investigação inicial para compreender como os rendimentos se distribuem antes de realizar comparações mais específicas.
+
+A AED ajuda a responder perguntas como: *qual é o rendimento típico? Há muita diferença entre os valores observados? Existem rendimentos muito altos que elevam a média?* Ela também permite identificar valores ausentes e possíveis inconsistências. Nesta etapa, **descrevemos os dados**, sem tentar explicar causalmente as diferenças encontradas.
+
+## Qual será nossa unidade de análise?
+
+A PNAD contém um registro por morador. Como o projeto estuda **domicílios classificados pelo sexo da pessoa responsável**, utilizaremos apenas a observação da pessoa responsável por cada domicílio. A seleção será feita **dentro do objeto amostral**, para preservar os pesos e o desenho da pesquisa.
+
+Trabalharemos com dois indicadores já apresentados no Entregável 2:
+
+| Código da PNAD | Indicador | Significado |
+|---|---|---|
+| `VD5001` | Rendimento domiciliar total | Rendimento efetivo do domicílio. |
+| `VD5002` | Rendimento domiciliar per capita | Rendimento efetivo por pessoa, segundo a definição do IBGE. |
+
+Conforme estudamos no Entregável 3, utilizaremos o fator **`CO1e`** para expressar esses rendimentos a **preços médios de 2024**. Ainda não faremos separações entre domicílios com responsáveis homens e mulheres: essa comparação pertence à **seção 4.3**.
+
+## Preparando os dados para os cálculos
+
+O bloco a seguir recupera o objeto `pnad`, quando ele já estiver carregado corretamente. Se o objeto não existir ou não contiver as variáveis necessárias, os microdados serão importados com os mesmos parâmetros utilizados no Entregável 3. Assim, o arquivo pode ser executado separadamente no Positron.
+
+```{r}
+#| label: e4-p1-preparar-base
+
+# O pacote survey calcula estatísticas de pesquisas amostrais complexas.
+if (!requireNamespace("survey", quietly = TRUE)) {
+  stop("Instale o pacote survey: install.packages('survey')")
+}
+library(survey)
+
+# Verificar se a PNAD já está disponível com o desenho e o deflator.
+variaveis_necessarias <- c("V2005", "VD5001", "VD5002", "CO1e")
+pnad_pronta <- exists("pnad", inherits = TRUE)
+
+if (pnad_pronta) {
+  pnad_pronta <-
+    inherits(pnad, c("svyrep.design", "survey.design")) &&
+    !is.null(pnad$variables) &&
+    all(variaveis_necessarias %in% names(pnad$variables))
+}
+
+# Importar somente se necessário; arquivos baixados podem ser reutilizados.
+if (!pnad_pronta) {
+  if (!requireNamespace("PNADcIBGE", quietly = TRUE)) {
+    stop("Instale o pacote PNADcIBGE: install.packages('PNADcIBGE')")
+  }
+  dir.create("dados/cache_pnadc", recursive = TRUE, showWarnings = FALSE)
+
+  pnad <- PNADcIBGE::get_pnadc(
+    year = 2024,
+    interview = 1,
+    labels = TRUE,
+    deflator = TRUE,
+    defyear = 2024,
+    design = TRUE,
+    reload = FALSE,
+    savedir = "dados/cache_pnadc"
+  )
+}
+
+# Conferir o resultado antes de calcular estatísticas.
+if (!inherits(pnad, c("svyrep.design", "survey.design"))) {
+  stop("O objeto pnad precisa conter o desenho amostral (design = TRUE).")
+}
+
+faltantes <- setdiff(variaveis_necessarias, names(pnad$variables))
+if (length(faltantes) > 0) {
+  stop("Variáveis ausentes na PNAD: ", paste(faltantes, collapse = ", "))
+}
+
+if (!all(vapply(pnad$variables[c("VD5001", "VD5002", "CO1e")],
+                is.numeric, logical(1)))) {
+  stop("Os rendimentos e o deflator precisam ser numéricos. Confira a importação.")
+}
+
+if (!is.factor(pnad$variables$V2005) ||
+    !("Pessoa responsável pelo domicílio" %in% levels(pnad$variables$V2005))) {
+  stop("Confira a variável V2005: a seleção utiliza os rótulos da PNAD (labels = TRUE).")
+}
+```
+
+**O que há de novo?** `requireNamespace()` verifica se um pacote está instalado; `if` executa um comando apenas quando a condição é atendida; e `stop()` interrompe a análise com uma mensagem se faltar algum requisito. A função `setdiff()` identifica nomes de variáveis não encontrados. Essas verificações evitam produzir resultados com uma base incorreta.
+
+Agora retomaremos `update()`, apresentado no Entregável 3, para criar as rendas reais **sem perder o desenho amostral**. Em seguida, `subset()` selecionará os responsáveis, preservando os pesos da pesquisa.
+
+```{r}
+#| label: e4-p1-definir-domicilios
+
+# Criar os dois indicadores em reais, a preços médios de 2024.
+pnad_e4 <- update(
+  pnad,
+  rendimento_domiciliar_real = VD5001 * CO1e,
+  renda_per_capita_real = VD5002 * CO1e
+)
+
+# Manter uma observação por domicílio: a pessoa responsável.
+domicilios_e4 <- subset(
+  pnad_e4,
+  V2005 == "Pessoa responsável pelo domicílio"
+)
+
+# Impedir cálculos se a seleção ou os rendimentos estiverem vazios.
+if (nrow(domicilios_e4$variables) == 0) {
+  stop("Nenhum responsável foi selecionado. Confira os rótulos de V2005.")
+}
+if (sum(is.finite(domicilios_e4$variables$rendimento_domiciliar_real)) < 2 ||
+    sum(is.finite(domicilios_e4$variables$renda_per_capita_real)) < 2) {
+  stop("Há menos de dois rendimentos válidos. Confira a importação.")
+}
+
+# Conferir a seleção e os valores das variáveis.
+nrow(domicilios_e4$variables)
+head(domicilios_e4$variables[
+  c("rendimento_domiciliar_real", "renda_per_capita_real")
+])
+```
+
+O nome `renda_per_capita_real` é o mesmo usado no Entregável 3. Já `rendimento_domiciliar_real` aplica o deflator ao rendimento total (`VD5001`). Em ambos os casos, **não estamos excluindo rendimentos iguais a zero**: eles são informações potencialmente válidas.
+
+# 4.2 — Estatísticas descritivas dos rendimentos
+
+As estatísticas descritivas sintetizam uma distribuição sem exigir a leitura de milhares de linhas. Algumas indicam o **centro** dos dados; outras mostram sua **dispersão**.
+
+| Medida | O que informa? |
+|---|---|
+| **Média** | Soma dos rendimentos dividida pela quantidade de observações, em um cálculo simples. É sensível a valores muito altos. |
+| **Mediana** | Valor que divide as observações ordenadas em duas metades. É menos sensível a valores extremos. |
+| **1º e 3º quartis (Q1 e Q3)** | Valores abaixo dos quais estão, respectivamente, 25% e 75% das observações, segundo o método de cálculo utilizado. |
+| **Variância** | Mede a dispersão dos valores em torno da média, em unidades monetárias **ao quadrado**. |
+| **Desvio-padrão** | Raiz quadrada da variância; expressa a dispersão na mesma unidade do rendimento (R$). |
+
+Por exemplo, se poucos domicílios possuem rendimentos muito elevados, a **média** pode ficar bem acima da **mediana**. Isso sugere uma distribuição assimétrica, algo importante de observar em dados de renda.
+
+## Estatísticas simples no R
+
+Primeiro, veremos como o R calcula essas medidas **sem utilizar pesos amostrais**. A função `summary()` apresenta, de uma só vez, mínimo, quartis, mediana, média e máximo; `NA's`, quando mostrado, indica a quantidade de valores ausentes.
+
+```{r}
+#| label: e4-p1-resumo-simples
+
+# Acessar o rendimento real per capita da amostra de domicílios.
+renda <- domicilios_e4$variables$renda_per_capita_real
+
+summary(renda)
+
+# Calcular, separadamente, as estatísticas estudadas.
+mean(renda, na.rm = TRUE)                    # Média
+median(renda, na.rm = TRUE)                  # Mediana
+quantile(renda, probs = c(0.25, 0.75),
+         na.rm = TRUE)                       # Q1 e Q3
+var(renda, na.rm = TRUE)                     # Variância
+sd(renda, na.rm = TRUE)                      # Desvio-padrão
+```
+
+**Entendendo os comandos:** `mean()` calcula a média; `median()`, a mediana; `quantile()` identifica os quartis indicados em `probs`; `var()` calcula a variância amostral; e `sd()`, o desvio-padrão amostral. Em todos, `na.rm = TRUE` desconsidera valores ausentes (`NA`).
+
+Esses resultados **descrevem os registros da amostra**, mas ainda não representam automaticamente a distribuição de rendimentos de todos os domicílios brasileiros. Para realizar estimativas populacionais, precisamos levar em conta o desenho amostral.
+
+## Estatísticas considerando o desenho amostral
+
+No Entregável 3, conhecemos `svymean()`, que calcula **médias ponderadas**. Agora utilizaremos também duas funções do pacote `survey`:
+
+- **`svyquantile()`**: estima quartis e mediana considerando os pesos do desenho amostral. O valor `0.50`, por exemplo, indica a mediana.
+- **`svyvar()`**: estima a variância da distribuição considerando o desenho amostral. Sua raiz quadrada fornece uma medida de desvio-padrão dos rendimentos.
+
+O código abaixo calcula essas estatísticas para o **rendimento real per capita**, sem separar os domicílios por grupos.
+
+```{r}
+#| label: e4-p1-estatisticas-ponderadas
+
+# Média ponderada e erro-padrão da média.
+media_pc <- svymean(
+  ~renda_per_capita_real,
+  design = domicilios_e4,
+  na.rm = TRUE
+)
+
+# Quartis: 25%, 50% (mediana) e 75% da distribuição.
+quartis_pc <- svyquantile(
+  ~renda_per_capita_real,
+  design = domicilios_e4,
+  quantiles = c(0.25, 0.50, 0.75),
+  na.rm = TRUE,
+  ci = FALSE
+)
+
+# Variância ponderada.
+variancia_pc <- svyvar(
+  ~renda_per_capita_real,
+  design = domicilios_e4,
+  na.rm = TRUE
+)
+
+media_pc
+quartis_pc
+variancia_pc
+```
+
+**Como ler o código:** o símbolo `~` apresenta ao R a variável que queremos estudar; `design = domicilios_e4` informa o objeto que contém os pesos e o desenho amostral; e `quantiles = c(0.25, 0.50, 0.75)` pede os três pontos da distribuição. Utilizamos `ci = FALSE` para mostrar somente os quartis, sem calcular intervalos de confiança nesta etapa.
+
+**Não confunda duas medidas:** o **desvio-padrão dos rendimentos** mostra quanto os valores diferem entre os domicílios. Já o **erro-padrão da média**, apresentado por `svymean()`, indica a incerteza da **estimativa da média** por utilizarmos uma amostra. Eles não representam a mesma coisa.
+
+## Tabela-resumo dos rendimentos
+
+Para encerrar, reuniremos as estatísticas em uma tabela com os **dois indicadores**, sempre a preços médios de 2024: o rendimento domiciliar total e o rendimento per capita. Repetiremos os cálculos somente para o indicador total, que ainda não havia sido resumido com os pesos.
+
+```{r}
+#| label: e4-p1-tabela-resumo
+
+# Estatísticas do rendimento domiciliar total.
+media_total <- svymean(
+  ~rendimento_domiciliar_real,
+  design = domicilios_e4,
+  na.rm = TRUE
+)
+
+quartis_total <- svyquantile(
+  ~rendimento_domiciliar_real,
+  design = domicilios_e4,
+  quantiles = c(0.25, 0.50, 0.75),
+  na.rm = TRUE,
+  ci = FALSE
+)
+
+variancia_total <- svyvar(
+  ~rendimento_domiciliar_real,
+  design = domicilios_e4,
+  na.rm = TRUE
+)
+
+# Extrair os resultados das funções do pacote survey.
+q_pc <- as.numeric(coef(quartis_pc))
+q_total <- as.numeric(coef(quartis_total))
+v_pc <- as.numeric(coef(variancia_pc))
+v_total <- as.numeric(coef(variancia_total))
+
+# Montar uma tabela com estatísticas ponderadas.
+tabela_resumo <- data.frame(
+  Estatistica = c("Média", "Mediana", "1º quartil (Q1)",
+                  "3º quartil (Q3)", "Variância (R$²)",
+                  "Desvio-padrão"),
+  Domiciliar = c(as.numeric(coef(media_total)), q_total[2],
+                 q_total[1], q_total[3], v_total, sqrt(v_total)),
+  Per_capita = c(as.numeric(coef(media_pc)), q_pc[2],
+                 q_pc[1], q_pc[3], v_pc, sqrt(v_pc))
+)
+
+knitr::kable(
+  tabela_resumo,
+  col.names = c("Estatística", "Rendimento domiciliar total",
+                "Rendimento domiciliar per capita"),
+  digits = 2,
+  format.args = list(decimal.mark = ",", big.mark = "."),
+  caption = paste(
+    "PNAD Contínua anual de 2024, primeira entrevista.",
+    "Estatísticas ponderadas dos domicílios, a preços médios de 2024."
+  )
+)
+```
+
+**Entendendo o fechamento:** `coef()` extrai os valores estimados dos resultados do pacote `survey`; `as.numeric()` permite utilizá-los em cálculos; `sqrt()` calcula a raiz quadrada da variância; `data.frame()` organiza os resultados em colunas; e `knitr::kable()` apresenta a tabela formatada no e-book.
+
+Os valores da tabela **não foram preenchidos manualmente**: serão calculados a partir dos microdados quando os blocos forem executados. A variância aparece em **R$²**, enquanto as outras medidas estão em **R$**. Por padrão, `na.rm = TRUE` faz com que cada indicador seja estimado com as observações em que seu valor está disponível.
+
+## Síntese da etapa
+
+Nesta parte, aprendemos a identificar medidas de tendência central e dispersão, utilizar `summary()`, `mean()`, `median()`, `quantile()`, `var()` e `sd()`, e construir estimativas que respeitam o desenho amostral com `svymean()`, `svyquantile()` e `svyvar()`.
+
+A tabela apresenta um **panorama geral dos rendimentos domiciliares**, sem comparar grupos. Na **seção 4.3**, o Lucas aprofundará a comparação entre domicílios classificados pelo sexo da pessoa responsável. As análises por outras características socioeconômicas ficarão para as seções seguintes.
+
+*Fontes técnicas: [IBGE — deflacionamento anual por visita](https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Documentacao_Geral/PNADcIBGE_Deflator_Anual_Visita.pdf), [documentação do `PNADcIBGE`](https://cran.r-universe.dev/PNADcIBGE/doc/manual.html) e [documentação de `svyquantile()` no pacote `survey`](https://r-survey.r-forge.r-project.org/pkgdown/docs/reference/svyquantile.html).*
