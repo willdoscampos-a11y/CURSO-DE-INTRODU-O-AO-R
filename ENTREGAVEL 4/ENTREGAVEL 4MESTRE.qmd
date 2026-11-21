@@ -1,0 +1,332 @@
+---
+title: "4.4 e 4.5 — Características socioeconômicas e conclusões preliminares"
+lang: pt-BR
+format: pdf
+execute:
+  echo: true
+  message: false
+  warning: false
+---
+
+# 4.4 — Comparações por características socioeconômicas
+
+Na seção 4.3, comparamos os rendimentos de domicílios segundo o sexo da pessoa responsável. Mas será que essa diferença se apresenta da mesma forma entre pessoas com diferentes níveis de escolaridade e idades? E como o rendimento varia entre as Unidades da Federação (UFs)?
+
+Nesta etapa, vamos **combinar características** para observar essas diferenças com mais detalhe. Continuaremos utilizando a **PNAD Contínua anual de 2024, primeira entrevista**, com os rendimentos domiciliares total e per capita expressos a **preços médios de 2024**. Como já aprendemos, as médias serão estimadas com o pacote `survey`, respeitando o desenho amostral.
+
+**Atenção:** a escolaridade e a idade se referem à **pessoa responsável**, enquanto os rendimentos dizem respeito ao **domicílio**. Comparar os grupos não significa que uma dessas características, isoladamente, determine a renda.
+
+## Preparando a base para as comparações
+
+Vamos aproveitar `base_comparacao`, criada na seção 4.3. Ela já contém uma observação por domicílio, os grupos `"Homem"` e `"Mulher"` e os dois rendimentos reais. Caso o arquivo seja executado sozinho, o bloco abaixo recupera esses dados a partir de `domicilios_e4` ou, se necessário, da PNAD original.
+
+```{r}
+#| label: e4-p3-preparar-base
+
+if (!requireNamespace("survey", quietly = TRUE)) {
+  stop("Instale o pacote survey: install.packages('survey')")
+}
+library(survey)
+
+# Verificar se a base preparada no capítulo do Lucas está disponível.
+colunas_analise <- c(
+  "grupo", "V2009", "VD3005", "UF",
+  "rendimento_domiciliar_real", "renda_per_capita_real"
+)
+base_pronta <- exists("base_comparacao", inherits = TRUE)
+if (base_pronta) {
+  base_pronta <-
+    inherits(base_comparacao, c("svyrep.design", "survey.design")) &&
+    !is.null(base_comparacao$variables) &&
+    all(colunas_analise %in% names(base_comparacao$variables))
+}
+
+if (!base_pronta) {
+  # Se necessário, recuperar a base da seção 4.1.
+  colunas_domicilios <- c(
+    "V2007", "V2009", "VD3005", "UF",
+    "rendimento_domiciliar_real", "renda_per_capita_real"
+  )
+  domicilios_prontos <- exists("domicilios_e4", inherits = TRUE)
+  if (domicilios_prontos) {
+    domicilios_prontos <-
+      inherits(domicilios_e4, c("svyrep.design", "survey.design")) &&
+      !is.null(domicilios_e4$variables) &&
+      all(colunas_domicilios %in% names(domicilios_e4$variables))
+  }
+
+  if (!domicilios_prontos) {
+    # Recuperar ou importar a PNAD com os mesmos parâmetros do E3 e E4.
+    colunas_pnad <- c("V2005", "V2007", "V2009", "VD3005",
+                     "UF", "VD5001", "VD5002", "CO1e")
+    pnad_pronta <- exists("pnad", inherits = TRUE)
+    if (pnad_pronta) {
+      pnad_pronta <-
+        inherits(pnad, c("svyrep.design", "survey.design")) &&
+        !is.null(pnad$variables) &&
+        all(colunas_pnad %in% names(pnad$variables))
+    }
+
+    if (!pnad_pronta) {
+      if (!requireNamespace("PNADcIBGE", quietly = TRUE)) {
+        stop("Instale o pacote PNADcIBGE: install.packages('PNADcIBGE')")
+      }
+      dir.create("dados/cache_pnadc", recursive = TRUE,
+                 showWarnings = FALSE)
+      pnad <- PNADcIBGE::get_pnadc(
+        year = 2024, interview = 1, labels = TRUE,
+        deflator = TRUE, defyear = 2024, design = TRUE,
+        reload = FALSE, savedir = "dados/cache_pnadc"
+      )
+    }
+
+    if (!inherits(pnad, c("svyrep.design", "survey.design")) ||
+        is.null(pnad$variables) ||
+        !all(colunas_pnad %in% names(pnad$variables))) {
+      stop("Confira a importação da PNAD 2024 e o desenho amostral.")
+    }
+    if (!all(vapply(pnad$variables[c("VD5001", "VD5002", "CO1e")],
+                    is.numeric, logical(1)))) {
+      stop("Rendimentos e deflator CO1e devem ser numéricos.")
+    }
+    if (!("Pessoa responsável pelo domicílio" %in%
+          as.character(unique(pnad$variables$V2005)))) {
+      stop("Confira V2005: a PNAD deve ter rótulos (labels = TRUE).")
+    }
+
+    # Deflacionar apenas uma vez e preservar os pesos.
+    pnad_e4 <- update(
+      pnad,
+      rendimento_domiciliar_real = VD5001 * CO1e,
+      renda_per_capita_real = VD5002 * CO1e
+    )
+    domicilios_e4 <- subset(
+      pnad_e4, V2005 == "Pessoa responsável pelo domicílio"
+    )
+  }
+
+  if (!all(as.character(na.omit(unique(domicilios_e4$variables$V2007))) %in%
+           c("Homem", "Mulher"))) {
+    stop("Confira V2007: os rótulos esperados são Homem e Mulher.")
+  }
+
+  desenho_grupos <- update(
+    domicilios_e4,
+    grupo = factor(as.character(V2007), levels = c("Homem", "Mulher"))
+  )
+  base_comparacao <- subset(
+    desenho_grupos,
+    !is.na(grupo) &
+      is.finite(rendimento_domiciliar_real) &
+      is.finite(renda_per_capita_real)
+  )
+}
+
+# Conferências finais antes de estimar as médias.
+if (!all(colunas_analise %in% names(base_comparacao$variables)) ||
+    !is.numeric(base_comparacao$variables$V2009) ||
+    !all(vapply(base_comparacao$variables[
+      c("rendimento_domiciliar_real", "renda_per_capita_real")
+    ], is.numeric, logical(1)))) {
+  stop("Confira as variáveis da base preparada nas seções anteriores.")
+}
+if (nrow(base_comparacao$variables) == 0) {
+  stop("A base de comparação está vazia. Confira a seleção de domicílios.")
+}
+
+# Quantidade de observações da amostra em cada grupo.
+table(base_comparacao$variables$grupo)
+```
+
+**Entendendo a preparação:** `exists()` verifica se um objeto já foi criado, `if` só executa determinado trecho quando necessário e `stop()` apresenta uma mensagem caso falte alguma informação. Não estamos recalculando resultados nem aplicando o deflator duas vezes: o objetivo é **utilizar a mesma base da seção 4.3**. Quando executamos este arquivo depois das seções anteriores, a maior parte desse bloco apenas confere o que já está disponível.
+
+## Criando grupos de escolaridade e faixas etárias
+
+No E3, conhecemos `VD3005` (anos de estudo) e `V2009` (idade). Para realizar comparações mais fáceis de interpretar, vamos reunir esses valores em intervalos.
+
+Utilizaremos `cut()`, uma função que **transforma números em categorias**. Por exemplo, podemos reunir pessoas com até 8 anos de estudo em uma categoria e aquelas com 9 a 11 anos em outra. Os intervalos são escolhas didáticas para esta análise, **não equivalem automaticamente a níveis de ensino concluídos**.
+
+Há um cuidado: `VD3005` pode estar armazenada como `factor`, com rótulos como `"9 anos de estudo"`. Por isso, primeiro leremos os rótulos como texto para recuperar os anos de estudo, sem confundir os códigos internos do `factor` com os valores reais.
+
+```{r}
+#| label: e4-p3-criar-categorias
+
+# Ler os rótulos de escolaridade, sem usar os códigos internos do factor.
+rotulos_estudo <- trimws(as.character(base_comparacao$variables$VD3005))
+
+# Extrair o número que aparece no início de rótulos como "9 anos de estudo".
+anos_estudo <- suppressWarnings(as.numeric(
+  sub("^([0-9]+).*", "\\1", rotulos_estudo)
+))
+
+# A categoria "Sem instrução e menos de 1 ano de estudo" corresponde a zero.
+anos_estudo[grepl("^Sem instru", rotulos_estudo, ignore.case = TRUE)] <- 0
+
+# Evitar interpretar códigos especiais (como 99) como anos de estudo.
+anos_estudo[!is.na(anos_estudo) &
+              (anos_estudo < 0 | anos_estudo > 16)] <- NA_real_
+
+# Criar três grupos de escolaridade.
+escolaridade_calc <- cut(
+  anos_estudo,
+  breaks = c(-Inf, 8, 11, Inf),
+  labels = c("Até 8 anos", "9 a 11 anos", "12 anos ou mais"),
+  ordered_result = TRUE
+)
+
+# Repetir o procedimento para a idade, com as faixas usadas no E3.
+faixa_etaria_calc <- cut(
+  base_comparacao$variables$V2009,
+  breaks = c(-Inf, 29, 44, 59, Inf),
+  labels = c("Até 29 anos", "30 a 44 anos",
+             "45 a 59 anos", "60 anos ou mais"),
+  ordered_result = TRUE
+)
+
+# Interromper se nenhum registro puder ser classificado.
+if (all(is.na(escolaridade_calc)) || all(is.na(faixa_etaria_calc))) {
+  stop("Confira os rótulos de VD3005 e os valores de idade (V2009).")
+}
+
+# Acrescentar as categorias ao próprio desenho amostral.
+base_socio <- update(
+  base_comparacao,
+  escolaridade = escolaridade_calc,
+  faixa_etaria = faixa_etaria_calc
+)
+
+# Conferir as categorias criadas e eventuais valores ausentes.
+table(base_socio$variables$escolaridade, useNA = "ifany")
+table(base_socio$variables$faixa_etaria, useNA = "ifany")
+```
+
+**Interpretando o código:** `breaks` define os limites dos intervalos; `labels`, os nomes que aparecerão nas tabelas; e `ordered_result = TRUE` indica que essas categorias têm uma ordem. O `sub()` extrai o número inicial dos rótulos de escolaridade, enquanto `suppressWarnings()` evita exibir avisos esperados durante a tentativa de converter rótulos não numéricos. Esses casos permanecem como `NA` e **não são convertidos automaticamente em zero**.
+
+## Comparando rendimento por sexo e escolaridade
+
+Aqui está a principal novidade: podemos utilizar **mais de uma variável categórica no mesmo `svyby()`**. Na seção 4.3, escrevemos `by = ~grupo`; agora, usaremos `by = ~grupo + escolaridade` para calcular uma média para **cada combinação** de sexo da pessoa responsável e faixa de escolaridade.
+
+```{r}
+#| label: e4-p3-escolaridade
+
+# Manter apenas registros com escolaridade identificada.
+base_escolaridade <- subset(base_socio, !is.na(escolaridade))
+
+medias_escolaridade <- svyby(
+  formula = ~rendimento_domiciliar_real + renda_per_capita_real,
+  by = ~grupo + escolaridade,
+  design = base_escolaridade,
+  FUN = svymean,
+  na.rm = TRUE,
+  vartype = "se",
+  drop.empty.groups = TRUE,
+  na.rm.by = TRUE
+)
+
+# Organizar uma tabela objetiva, sem digitar os resultados manualmente.
+tabela_escolaridade <- data.frame(
+  Sexo = medias_escolaridade$grupo,
+  Escolaridade = medias_escolaridade$escolaridade,
+  Renda_domiciliar = medias_escolaridade$rendimento_domiciliar_real,
+  Renda_per_capita = medias_escolaridade$renda_per_capita_real
+)
+
+knitr::kable(
+  tabela_escolaridade,
+  col.names = c("Responsável", "Anos de estudo", "Renda domiciliar (R$)",
+                "Renda per capita (R$)"),
+  digits = 2,
+  format.args = list(decimal.mark = ",", big.mark = "."),
+  caption = "Rendimentos médios por sexo da pessoa responsável e escolaridade — PNAD 2024, preços médios de 2024"
+)
+```
+
+**Como interpretar?** Primeiro, compare os níveis de escolaridade **dentro de cada grupo**. Depois, compare homens e mulheres **com a mesma faixa de escolaridade**. Isso permite observar se a diferença de rendimento se mantém, diminui ou aumenta quando consideramos outra característica. Os rendimentos representam os domicílios, e não apenas o salário da pessoa responsável.
+
+O argumento `drop.empty.groups = TRUE` impede a apresentação de combinações sem observações; já `na.rm.by = TRUE` desconsidera categorias ausentes. Os erros-padrão também são calculados pelo `svyby()`, embora não sejam exibidos nesta tabela compacta.
+
+## Comparando rendimento por sexo e faixa etária
+
+Agora repetiremos o raciocínio utilizando a idade da pessoa responsável. A função é a mesma: basta substituir a variável de agrupamento `escolaridade` por `faixa_etaria`.
+
+```{r}
+#| label: e4-p3-faixa-etaria
+
+base_idade <- subset(base_socio, !is.na(faixa_etaria))
+
+medias_idade <- svyby(
+  formula = ~rendimento_domiciliar_real + renda_per_capita_real,
+  by = ~grupo + faixa_etaria,
+  design = base_idade,
+  FUN = svymean,
+  na.rm = TRUE,
+  vartype = "se",
+  drop.empty.groups = TRUE,
+  na.rm.by = TRUE
+)
+
+knitr::kable(
+  data.frame(
+    Responsavel = medias_idade$grupo,
+    Faixa_etaria = medias_idade$faixa_etaria,
+    Renda_domiciliar = medias_idade$rendimento_domiciliar_real,
+    Renda_per_capita = medias_idade$renda_per_capita_real
+  ),
+  col.names = c("Responsável", "Faixa etária", "Renda domiciliar (R$)",
+                "Renda per capita (R$)"),
+  digits = 2,
+  format.args = list(decimal.mark = ",", big.mark = "."),
+  caption = "Rendimentos médios por sexo da pessoa responsável e faixa etária — PNAD 2024, preços médios de 2024"
+)
+```
+
+**Por que essa comparação é útil?** Idade e renda podem estar associadas a diferentes momentos da vida, experiências profissionais e composições familiares. Porém, uma média mais alta em determinada faixa etária **não prova** que a idade, por si só, tenha causado essa diferença.
+
+## Diferenças de rendimento entre UFs
+
+Além das características individuais do responsável, podemos observar a dimensão **geográfica** da desigualdade. A variável `UF`, já conhecida do E2, identifica a Unidade da Federação de cada domicílio.
+
+```{r}
+#| label: e4-p3-ufs
+
+medias_uf <- svyby(
+  formula = ~renda_per_capita_real,
+  by = ~UF,
+  design = base_socio,
+  FUN = svymean,
+  na.rm = TRUE,
+  vartype = "se",
+  drop.empty.groups = TRUE,
+  na.rm.by = TRUE
+)
+
+# Apresentar as UFs em ordem decrescente de renda per capita média.
+tabela_uf <- data.frame(
+  UF = as.character(medias_uf$UF),
+  Renda_per_capita = as.numeric(medias_uf$renda_per_capita_real)
+)
+tabela_uf <- tabela_uf[order(tabela_uf$Renda_per_capita,
+                             decreasing = TRUE, na.last = TRUE), ]
+
+knitr::kable(
+  tabela_uf,
+  col.names = c("Unidade da Federação", "Renda per capita média (R$)"),
+  digits = 2,
+  format.args = list(decimal.mark = ",", big.mark = "."),
+  caption = "Rendimento domiciliar per capita médio por UF — PNAD 2024, preços médios de 2024"
+)
+```
+
+O comando `order()` permite ordenar as linhas da tabela: `decreasing = TRUE` coloca os maiores valores primeiro. Assim, podemos identificar diferenças regionais na renda per capita média dos domicílios. **Uma UF ter renda média mais alta não significa que todos os seus domicílios tenham renda elevada**, nem explica sozinha as causas dessa diferença.
+
+# 4.5 — Síntese dos resultados e próximos passos
+
+Ao combinar o sexo da pessoa responsável com **escolaridade e faixa etária**, ampliamos a comparação feita na seção 4.3. As tabelas permitem verificar se as diferenças entre homens e mulheres permanecem semelhantes quando observamos grupos com características mais próximas. A comparação por **UF** acrescenta outra dimensão, mostrando como os rendimentos médios variam geograficamente.
+
+**O que podemos concluir nesta etapa?** Os resultados são **descritivos**: identificam padrões e associações presentes nos dados, mas não demonstram relações de causa e efeito. Diferenças de rendimento podem estar relacionadas, por exemplo, à inserção no mercado de trabalho, ao número de moradores e às características econômicas regionais. Para afirmar a contribuição específica de cada fator, seria necessária uma análise adicional.
+
+Também precisamos ter cautela com grupos pequenos e estimativas pouco precisas. Embora as médias tenham sido calculadas respeitando os pesos e o desenho amostral, uma diferença numérica entre grupos **não é, por si só, prova de diferença estatisticamente significativa**.
+
+**Transição para o Entregável 5:** agora temos uma descrição mais detalhada das desigualdades de rendimento observadas na PNAD. A próxima etapa poderá reunir essas evidências, aprofundar sua interpretação e discutir os limites das conclusões, sem transformar associações exploratórias em afirmações causais.
+
+*Referências técnicas: [IBGE — deflacionamento anual por visita](https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Documentacao_Geral/PNADcIBGE_Deflator_Anual_Visita.pdf) e [documentação da função `svyby()`](https://r-survey.r-forge.r-project.org/pkgdown/docs/reference/svyby.html).*
