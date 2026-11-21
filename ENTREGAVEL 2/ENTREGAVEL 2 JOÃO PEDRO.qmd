@@ -59,7 +59,7 @@ Vamos criar uma nova base de dados contendo apenas as variáveis que serão util
 Considerando que o objetivo de um artigo é relacionado a uma pergunta específica, a base original da PNAD provavelmente conterá muitas variáveis que não serão utilizadas diretamente na análise. Contribuindo para a redução de erros, pois diminui a possibilidade de utilizar acidentalmente variáveis inadequadas durante as análises.
 
 ### Como renomear as variáveis com o R na prática?
-Vamos considerar algumas variáveis que poderiam ser utilizadas no estudo:
+Primeiro vamos trabalhar com um exemplo com a quantidade de variaveis reduzida para ser mais didatico. Consideraremos algumas variáveis que serão utilizadas no estudo:
 
 | Variável PNAD | Descrição | Nome padronizado |
 |---|---|---|
@@ -67,21 +67,18 @@ Vamos considerar algumas variáveis que poderiam ser utilizadas no estudo:
 | `V2007` | Sexo | `sexo` |
 | `VD5002` | Rendimento domiciliar per capita | `renda_per_capita` |
 
-O exemplo abaixo utiliza a função `select()` do pacote `dplyr`, que permite selecionar e renomear variáveis simultaneamente.  
-[**Observação:**]{style="color: red"} Considerando que o pacote `dplyr` já está instalado no R. Caso ainda não esteja instalado utilize o comando `install.packages("dplyr")` uma vez.
 
-```{r}
-#| label: carregar-base
+**Conhecendo o pacote `dplyr`**
+Até aqui, identificamos quais variáveis da PNAD Contínua são relevantes para nossa pesquisa. Agora, precisamos renomear essas informações para construir uma "nova" base de dados mais organizada e apenas com o que iremos utilizar.
 
-pnad <- readRDS("dados/pnad.rds")
-```
+Para isso, utilizaremos o pacote `dplyr`, que funciona como uma caixa de ferramentas para manipular dados no R. Ele oferece diversas funções que facilitam a organização e o tratamento de tabelas, fazendo um exemplo:
 
 ```{r}
 # Carregar o pacote
 library(dplyr)
 
 # Criar uma base específica para a pesquisa
-base_trabalho <- pnad %>%
+base_exemplo <- pnad$variables %>%
   select(
     idade = V2009,
     sexo = V2007,
@@ -89,11 +86,37 @@ base_trabalho <- pnad %>%
   )
 ```
 
-Nesse procedimento, o objeto pnad permanece inalterado, enquanto base_trabalho contém somente as quatro variáveis selecionadas, já com seus respectivos nomes padronizados.
-**Atenção:** as variáveis apresentadas são exemplos para demonstrar o procedimento. A escolha definitiva deve considerar o dicionário da edição da PNAD utilizada e, principalmente, qual tema será abordado em seu projeto.
+Como utilizado no codigo acima uma dessas ferramentas é a função `select()`, que permite selecionar colunas de uma tabela e renomeá-las. Em nosso caso, utilizaremos essa função para criar uma nova base contendo apenas as variáveis da PNAD necessárias à pesquisa, com nomes mais fáceis de interpretar.
 
-## Resumo: Expandindo para nossa pesquisa e o resultado da padronização.
-Utilizando da relação de variáveis relevante para nossa pesquisa construimos nossa base de dados, utilizando da padronização no padrão `snake_case`. Para isso, no R:
+**Importante:** o `dplyr` não fornece os dados da PNAD nem cria uma tabela vazia para preenchermos. Ele permite trabalhar com os dados que já importamos anteriormente, enquanto a base original permanece inalterada.
+
+Para utilizar o pacote, precisamos instalá-lo uma única vez com `install.packages("dplyr")` e carregá-lo em cada nova sessão do R utilizando `library(dplyr)`.
+
+Explicando linha por linha:
+
+base_exemplo: nome da nova base de dados que será criada.
+
+<-: operador de atribuição, utilizado para armazenar um resultado em um objeto.
+
+pnad$variables: acessa a tabela de microdados armazenada no objeto pnad.
+
+%>%: operador pipe, que encaminha o resultado de uma operação para a função seguinte.
+
+select(): função que permite selecionar e renomear variáveis de uma base de dados.
+
+idade = V2009: seleciona a variável V2009 e a renomeia para idade.
+
+sexo = V2007: seleciona a variável V2007 e a renomeia para sexo.
+
+renda_per_capita = VD5002: seleciona a variável VD5002 e a renomeia para renda_per_capita
+
+
+
+Nesse procedimento, o objeto pnad permanece inalterado, enquanto base_exemplo contém somente as três variáveis selecionadas, já com seus respectivos nomes padronizados.
+**Atenção:** as variáveis apresentadas são exemplos para demonstrar o procedimento. A escolha definitiva ira vir a seguir, se o leitor for trabalhar com algum tema ou base diferente do abordado nesse ebook deve considerar o dicionário da edição da PNAD utilizada e, principalmente, qual tema será abordado em seu projeto.
+
+## DEFININDO AS VARIAVEIS QUE DE FATO UTILIZAREMOS.
+Agora sem mais abordar um exemplo, iremos definir as variaveis que iremos usar aqui até o restante do ebook. Utilizando da relação de variáveis relevante para nossa pesquisa construimos nossa base de dados, utilizando da padronização no padrão `snake_case`. Para isso, no R:
 
 ```{r}
 library(dplyr)
@@ -116,6 +139,10 @@ base_trabalho <- pnad$variables %>%
 
 Agora temos a base de dados `base_trabalho`, que contém as informações relevantes para seguirmos com o desenvolvimento da pesquisa.
 
+**Importante:** a função select() do pacote dplyr permite criar uma tabela mais organizada, contendo apenas as variáveis que queremos estudar. Entretanto, essa nova tabela não preserva automaticamente o desenho amostral da PNAD, necessário para calcular estatísticas representativas da população brasileira. Desenho amostral é a forma como o IBGE seleciona os entrevistados. Como apenas uma parte da população é entrevistada, são utilizados pesos amostrais para que os resultados representem melhor a população brasileira.
+
+Por isso, utilizaremos o dplyr para organizar e tratar os dados e, posteriormente, o pacote survey (que será apresentado no entregravel 3) para realizar estimativas populacionais, mantendo as informações amostrais do objeto original pnad e incorporando a ele as transformações necessárias.
+
 Para termos maior praticidade a tabela a seguir apresenta a correspondência entre os códigos originais das variáveis, as informações que representam e os respectivos nomes que serão utilizados ao longo do desenvolvimento da pesquisa.
 
 ## Tabela de correspondência das variáveis
@@ -127,10 +154,10 @@ Para termos maior praticidade a tabela a seguir apresenta a correspondência ent
 | `V2005` | Condição no domicílio | `condicao_domicilio` |
 | `V2007` | Sexo do morador | `sexo` |
 | `V2009` | Idade | `idade` |
-|`V2010`| Cor ou raça | `cor_ou_raça`| 
+|`V2010`| Cor ou raça | `cor_ou_raca`| 
 | `VD3005` | Anos de estudo | `anos_estudo` |
 | `VD4001` | Condição em relação à força de trabalho | `condicao_forca_trabalho` |
-| `VD4002` | Condição de ocupação (fora da força de trabalho) | `condicao_ocupacao` | 
+| `VD4002` | Condição de ocupação (ocupado ou desocupado, para pessoas na força de trabalho) | `condicao_ocupacao` | 
 | `VD5001` | Indicador de rendimento domiciliar | `rendimento_domiciliar` |
 | `VD5002` | Indicador de rendimento domiciliar per capita | `rendimento_per_capita` |
 
