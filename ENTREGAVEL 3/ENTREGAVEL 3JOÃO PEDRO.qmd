@@ -1,219 +1,340 @@
 ---
-title: "?"
+title: "Entregável 3 — Diagnóstico, limpeza e preparação dos dados"
 format: pdf
 execute:
-  eval: false
+  eval: true
+  echo: true
+  warning: true
+  message: false
 ---
 
-Neste tópico, vamos utilizar ferramentas de identificação e remoção de valores faltantes das variáveis que serão utilizadas para nosso objetivo e também converter os tipos de valores das variáveis que forem necessários. Com a finalidade de termos uma base de dados capaz de proporcionar análises que atendem aos requisítos econométricos.
+## Diagnóstico, limpeza e preparação das variáveis
 
-Ao final da etapa anterior, construímos a base de dados que reúne os domicílios selecionados e as variáveis centrais da pesquisa. Nesta etapa, retomaremos essa base para realizar procedimentos de diagnóstico, limpeza e preparação das variáveis.
+Na primeira parte deste entregável, selecionamos as pessoas responsáveis pelos domicílios da PNAD Contínua de 2024 e construímos a tabela `base_domicilios`. Agora vamos verificar a qualidade das informações, identificar valores ausentes, conferir os tipos das variáveis e preparar novas classificações para as análises posteriores.
+
+**Nosso objetivo nesta etapa não é apagar todos os valores ausentes.** Primeiro precisamos entender o que eles representam e decidir, com base na documentação da pesquisa, se algum tratamento é necessário. Afinal, excluir uma observação sem justificativa pode alterar os resultados do estudo.
+
+### Retomando a base construída anteriormente
+
+Como esta parte do trabalho está em um arquivo separado, precisamos carregar a tabela que foi salva ao final da etapa anterior. Para isso, utilizamos `readRDS()`, função que recupera um objeto do R armazenado em um arquivo `.rds`.
 
 ```{r}
-#| label: carregar-base
+#| label: e3-carregar-base
 #| message: false
 
 library(dplyr)
 library(tidyr)
 
-base_domicilios <- readRDS("dados/base_domicilios.rds")
+# Procurar o arquivo salvo na primeira parte do Entregável 3.
+# Os caminhos cobrem a execução a partir da raiz do projeto
+# e de pastas internas próximas.
+caminhos_base <- c(
+  "dados/base_domicilios.rds",
+  "../dados/base_domicilios.rds",
+  "../../dados/base_domicilios.rds",
+  "ENTREGAVEL 3/dados/base_domicilios.rds",
+  "../ENTREGAVEL 3/dados/base_domicilios.rds",
+  "../../ENTREGAVEL 3/dados/base_domicilios.rds"
+)
 
-# Conferir se a base foi carregada
-glimpse(base_domicilios)
+caminhos_existentes <- caminhos_base[file.exists(caminhos_base)]
+
+if (length(caminhos_existentes) == 0) {
+  stop(
+    "O arquivo base_domicilios.rds não foi encontrado. ",
+    "Execute primeiro a etapa anterior e confira o caminho da pasta 'dados'."
+  )
+}
+
+base_domicilios <- readRDS(caminhos_existentes[1])
+cat("Arquivo carregado:", caminhos_existentes[1], "\n")
 ```
+
+**Entendendo os comandos:**
+
+- `library(dplyr)` e `library(tidyr)`: carregam os pacotes necessários para manipular a tabela e tratar valores ausentes.
+- `file.exists()`: verifica se um arquivo existe no caminho indicado.
+- `readRDS()`: recupera a base salva anteriormente, preservando seus valores e classes.
+- `base_domicilios <- ...`: guarda o objeto carregado com o mesmo nome utilizado na primeira parte.
+
+Os diferentes caminhos são uma precaução porque os arquivos dos integrantes podem estar em pastas distintas. O R utiliza o **primeiro arquivo encontrado**. Se nenhum existir nesses locais, a execução será interrompida com uma mensagem explicando o problema, em vez de utilizar dados fictícios.
+
+Antes de começar, vamos conferir se as principais variáveis criadas na etapa anterior estão disponíveis:
 
 ```{r}
-names(base_domicilios)
+#| label: e3-conferir-variaveis
+
+variaveis_foco <- c(
+  "idade_chefe",
+  "sexo_responsavel",
+  "rendimento_domiciliar",
+  "rendimento_per_capita",
+  "numero_moradores"
+)
+
+variaveis_faltantes <- setdiff(variaveis_foco, names(base_domicilios))
+
+if (length(variaveis_faltantes) > 0) {
+  stop(
+    "A base carregada não contém estas variáveis: ",
+    paste(variaveis_faltantes, collapse = ", "),
+    ". Verifique se o arquivo corresponde à primeira parte revisada."
+  )
+}
+
+base_domicilios %>%
+  select(idade_chefe, sexo_responsavel, rendimento_domiciliar,
+         rendimento_per_capita, numero_moradores) %>%
+  glimpse()
 ```
 
-## Quais variáveis serão tratar?
-Olhamos para nossa base, base_domicilios, criada na etapa anterior. Ela representa os domicílios após a seleção da pessoa responsável e a construção das variáveis centrais.
+A função `names()` consulta os nomes das colunas. Já `setdiff()` identifica quais nomes esperados estão faltando. Se alguma variável não existir, o código avisa imediatamente; caso contrário, `glimpse()` apresenta uma visão resumida das cinco colunas de interesse, incluindo seus tipos e alguns valores.
 
-As variáveis que merecem atenção nesta etapa são:
+### Quais variáveis merecem atenção?
 
-| Variável |	Tipo esperado |	Principal verificação |
+Nesta etapa, concentraremos a verificação nas variáveis diretamente relacionadas à comparação das condições socioeconômicas dos domicílios.
+
+| Variável | Tipo esperado | Principal verificação |
 |---|---|---|
-| idade_chefe	| Numérica |	Valores ausentes e faixa plausível |
-| sexo_responsavel | Categórica	| Categorias e ausências |
-| renda_domiciliar |	Numérica	| Ausências, zeros e valores extremos |
-| renda_per_capita |	Numérica	| Ausências, zeros e valores extremos |
-| numero_moradores	| Numérica ou inteira	| Valores ausentes e positivos |
+| `idade_chefe` | Numérica | Valores ausentes e idades incomuns |
+| `sexo_responsavel` | Categórica | Categorias e valores ausentes |
+| `rendimento_domiciliar` | Numérica | Ausências, zeros e valores elevados |
+| `rendimento_per_capita` | Numérica | Ausências, zeros e valores elevados |
+| `numero_moradores` | Numérica ou inteira | Ausências e valores incompatíveis com o número de moradores |
 
-Uma observação sobre a documentação: o IBGE disponibiliza os microdados acompanhados de documentação que identifica as variáveis e suas categorias. Portanto, não devemos converter um código em `NA` apenas porque ele parece incomum. Primeiro precisamos confirmar o significado daquele código no dicionário correspondente à pesquisa.
-Também não vamos excluir automaticamente domicílios com renda igual a zero. Ausência de informação e rendimento efetivamente igual a zero são situações distintas.
+**Atenção:** um valor aparentemente estranho não é necessariamente um erro. Antes de tratar códigos especiais, precisamos consultar o dicionário de variáveis do IBGE. Da mesma forma, **rendimento igual a zero não significa rendimento ausente**.
 
 ## Identificação de valores ausentes
-O primeiro procedimento é verificar se existem valores ausentes (`NA`) na base e identificar em quais variáveis eles aparecem.
-No R, a função `is.na()` identifica valores ausentes e retorna `TRUE` quando uma observação está ausente e `FALSE` quando contém algum valor.
+
+No R, a ausência de informação é normalmente representada por `NA`. A função `is.na()` verifica cada valor de uma variável e retorna `TRUE` quando ele está ausente e `FALSE` quando está preenchido.
+
+**Vamos colocar em prática!**
 
 ```{r}
+#| label: e3-identificar-na
 
-# Verificar valores ausentes na variável de rendimento per capita
-is.na(base_domicilios$rendimento_per_capita)
+# Mostrar apenas os dez primeiros resultados, para não imprimir
+# uma lista enorme no documento.
+head(is.na(base_domicilios$rendimento_per_capita), 10)
 ```
 
-Neste exemplo, estamos verificando quais domicilios tem valor `NA` para a coluna de `rendimento_per_capita`. O mesmo pode ser feito para outras colunas da base de dados, apenas substituindo a variável após o símbolo `$`.
+A expressão `base_domicilios$rendimento_per_capita` acessa a coluna de rendimento per capita. Em seguida, `is.na()` verifica suas observações, enquanto `head(..., 10)` limita a exibição às dez primeiras posições.
 
-Para obter uma contagem dos valores ausentes em cada variável, podemos utilizar `colSums()`:
+Para descobrir **quantos** valores ausentes existem nas principais variáveis, utilizamos `colSums()`:
 
 ```{r}
+#| label: e3-contar-na
 
-# Contar valores ausentes em cada coluna
-colSums(is.na(base_domicilios))
+colSums(is.na(
+  base_domicilios %>%
+    select(idade_chefe, sexo_responsavel, rendimento_domiciliar,
+           rendimento_per_capita, numero_moradores)
+))
 ```
 
-Esse procedimento permite identificar quais variáveis apresentam maior quantidade de informações ausentes. Também podemos analisar a distribuição de uma variável categórica, incluindo explicitamente os valores ausentes:
+A função `colSums()` soma os valores de cada coluna. Como o R considera `TRUE` igual a 1 e `FALSE` igual a 0 nesse cálculo, o resultado corresponde à quantidade de valores ausentes em cada variável selecionada.
+
+Para uma variável categórica, também podemos consultar sua distribuição:
 
 ```{r}
+#| label: e3-conferir-sexo
 
-# Verificar a distribuição do sexo do responsável
-table(
-  base_domicilios$sexo_responsavel,
-  useNA = "ifany"
-)
+table(base_domicilios$sexo_responsavel, useNA = "ifany")
 ```
 
-O argumento `useNA = "ifany"` faz com que os valores ausentes sejam exibidos na tabela quando existirem. Essa é uma etapa exploratória. O objetivo dela é conhecer a situação da base antes de realizar qualquer exclusão ou substituição de valores. A presença de `NA` não significa, por si só, que a observação deva ser removida, devemos analisar qual a variável e se ela ter esse valor vai prejudicar nossas estimações futuras.
+Já utilizamos `table()` na parte anterior do entregável. Aqui, o argumento `useNA = "ifany"` é particularmente útil: se houver valores ausentes, eles aparecerão na contagem.
+
+**Importante:** encontrar um `NA` não significa que a linha deve ser excluída. Precisamos considerar o significado da ausência e sua relevância para a análise que será realizada.
 
 ## Tratamento de valores ausentes e códigos especiais
-Depois de identificar os valores ausentes, precisamos investigar sua origem.
 
-Existem duas situações importantes:
-- Valor ausente (`NA`): o dado não está disponível para aquela observação.
-- Código especial: determinado valor pode representar uma condição específica da pesquisa, como informação **não declarada ou não aplicável**. Seu significado deve ser verificado no dicionário.
-Não devemos presumir que valores como -1, 0 ou 999 representam ausência. É necessário consultar a documentação da variável antes de qualquer substituição.
+Antes de modificar os dados, precisamos distinguir duas situações:
 
-Podemos começar examinando os valores existentes:
+- **Valor ausente (`NA`):** não há informação disponível para aquela observação.
+- **Código especial:** um valor pode representar uma resposta específica, como "não declarado" ou "não aplicável", conforme a documentação da variável.
+
+Não devemos supor que números como `-1`, `0` ou `999` representam ausência. O significado desses códigos precisa ser confirmado no dicionário da PNAD Contínua correspondente à base utilizada.
+
+### Investigando os rendimentos
+
+Em uma variável numérica, como `rendimento_per_capita`, pode haver muitos valores distintos. Por isso, em vez de imprimir uma tabela de frequências extensa, utilizamos `summary()` para obter um resumo dos dados:
 
 ```{r}
+#| label: e3-resumo-rendimento
 
-# Verificar os valores observados na variável
-table(
-  base_domicilios$renda_per_capita,
-  useNA = "ifany"
-)
+summary(base_domicilios$rendimento_per_capita)
+
+# Quantidade de registros com rendimento per capita igual a zero
+sum(base_domicilios$rendimento_per_capita == 0, na.rm = TRUE)
 ```
 
-Para variáveis numéricas com muitos valores diferentes, é mais útil observar estatísticas descritivas:
+A função `summary()` apresenta medidas como mínimo, mediana, média e máximo, além de informar valores ausentes quando existirem. No segundo comando, `sum()` conta quantas observações satisfazem a condição `== 0`. O argumento `na.rm = TRUE` desconsidera os `NA` durante essa contagem.
+
+Essas informações ajudam a identificar situações que merecem investigação, **mas não autorizam excluir ou modificar valores automaticamente**.
+
+### Como funciona `na_if()`?
+
+A função `na_if()`, do pacote `dplyr`, substitui um valor específico por `NA`. Ela deve ser utilizada na base real somente quando a documentação confirmar que aquele valor representa ausência de informação.
+
+Para aprender seu funcionamento sem alterar os dados da PNAD, vamos criar um **exemplo fictício**:
 
 ```{r}
+#| label: e3-exemplo-na-if
 
-summary(base_domicilios$renda_per_capita)
+rendimentos_exemplo <- c(1500, -1, 0, 850)
+
+na_if(rendimentos_exemplo, -1)
 ```
 
-Se a documentação confirmar que determinado código representa ausência de informação, podemos substituí-lo por `NA` utilizando `na_if()`.
-Por exemplo, supondo que o dicionário identificasse `-1` como código de ausência:
+**Saída esperada:**
 
-```{r}
+```text
+[1] 1500   NA    0  850
+```
 
+Nesse exemplo, `-1` foi substituído por `NA`, enquanto o valor `0` foi preservado. **O código `-1` é exclusivamente ilustrativo**: não estamos afirmando que ele seja usado pela PNAD de 2024 para indicar rendimento ausente.
+
+### Por que não excluir automaticamente rendimentos iguais a zero?
+
+Um domicílio pode ter rendimento registrado igual a zero. Isso é diferente de não haver informação disponível. Excluir todos esses domicílios sem justificativa alteraria a composição da amostra e poderia distorcer as comparações.
+
+Por esse motivo, **não executaremos** na base real a operação abaixo; ela está apresentada apenas para mostrar uma decisão que exigiria justificativa metodológica:
+
+```r
+# Exemplo de exclusão que NÃO deve ser aplicada automaticamente:
 base_domicilios <- base_domicilios %>%
-  mutate(
-    renda_per_capita = na_if(renda_per_capita, -1)
-  )
-```
-*O valor -1 é apenas ilustrativo. Não deve ser utilizado na base de 2024 sem confirmação documental.*
-
-A função `na_if()` compara os valores de uma variável com um valor informado e substitui as correspondências por `NA`.
-E os domicílios com renda igual a zero?
-Essa distinção é especialmente importante para o exemplo de análise da renda domiciliar.
-Conforme já mencionado anteriormente, um domicílio com rendimento igual a zero não necessariamente possui uma informação ausente. Ele pode representar uma situação real em que nenhum rendimento foi registrado para aquela medida.
-
-Portanto, não devemos utilizar uma instrução como:
-
-```{r}
-base_domicilios <- base_domicilios %>%
-filter(renda_per_capita > 0)
+  filter(rendimento_per_capita > 0)
 ```
 
-Sem antes justificar metodologicamente a exclusão dos domicílios sem rendimento. Essa operação alteraria a população analisada e poderia produzir resultados enviesados.
+Observe a diferença entre os blocos: ` ```{r} ` executa código no Quarto; ` ```r ` apenas apresenta um exemplo, sem executá-lo.
 
 ## Exclusão criteriosa de observações
-Em algumas análises, pode ser necessário excluir observações que não possuem informações para determinadas variáveis. Para isso, podemos utilizar a função `drop_na()`, disponível no pacote `tidyr`.
 
-Primeiro, carregamos o pacote:
+Em algumas análises, é necessário trabalhar apenas com observações que possuam informação nas variáveis utilizadas. Para isso, podemos recorrer à função `drop_na()`, do pacote `tidyr`.
 
-```{r}
+**Como funciona?** A função elimina linhas com valores ausentes **somente nas colunas indicadas**. Não é necessário eliminar uma observação porque ela possui `NA` em alguma variável que não participará da análise.
 
-library(tidyr)
-```
-
-Se o objetivo for analisar a relação entre sexo do responsável e renda per capita, podemos criar uma base sem valores ausentes apenas nessas duas variáveis:
+Se desejarmos comparar o sexo da pessoa responsável com o rendimento domiciliar per capita, podemos criar uma tabela específica:
 
 ```{r}
+#| label: e3-criar-base-analise
 
 base_analise <- base_domicilios %>%
-  drop_na(
-    sexo_responsavel,
-    renda_per_capita
-  )
+  drop_na(sexo_responsavel, rendimento_per_capita)
 ```
 
-Nesse exemplo, serão removidas somente as observações que apresentarem ausência em pelo menos uma das duas variáveis especificadas. Os argumentos da função `drop_na` correspondem às variáveis que desejamos remover as observações com ausência de valores, podendo ser adicionadas outras colunas conforme desejar, separando-as por vírgula.
+Nesse código, `base_analise` é um **novo objeto**. A tabela `base_domicilios` permanece intacta, e somente as linhas com valores ausentes em `sexo_responsavel` ou `rendimento_per_capita` são retiradas da tabela de análise.
 
-Podemos conferir o resultado da operação, para comparar quantas observações foram excluídas pelo procedimento:
+Para comparar as quantidades de observações antes e depois:
 
 ```{r}
+#| label: e3-comparar-observacoes
 
-# Quantidade de observações antes e depois
 nrow(base_domicilios)
 nrow(base_analise)
 ```
 
-## Conversão de tipos de variáveis
-Outro procedimento importante é verificar se as variáveis estão armazenadas no formato adequado para as operações estatísticas.
-No R, cada variável possui uma classe (`class`) que determina como seus valores serão interpretados e quais operações podem ser realizadas.
+A função `nrow()` informa o número de linhas de uma tabela. A diferença entre os dois resultados corresponde à quantidade de observações excluídas nessa seleção. **Isso ainda não constitui uma estimativa populacional**, pois não utilizamos o desenho amostral da pesquisa.
 
-Podemos verificar a estrutura da base e visualizar de maneira resumida com:
+## Verificação e conversão dos tipos de variáveis
+
+Antes de realizar cálculos, é importante conferir como cada variável está armazenada no R. Já utilizamos `class()` anteriormente; agora podemos observar várias colunas de uma só vez com `str()` e `glimpse()`.
 
 ```{r}
+#| label: e3-verificar-classes
 
-# Verificando a estrutura da base
-str(base_domicilios)
-
-# Visualizando a estrutura resumidamente
-dplyr::glimpse(base_domicilios)
+# Estrutura resumida das principais variáveis
+str(base_domicilios %>%
+      select(idade_chefe, sexo_responsavel, rendimento_domiciliar,
+             rendimento_per_capita, numero_moradores))
 ```
 
-Entre as classes mais utilizadas, destacam-se:
-| Classe	| Utilização |
-| --- | --- |
-| numeric	| Valores numéricos, inclusive decimais |
-|integer |	Valores inteiros |
-|character	| Textos e códigos armazenados como caracteres |
-|factor |	Variáveis categóricas |
+A função `str()` mostra a estrutura do objeto, incluindo os tipos das colunas. `glimpse()`, utilizado no início desta seção, apresenta uma visão semelhante, geralmente mais compacta.
 
-**Para realizar a conversão para valores numéricos** a função `as.numeric()` permite converter uma variável para o formato numérico.
-Por exemplo:
+| Classe | Significado |
+|---|---|
+| `numeric` | Números, inclusive valores com casas decimais |
+| `integer` | Números inteiros |
+| `character` | Textos |
+| `factor` | Categorias com níveis definidos |
+
+### Convertendo valores numéricos com segurança
+
+A função `as.numeric()` transforma valores compatíveis em números. Por exemplo, podemos converter um vetor com idades armazenadas como texto:
 
 ```{r}
+#| label: e3-exemplo-numerico
 
-base_domicilios <- base_domicilios %>%
-  mutate(
-    idade_chefe = as.numeric(idade_chefe),
-    renda_domiciliar = as.numeric(renda_domiciliar),
-    renda_per_capita = as.numeric(renda_per_capita)
-  )
+idades_texto <- c("18", "32", "60")
+as.numeric(idades_texto)
 ```
 
-Essa conversão é útil quando uma variável foi importada como texto, mas representa uma quantidade numérica.
-Entretanto, é necessário ter cuidado quando a variável está armazenada como `factor`. Aplicar `as.numeric()` diretamente a um fator pode retornar os códigos internos das categorias, e não os valores originais.
+**Saída esperada:**
 
-Quando os valores originais são números armazenados como categorias, a conversão deve ser realizada em duas etapas:
+```text
+[1] 18 32 60
+```
+
+Entretanto, precisamos ter cuidado com variáveis do tipo `factor`. Se aplicarmos `as.numeric()` diretamente a um fator, o R poderá retornar os **códigos internos das categorias**, e não os números que aparecem nos rótulos.
+
+Veja a diferença em um exemplo que não altera a base real:
 
 ```{r}
+#| label: e3-exemplo-fator-numerico
 
-variavel_numerica <- as.numeric(
-  as.character(variavel_original)
+idades_fator <- factor(c("18", "32", "60"))
+
+as.numeric(idades_fator)
+as.numeric(as.character(idades_fator))
+```
+
+**Saída esperada:**
+
+```text
+[1] 1 2 3
+[1] 18 32 60
+```
+
+No segundo comando, `as.character()` recupera os rótulos do fator como texto; só depois `as.numeric()` os converte para números. Esse procedimento é adequado **apenas quando os rótulos representam quantidades numéricas**.
+
+Na nossa base, não precisamos forçar a conversão de todas as colunas. Primeiro vamos verificar se aquelas usadas como quantidades já são numéricas:
+
+```{r}
+#| label: e3-conferir-numericas
+
+variaveis_numericas <- c(
+  "idade_chefe",
+  "rendimento_domiciliar",
+  "rendimento_per_capita",
+  "numero_moradores"
 )
+
+verificacao_numerica <- vapply(
+  base_domicilios[variaveis_numericas],
+  is.numeric,
+  logical(1)
+)
+
+verificacao_numerica
+
+if (!all(verificacao_numerica)) {
+  stop(
+    "Uma das variáveis quantitativas não está armazenada como número. ",
+    "Confira sua classe e os códigos no dicionário antes de converter."
+  )
+}
 ```
 
-Essa operação deve ser utilizada somente quando a variável realmente representar uma quantidade numérica.
+A função `is.numeric()` verifica se uma variável está armazenada como número. Nesse bloco, `vapply()` aplica essa verificação às quatro colunas e `all()` confirma se todas retornaram `TRUE`. Se alguma não for numérica, o código interrompe a execução para evitar uma conversão que possa distorcer os dados.
 
-**Quando necessário a conversão para variáveis categóricas** a função `factor()` permite transformar uma variável em categórica, definindo suas categorias e respectivos rótulos.
+**Por que não usar `as.numeric()` diretamente nessas colunas?** Porque a primeira parte já foi construída com os valores originais da PNAD. Se as variáveis estiverem no formato adequado, a conversão seria desnecessária; caso contrário, precisamos investigar o motivo antes de modificá-las.
 
-Considerando a variável `sexo_responsavel`, podemos organizá-la da seguinte maneira:
+### Organizando o sexo da pessoa responsável como categoria
+
+A função `factor()` permite indicar explicitamente que uma variável representa categorias. Na primeira parte, `sexo_responsavel` foi criada com os textos `"Homem"` e `"Mulher"`. Podemos organizar esses valores como níveis de um fator:
 
 ```{r}
+#| label: e3-converter-sexo-fator
 
 base_domicilios <- base_domicilios %>%
   mutate(
@@ -222,48 +343,57 @@ base_domicilios <- base_domicilios %>%
       levels = c("Homem", "Mulher")
     )
   )
+
+levels(base_domicilios$sexo_responsavel)
 ```
 
-Nesse exemplo, os valores são organizados em duas categorias, permitindo que o R os reconheça como uma variável qualitativa.
-
-A definição de `levels` deve corresponder exatamente aos valores existentes na variável. Caso os dados ainda estejam codificados numericamente, os níveis e rótulos **devem ser definidos conforme o dicionário da PNAD.**
+O argumento `levels` define as categorias possíveis e sua ordem de apresentação. Valores ausentes continuam como `NA`. Aqui utilizamos exatamente os rótulos definidos na parte anterior do entregável.
 
 ## Criação de faixas etárias
-Além da conversão de tipos, podemos criar novas variáveis categóricas a partir de informações numéricas.
-Um exemplo é a construção de faixas etárias para o responsável pelo domicílio. Essa transformação pode facilitar a comparação entre diferentes grupos populacionais.
 
-Podemos utilizar a função `case_when()`, do pacote `dplyr`:
+Além de conferir os tipos, podemos construir novas categorias a partir de uma variável numérica. Um exemplo é agrupar a idade da pessoa responsável em faixas, facilitando comparações entre domicílios.
+
+Já conhecemos `mutate()` e `case_when()`: a primeira função cria uma coluna, e a segunda define seu valor conforme diferentes condições.
+
+**Vamos colocar em prática!**
 
 ```{r}
+#| label: e3-criar-faixas-etarias
 
 base_domicilios <- base_domicilios %>%
   mutate(
     faixa_etaria = case_when(
-      idade_chefe < 30 ~ "Até 29 anos",
-      idade_chefe < 45 ~ "30 a 44 anos",
-      idade_chefe < 60 ~ "45 a 59 anos",
+      idade_chefe >= 0 & idade_chefe < 30 ~ "Até 29 anos",
+      idade_chefe >= 30 & idade_chefe < 45 ~ "30 a 44 anos",
+      idade_chefe >= 45 & idade_chefe < 60 ~ "45 a 59 anos",
       idade_chefe >= 60 ~ "60 anos ou mais",
       TRUE ~ NA_character_
     )
   )
 ```
 
-A função avalia as condições na ordem em que aparecem, quando uma condição é satisfeita, o respectivo rótulo é atribuído à observação.
-O último argumento, `TRUE ~ NA_character_`, garante que observações que não atendam às condições anteriores, como aquelas com idade ausente, permaneçam sem classificação.
+**Interpretando as condições:**
 
-Depois de criar a variável, podemos verificar sua distribuição:
+- `idade_chefe >= 0 & idade_chefe < 30`: seleciona idades de 0 a 29 anos.
+- `idade_chefe >= 30 & idade_chefe < 45`: seleciona idades de 30 a 44 anos.
+- `idade_chefe >= 45 & idade_chefe < 60`: seleciona idades de 45 a 59 anos.
+- `idade_chefe >= 60`: seleciona pessoas com 60 anos ou mais.
+- `TRUE ~ NA_character_`: deixa sem classificação observações que não se enquadrem nas condições, incluindo idades ausentes ou negativas.
+
+O operador `&` significa **“e”**: as duas condições precisam ser verdadeiras. Como `case_when()` avalia as condições na ordem em que aparecem, cada observação recebe a classificação da primeira condição satisfeita.
+
+Vamos conferir a distribuição das categorias:
 
 ```{r}
+#| label: e3-tabela-faixas-etarias
 
-table(
-  base_domicilios$faixa_etaria,
-  useNA = "ifany"
-)
+table(base_domicilios$faixa_etaria, useNA = "ifany")
 ```
 
-Também podemos transformar a nova variável em fator, estabelecendo uma ordem específica para as categorias:
+As faixas etárias possuem uma ordem natural. Para que o R respeite essa sequência, podemos converter a variável em um **fator ordenado**:
 
 ```{r}
+#| label: e3-ordenar-faixas-etarias
 
 base_domicilios <- base_domicilios %>%
   mutate(
@@ -278,41 +408,61 @@ base_domicilios <- base_domicilios %>%
       ordered = TRUE
     )
   )
+
+levels(base_domicilios$faixa_etaria)
 ```
 
-O argumento `ordered = TRUE` informa ao R que existe uma ordenação natural entre as categorias.
+O argumento `ordered = TRUE` informa que as categorias possuem uma ordenação, da faixa mais jovem à mais velha. Isso ajuda a manter uma apresentação coerente em tabelas e gráficos futuros.
 
 ## Conferência final da base
-Após realizar os procedimentos de limpeza e conversão, é importante verificar novamente a estrutura dos dados. Essa conferência permite verificar se as transformações foram realizadas corretamente e se a base está preparada para as próximas etapas da análise.
+
+Depois dessas etapas, devemos verificar novamente a estrutura das variáveis e os valores ausentes. Essa conferência ajuda a identificar possíveis problemas, embora não substitua uma validação completa da pesquisa.
 
 ```{r}
+#| label: e3-conferencia-final
 
-# Conferir a estrutura das variáveis
-glimpse(base_domicilios)
+# Conferir as colunas mais importantes, incluindo a nova faixa etária
+base_domicilios %>%
+  select(idade_chefe, sexo_responsavel, faixa_etaria,
+         rendimento_domiciliar, rendimento_per_capita,
+         numero_moradores) %>%
+  glimpse()
 
-# Verificar valores ausentes
-colSums(is.na(base_domicilios))
+# Contar os valores ausentes nessas variáveis
+base_domicilios %>%
+  select(idade_chefe, sexo_responsavel, faixa_etaria,
+         rendimento_domiciliar, rendimento_per_capita,
+         numero_moradores) %>%
+  is.na() %>%
+  colSums()
 
-# Conferir estatísticas das variáveis numéricas
-summary(base_domicilios)
+# Resumir as variáveis selecionadas
+summary(base_domicilios %>%
+          select(idade_chefe, sexo_responsavel, faixa_etaria,
+                 rendimento_domiciliar, rendimento_per_capita,
+                 numero_moradores))
 ```
 
+Essas três verificações cumprem papéis diferentes: `glimpse()` mostra como os dados estão armazenados, `colSums(is.na(...))` contabiliza ausências e `summary()` apresenta um panorama das variáveis numéricas e categóricas.
+
+**Uma observação importante:** `base_analise`, criada anteriormente com `drop_na()`, é uma tabela separada. Alterações posteriores em `base_domicilios`, como a criação de `faixa_etaria`, **não são incorporadas automaticamente** a ela. Se precisarmos usar essas novas variáveis em uma análise sem valores ausentes, poderemos criar uma nova `base_analise` a partir da versão atualizada de `base_domicilios`.
+
 ## Cuidados metodológicos
-A limpeza dos microdados não deve ser tratada como uma simples operação de remoção de valores. Cada transformação pode alterar a composição da amostra e, consequentemente, os resultados da análise.
 
-No caso da PNAD Contínua, alguns cuidados merecem destaque:
+A preparação dos dados exige atenção porque cada exclusão ou recodificação pode alterar a composição da amostra. Antes de avançar para as análises estatísticas, devemos manter alguns cuidados:
 
-1. **Consultar o dicionário:** antes de substituir códigos por valores ausentes, verificar o significado de cada código.
+1. **Consultar o dicionário do IBGE:** confirmar o significado de cada categoria ou código especial antes de transformá-lo.
+2. **Preservar informações válidas:** não tratar automaticamente rendimentos iguais a zero como valores ausentes.
+3. **Justificar exclusões:** utilizar `drop_na()` apenas quando a ausência for relevante para as variáveis analisadas.
+4. **Conferir os tipos das variáveis:** evitar conversões que troquem valores verdadeiros por códigos internos de fatores.
+5. **Preservar o desenho amostral:** lembrar que uma tabela convencional não contém, por si só, todas as informações necessárias para estimativas populacionais.
 
-2. **Preservar informações válidas:** não excluir automaticamente rendimentos iguais a zero.
+### Atenção ao desenho amostral da PNAD Contínua
 
-3. **Justificar exclusões:** utilizar `drop_na()` somente nas variáveis necessárias à análise.
+Na primeira parte do entregável, construímos `base_domicilios` a partir de `pnad$variables`, isto é, da tabela de microdados contida no objeto original da pesquisa. Essa abordagem facilita o aprendizado das ferramentas de manipulação de dados, mas **não mantém automaticamente o desenho amostral completo** do objeto `pnad`, que pertence à classe `svyrep.design`.
 
-4. **Verificar os tipos:** garantir que variáveis quantitativas e categóricas estejam armazenadas corretamente.
+Isso não torna `base_domicilios` incorreta. Ela é útil para organizar informações, conferir valores e construir novas variáveis. Entretanto, as proporções e médias calculadas diretamente dessa tabela descrevem as observações selecionadas e **não devem ser interpretadas automaticamente como estimativas representativas de todos os domicílios brasileiros**.
 
-5. **Preservar o desenho amostral:** como a PNAD utiliza um plano amostral complexo, as operações realizadas sobre `pnad$variables` não preservam, por si só, a estrutura de ponderação e o desenho da pesquisa. Para estimativas populacionais, é necessário manter a correspondência entre as observações e o objeto amostral.
+Nas etapas seguintes, para produzir estimativas populacionais e medidas de incerteza, será necessário utilizar o desenho amostral e os pesos adequados da PNAD Contínua, mantendo a correspondência com as pessoas responsáveis selecionadas. As transformações pertinentes deverão ser incorporadas ao objeto amostral por procedimentos compatíveis com o pacote `survey`.
 
-### Atenção ao desenho amostral
- Ao acessar `pnad$variables`, extraímos os dados para uma tabela convencional, facilitando a manipulação e a organização das variáveis. Entretanto, essa tabela não preserva automaticamente as informações do plano amostral da pesquisa. Por isso, o objeto original `pnad` deve ser mantido para as análises estatísticas que exigem ponderação e consideração do desenho amostral. Quando necessário, as operações de filtragem e preparação devem ser reproduzidas no objeto amostral, utilizando funções compatíveis com sua estrutura.
-
-**Uma distinção fundamental:** a tabela `base_domicilios` não está errada e nem é inútil. Ela é adequada para aprender manipulação de dados, conferir valores, construir variáveis e realizar análises exploratórias. O cuidado é não interpretar automaticamente suas médias, proporções e erros-padrão como estimativas representativas da população brasileira, por conta de não preservar as informações que permitem que ela represente a população integral.
+**Síntese da etapa:** identificamos possíveis ausências, aprendemos a investigar códigos especiais sem alterar indevidamente os dados, verificamos as classes das variáveis e criamos faixas etárias para as análises futuras. Assim, damos continuidade à preparação da base iniciada na primeira parte do Entregável 3, preservando os cuidados necessários para a interpretação dos resultados.
