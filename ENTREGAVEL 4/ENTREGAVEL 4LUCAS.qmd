@@ -1,216 +1,292 @@
 ---
 title: "4.3 — Comparação de renda entre os grupos"
 lang: pt-BR
+format: pdf
+execute:
+  echo: true
+  message: false
+  warning: false
 ---
 
-## 4.3.1 — Introdução à comparação entre grupos {.unnumbered}
+# 4.3 — Comparação de renda entre os grupos
 
-Uma média nacional resume a distribuição da renda em um único número. Ao estimar médias para grupos da população, podemos identificar diferenças que a média geral esconde. Nesta seção, usamos a **PNAD Contínua anual de 2024, primeira entrevista**, para comparar domicílios conforme o sexo da pessoa responsável.
+Na seção anterior, aprendemos a calcular estatísticas descritivas e a considerar o desenho amostral da **PNAD Contínua anual de 2024, primeira entrevista**. Agora utilizaremos essas ferramentas para responder a uma das perguntas centrais do projeto: **os rendimentos domiciliares diferem conforme o sexo da pessoa responsável pelo domicílio?**
 
-A unidade de análise é o domicílio. O rendimento domiciliar reúne os rendimentos dos moradores segundo os critérios do IBGE. A renda individual da pessoa responsável é apenas uma possível parcela desse total. Seu sexo é usado para classificar o domicílio. Como os microdados têm uma linha por morador, selecionamos a linha da pessoa responsável para contar cada domicílio uma vez.
+Nossa análise continua sendo feita **no nível do domicílio**, não do rendimento individual do responsável. O sexo da pessoa responsável serve para classificar o domicílio; já os indicadores de renda se referem ao conjunto do domicílio, conforme os critérios do IBGE. Vamos comparar tanto o **rendimento domiciliar total** quanto o **rendimento domiciliar per capita**.
 
-## 4.3.2 — Calculando rendimentos médios por grupo {.unnumbered}
+## 4.3.1 — Preparação da base para a comparação
 
-### Preparar o objeto para a comparação
+Precisamos utilizar o objeto com o **desenho amostral**, pois ele preserva as informações necessárias para calcular médias e erros-padrão representativos. Nas seções 4.1 e 4.2, criamos `domicilios_e4`, que contém apenas as pessoas responsáveis e duas variáveis de renda deflacionadas:
 
-No Positron, execute primeiro o fluxo final do E3 e atribua o **objeto de desenho amostral** a `desenho_e3`. Para reproduzir a seção em uma sessão nova do Quarto, salve esse objeto com `saveRDS()` e informe o caminho do arquivo na variável de ambiente `PNAD_E3_RDS`. Em ambos os casos, confirme que o objeto provém da base anual de 2024, primeira entrevista, e que a padronização do E2 foi aplicada dentro do desenho.
+- `rendimento_domiciliar_real`: rendimento domiciliar total a preços médios de 2024;
+- `renda_per_capita_real`: rendimento domiciliar per capita a preços médios de 2024.
 
-Confira no código de preparação se `rendimento_domiciliar` e `rendimento_per_capita` correspondem aos valores originais ou a valores já convertidos para preços de referência. A presença de uma coluna com o deflator indica apenas que o fator está disponível. Informe a unidade confirmada para **ambos** os indicadores em `PNAD_E3_UNIDADE_MONETARIA`, por exemplo, `R$ nominais` ou a unidade em reais com o período de preços documentado pelo E3. Se as colunas estiverem em unidades diferentes, resolva essa divergência antes de calcular a tabela. O código desta seção usa os valores preparados, sem reaplicar deflatores.
+**Vamos colocar em prática!** O primeiro bloco aproveita `domicilios_e4` quando o objeto já está disponível na sessão. Caso o capítulo seja executado separadamente, ele reconstrói esse objeto a partir de `pnad`, utilizando os mesmos critérios da seção 4.1. Se a PNAD ainda não estiver carregada, o pacote `PNADcIBGE` poderá baixá-la; por isso, essa primeira execução pode exigir internet.
 
 ```{r}
-#| label: e4-3-entrada
+#| label: e4-p2-preparar-base
 
-# Usar o desenho da sessão ou ler o arquivo indicado para a renderização.
-arquivo_e3 <- Sys.getenv("PNAD_E3_RDS")
-if (nzchar(arquivo_e3)) {
-  desenho_e3 <- readRDS(arquivo_e3)
+if (!requireNamespace("survey", quietly = TRUE)) {
+  stop("Instale o pacote survey: install.packages('survey')")
 }
-
-e4_disponivel <- exists("desenho_e3", inherits = FALSE)
-unidade_monetaria <- trimws(Sys.getenv("PNAD_E3_UNIDADE_MONETARIA"))
-```
-
-`r if (!e4_disponivel) "A tabela será calculada quando o desenho amostral final do E3 estiver disponível."`
-
-```{r}
-#| label: e4-3-validar
-#| eval: !expr e4_disponivel
-#| message: false
-
 library(survey)
 
-if (!inherits(desenho_e3, c("survey.design", "svyrep.design"))) {
-  stop("Use o desenho amostral da PNAD preparado no E3.")
-}
-if (!nzchar(unidade_monetaria)) {
-  stop("Confirme a unidade dos dois rendimentos em PNAD_E3_UNIDADE_MONETARIA.")
-}
-
-indicadores <- c("rendimento_domiciliar", "rendimento_per_capita")
-colunas <- c("condicao_domicilio", "sexo", indicadores)
-faltantes <- setdiff(colunas, names(desenho_e3$variables))
-if (length(faltantes) > 0) {
-  stop("Colunas do E2 ausentes: ", paste(faltantes, collapse = ", "))
-}
-
-dados_e3 <- desenho_e3$variables
-vapply(dados_e3[colunas], function(x) class(x)[1], character(1))
-if (!all(vapply(dados_e3[indicadores], is.numeric, logical(1)))) {
-  stop("Confira a importação: as colunas de rendimento devem ser numéricas.")
-}
-
-# Conferir os códigos ou rótulos presentes antes de selecionar os grupos.
-table(dados_e3$condicao_domicilio, useNA = "ifany")
-table(dados_e3$sexo, useNA = "ifany")
-```
-
-O operador `$variables` abre a tabela interna para conferência. `setdiff()` informa quais nomes esperados estão ausentes, e `table()` permite verificar se condição no domicílio e sexo vieram com códigos ou com rótulos. Para filtrar, usamos `subset()` sobre o próprio desenho, preservando os pesos e a estrutura da pesquisa.
-
-```{r}
-#| label: e4-3-domicilios-validos
-#| eval: !expr e4_disponivel
-
-domicilios <- subset(
-  desenho_e3,
-  tolower(trimws(as.character(condicao_domicilio))) %in%
-    c("01", "1", "pessoa responsável pelo domicílio", "pessoa responsável")
+# Reaproveitar o objeto produzido na seção 4.1, se estiver disponível.
+colunas_necessarias <- c(
+  "V2007", "rendimento_domiciliar_real", "renda_per_capita_real"
 )
 
-sexo_observado <- tolower(trimws(as.character(domicilios$variables$sexo)))
-if (any(!is.na(sexo_observado) &
-        !sexo_observado %in% c("1", "2", "homem", "mulher"))) {
-  stop("Confira os códigos ou rótulos de sexo no objeto do E3.")
+domicilios_prontos <- exists("domicilios_e4", inherits = TRUE)
+if (domicilios_prontos) {
+  domicilios_prontos <-
+    inherits(domicilios_e4, c("svyrep.design", "survey.design")) &&
+    !is.null(domicilios_e4$variables) &&
+    all(colunas_necessarias %in% names(domicilios_e4$variables))
 }
 
-domicilios <- update(
-  domicilios,
-  grupo = factor(
-    ifelse(sexo_observado %in% c("1", "homem"), "Homem",
-           ifelse(sexo_observado %in% c("2", "mulher"), "Mulher", NA_character_)),
-    levels = c("Homem", "Mulher")
+if (!domicilios_prontos) {
+  # Caso necessário, reconstruir o objeto usado na seção 4.1.
+  variaveis_pnad <- c("V2005", "V2007", "VD5001", "VD5002", "CO1e")
+  pnad_pronta <- exists("pnad", inherits = TRUE)
+
+  if (pnad_pronta) {
+    pnad_pronta <-
+      inherits(pnad, c("svyrep.design", "survey.design")) &&
+      !is.null(pnad$variables) &&
+      all(variaveis_pnad %in% names(pnad$variables))
+  }
+
+  if (!pnad_pronta) {
+    if (!requireNamespace("PNADcIBGE", quietly = TRUE)) {
+      stop("Instale o pacote PNADcIBGE: install.packages('PNADcIBGE')")
+    }
+    dir.create("dados/cache_pnadc", recursive = TRUE, showWarnings = FALSE)
+
+    pnad <- PNADcIBGE::get_pnadc(
+      year = 2024,
+      interview = 1,
+      labels = TRUE,
+      deflator = TRUE,
+      defyear = 2024,
+      design = TRUE,
+      reload = FALSE,
+      savedir = "dados/cache_pnadc"
+    )
+  }
+
+  # Conferir rótulos e tipos antes de calcular rendimentos reais.
+  if (!inherits(pnad, c("svyrep.design", "survey.design")) ||
+      is.null(pnad$variables)) {
+    stop("A PNAD deve estar em um objeto de desenho amostral (design = TRUE).")
+  }
+  if (!all(variaveis_pnad %in% names(pnad$variables))) {
+    stop("Faltam variáveis da PNAD. Confira a importação de 2024.")
+  }
+  if (!all(vapply(pnad$variables[c("VD5001", "VD5002", "CO1e")],
+                  is.numeric, logical(1)))) {
+    stop("Os dois rendimentos e o deflator CO1e precisam ser numéricos.")
+  }
+  if (!("Pessoa responsável pelo domicílio" %in%
+        as.character(unique(pnad$variables$V2005)))) {
+    stop("Confira V2005: a importação deve usar labels = TRUE.")
+  }
+
+  # Criar as rendas reais e selecionar uma observação por domicílio.
+  pnad_e4 <- update(
+    pnad,
+    rendimento_domiciliar_real = VD5001 * CO1e,
+    renda_per_capita_real = VD5002 * CO1e
   )
+  domicilios_e4 <- subset(
+    pnad_e4,
+    V2005 == "Pessoa responsável pelo domicílio"
+  )
+}
+
+# Conferência final, inclusive se o objeto foi reaproveitado.
+if (!inherits(domicilios_e4, c("svyrep.design", "survey.design")) ||
+    !all(colunas_necessarias %in% names(domicilios_e4$variables))) {
+  stop("Não foi possível preparar os domicílios com desenho amostral.")
+}
+if (!all(vapply(domicilios_e4$variables[
+  c("rendimento_domiciliar_real", "renda_per_capita_real")
+], is.numeric, logical(1)))) {
+  stop("Confira os rendimentos: ambos precisam ser numéricos.")
+}
+if (nrow(domicilios_e4$variables) == 0) {
+  stop("A seleção não encontrou pessoas responsáveis pelos domicílios.")
+}
+
+nrow(domicilios_e4$variables)
+```
+
+**Entendendo a preparação:** `exists()` verifica se o objeto já está carregado; `inherits()` confere se ele contém um desenho amostral; e `if` permite executar a importação **somente se for necessária**. A função `update()` cria as duas rendas reais dentro do desenho, enquanto `subset()` seleciona a pessoa responsável sem descartar as informações amostrais. Esse procedimento segue o que aprendemos no Entregável 3 e na seção 4.1.
+
+### Identificando os dois grupos
+
+Anteriormente, verificamos que `V2007` possui as categorias `"Homem"` e `"Mulher"`. Agora vamos utilizá-las para criar `grupo`, uma variável que distingue **domicílios com responsável homem** e **domicílios com responsável mulher**.
+
+```{r}
+#| label: e4-p2-criar-grupos
+
+# Conferir os rótulos encontrados na base.
+table(domicilios_e4$variables$V2007, useNA = "ifany")
+
+rotulos_sexo <- as.character(domicilios_e4$variables$V2007)
+if (!all(is.na(rotulos_sexo) | rotulos_sexo %in% c("Homem", "Mulher"))) {
+  stop("Os rótulos de V2007 devem ser 'Homem' e 'Mulher'. Confira labels = TRUE.")
+}
+
+# Criar o grupo dentro do desenho amostral.
+desenho_grupos <- update(
+  domicilios_e4,
+  grupo = factor(as.character(V2007), levels = c("Homem", "Mulher"))
 )
 
-# Contagens da amostra para conferir a perda de registros.
-table(domicilios$variables$grupo, useNA = "ifany")
-validos <- subset(
-  domicilios,
-  !is.na(grupo) & is.finite(rendimento_domiciliar) &
-    is.finite(rendimento_per_capita)
+# Usar a mesma seleção de registros válidos para ambos os indicadores.
+base_comparacao <- subset(
+  desenho_grupos,
+  !is.na(grupo) &
+    is.finite(rendimento_domiciliar_real) &
+    is.finite(renda_per_capita_real)
 )
-contagem <- table(validos$variables$grupo)
-contagem
 
-if (any(contagem == 0)) {
-  stop("Confira os rótulos da pessoa responsável e os rendimentos nos dois grupos.")
+# Conferir quantos registros permaneceram em cada grupo.
+contagem_grupos <- table(base_comparacao$variables$grupo)
+contagem_grupos
+
+if (any(contagem_grupos == 0)) {
+  stop("Um dos grupos ficou sem observações válidas. Confira a base.")
 }
 ```
 
-`update()` cria a variável `grupo` no desenho. O filtro de validade mantém os domicílios com sexo identificado e ambos os rendimentos informados, de modo que as duas médias usem o mesmo conjunto de domicílios em cada grupo. `is.finite()` mantém rendimentos iguais a zero e exclui valores ausentes ou infinitos. Eventuais códigos especiais de ausência precisam ter sido convertidos em `NA` na preparação do E3. Compare as contagens antes e depois do filtro. Se a perda for expressiva ou desigual entre os grupos, leve isso em conta na interpretação.
+**O que há de novo?** `factor()` organiza os dois grupos como categorias. Já `is.finite()` verifica se um valor numérico é finito: permite manter rendimentos iguais a **zero**, mas exclui `NA`, `Inf` e `-Inf` da seleção.
 
-### Estimar as médias por sexo da pessoa responsável
+Utilizamos **a mesma amostra válida para os dois indicadores**, para que a comparação entre rendimento total e per capita não mude apenas porque uma das variáveis está ausente. Isso pode produzir médias gerais ligeiramente diferentes das apresentadas na seção 4.2, que tratou cada indicador separadamente. O objeto `domicilios_e4` original permanece intacto.
 
-`svymean()` estima médias ponderadas. `svyby()` aplica essa função a cada grupo. Os pesos determinam a contribuição de cada observação à média. As informações do desenho amostral, como estratificação ou pesos de replicação, entram no cálculo da precisão das estimativas.
+## 4.3.2 — Calculando rendimentos médios por grupo
+
+Na seção anterior, utilizamos `svymean()` para estimar uma média geral. Para obter **uma média para cada grupo**, usamos a função **`svyby()`**, também do pacote `survey`.
 
 ```{r}
-#| label: e4-3-medias
-#| eval: !expr e4_disponivel
+#| label: e4-p2-medias-por-grupo
 
-medias <- svyby(
-  formula = ~rendimento_domiciliar + rendimento_per_capita,
+medias_grupos <- svyby(
+  formula = ~rendimento_domiciliar_real + renda_per_capita_real,
   by = ~grupo,
-  design = validos,
+  design = base_comparacao,
   FUN = svymean,
+  na.rm = TRUE,
   vartype = "se"
 )
-medias
+
+medias_grupos
 ```
 
-`formula` lista os indicadores. `by` define os grupos. `design` recebe o desenho amostral já filtrado, e `FUN` informa qual função deve ser aplicada a cada grupo. Com `vartype = "se"`, aparecem também os erros-padrão. Leia cada média na linha do grupo correspondente. O erro-padrão, expresso na mesma unidade da estimativa, mede a incerteza amostral da média. O desvio-padrão, por sua vez, mede a dispersão da renda entre domicílios.
+**Interpretando o código:**
 
-## 4.3.3 — Diferenças absolutas e percentuais {.unnumbered}
+- `formula`: informa quais rendimentos queremos comparar;
+- `by = ~grupo`: solicita uma média separada para cada categoria;
+- `design = base_comparacao`: indica o objeto com pesos e desenho amostral;
+- `FUN = svymean`: define a estatística calculada em cada grupo;
+- `vartype = "se"`: solicita também os **erros-padrão** das médias.
 
-Tomamos a média dos domicílios com responsáveis homens como referência. A diferença absoluta, aqui expressa em reais, mantém o sinal da subtração. A diferença percentual divide a mesma diferença pela média de referência.
+As médias são estimadas com os pesos da pesquisa. O **erro-padrão** informa a incerteza da estimativa, enquanto o **desvio-padrão** apresentado na seção 4.2 descreve a dispersão dos rendimentos; não são a mesma medida.
+
+## 4.3.3 — Calculando diferenças absolutas e percentuais
+
+Uma tabela com duas médias já permite comparar os grupos, mas podemos resumir a diferença de duas formas. Usaremos os domicílios com **responsável homem como referência** e subtrairemos sua média da média dos domicílios com **responsável mulher**.
 
 $$
-\Delta = \bar{y}_{\mathrm{mulher}} - \bar{y}_{\mathrm{homem}},
-\qquad
-\Delta\% = \frac{\bar{y}_{\mathrm{mulher}} - \bar{y}_{\mathrm{homem}}}
-{\bar{y}_{\mathrm{homem}}} \times 100.
+\text{Diferença absoluta} = \bar{R}_{\mathrm{mulher}} - \bar{R}_{\mathrm{homem}}
 $$
+
+$$
+\text{Diferença percentual} =
+\frac{\bar{R}_{\mathrm{mulher}} - \bar{R}_{\mathrm{homem}}}
+     {\bar{R}_{\mathrm{homem}}} \times 100
+$$
+
+A primeira mostra a diferença em **reais**; a segunda informa quanto essa diferença representa **em relação à média do grupo de referência**.
 
 ```{r}
-#| label: e4-3-diferencas
-#| eval: !expr e4_disponivel
+#| label: e4-p2-calcular-diferencas
 
-# Identificar os grupos pelo rótulo, independentemente da ordem das linhas.
-media_homem <- unlist(medias[medias$grupo == "Homem", indicadores],
-                      use.names = FALSE)
-media_mulher <- unlist(medias[medias$grupo == "Mulher", indicadores],
-                       use.names = FALSE)
+indicadores <- c("rendimento_domiciliar_real", "renda_per_capita_real")
 
+# Buscar cada grupo pelo nome, e não pela posição na tabela.
+media_homem <- as.numeric(unlist(
+  medias_grupos[medias_grupos$grupo == "Homem", indicadores, drop = FALSE],
+  use.names = FALSE
+))
+media_mulher <- as.numeric(unlist(
+  medias_grupos[medias_grupos$grupo == "Mulher", indicadores, drop = FALSE],
+  use.names = FALSE
+))
+
+# Diferença: mulher menos homem, mantendo o sinal.
 diferenca_absoluta <- media_mulher - media_homem
-diferenca_percentual <- rep(NA_real_, length(indicadores))
-referencia_valida <- media_homem != 0
-diferenca_percentual[referencia_valida] <-
-  100 * diferenca_absoluta[referencia_valida] / media_homem[referencia_valida]
+
+# Se a média de referência for zero, o percentual fica indefinido.
+diferenca_percentual <- ifelse(
+  media_homem != 0,
+  100 * diferenca_absoluta / media_homem,
+  NA_real_
+)
 ```
 
-`unlist()` extrai as duas médias de cada grupo como um vetor. O R faz as operações elemento a elemento, na ordem de `indicadores`. Um valor negativo indica que a média do grupo com responsáveis mulheres é menor que a do grupo de referência. Um valor positivo indica o inverso. Se a média de referência for zero, a diferença em reais continua definida e o percentual fica indefinido. Os cálculos usam as médias sem arredondamento.
+**Entendendo os comandos:** os colchetes `[...]` selecionam as médias de cada grupo, enquanto `unlist()` e `as.numeric()` as transformam em números para fazer as contas. O `ifelse()` aplica a regra **se... então... senão**: só calculamos o percentual quando a média de referência é diferente de zero.
 
-## 4.3.4 — Rendimento domiciliar total versus per capita {.unnumbered}
+Um resultado **negativo** indica que a média dos domicílios com responsáveis mulheres é menor; um resultado **positivo** indica que é maior. Por exemplo, uma diferença de `-10%` indicaria uma média 10% inferior à do grupo de referência. *Esse valor é apenas ilustrativo, não é um resultado da PNAD.*
 
-O total informa o montante de renda do domicílio. Já o rendimento per capita informa quanto esse montante representa por morador incluído no cálculo do IBGE. Em um exemplo aritmético, dois domicílios podem receber R$ 6.000 cada. Se todos os moradores entrarem no cálculo, um domicílio com duas pessoas terá R$ 3.000 per capita e outro, com quatro pessoas, terá R$ 1.500 per capita.
+## 4.3.4 — Rendimento domiciliar total e per capita
 
-Por isso, a diferença entre os grupos pode mudar de magnitude ou de sinal quando se considera o número de moradores. A primeira fórmula de `svyby()` já calcula as duas medidas lado a lado. Para a segunda, usamos o rendimento per capita registrado para cada domicílio e tiramos a média ponderada desses valores. Dividir a renda média do grupo pelo número médio de moradores produziria outra estatística.
+Por que comparar os dois indicadores? O **rendimento domiciliar total** informa o montante recebido pelo domicílio; o **per capita** considera esse rendimento em relação ao número de moradores incluídos no cálculo do IBGE.
 
-## 4.3.5 — Organização e interpretação dos resultados {.unnumbered}
+Imagine, apenas como exemplo, dois domicílios com rendimento total de **R$ 6.000**. Se um tiver duas pessoas, seu rendimento per capita será R$ 3.000; se outro tiver quatro, será R$ 1.500. Assim, domicílios com a mesma renda total podem apresentar condições diferentes quando consideramos seu tamanho.
+
+Na nossa análise, não precisamos dividir novamente os valores: `VD5002` já é o indicador per capita calculado segundo os critérios da PNAD. Utilizamos as médias ponderadas de cada indicador, e **não** a renda média total dividida pelo número médio de moradores, que seria outra medida.
+
+## 4.3.5 — Organizando e interpretando os resultados
+
+Por fim, vamos reunir as duas médias e suas diferenças em uma tabela. Os valores **não serão digitados manualmente**: serão preenchidos pelos cálculos anteriores, a preços médios de 2024.
 
 ```{r}
-#| label: e4-3-tabela
-#| eval: !expr e4_disponivel
+#| label: e4-p2-tabela-comparativa
 
 tabela_comparativa <- data.frame(
-  indicador = c("Rendimento domiciliar médio", "Rendimento per capita médio"),
-  media_homem,
-  media_mulher,
-  diferenca_absoluta,
-  diferenca_percentual
+  Indicador = c("Rendimento domiciliar médio",
+                "Rendimento domiciliar per capita médio"),
+  Homem = media_homem,
+  Mulher = media_mulher,
+  Diferenca_absoluta = diferenca_absoluta,
+  Diferenca_percentual = diferenca_percentual
 )
 
 knitr::kable(
   tabela_comparativa,
-  col.names = c("Indicador", "Responsável homem", "Responsável mulher",
-                "Diferença absoluta", "Diferença percentual (%)"),
+  col.names = c(
+    "Indicador", "Responsável homem (R$)", "Responsável mulher (R$)",
+    "Diferença absoluta (R$)", "Diferença percentual (%)"
+  ),
   digits = 2,
   format.args = list(decimal.mark = ",", big.mark = "."),
-  caption = paste0(
-    "IBGE, PNAD Contínua anual de 2024, primeira entrevista. Valores em ",
-    unidade_monetaria, ". Diferenças calculadas como mulher menos homem."
+  caption = paste(
+    "IBGE, PNAD Contínua anual de 2024, primeira entrevista.",
+    "Rendimentos a preços médios de 2024.",
+    "Diferença calculada como mulher menos homem."
   )
 )
 ```
 
-```{r}
-#| label: e4-3-leitura
-#| eval: !expr e4_disponivel
-#| echo: false
-#| results: asis
+**Como ler a tabela:** primeiro, compare as duas médias de cada linha. Depois, observe o **sinal** e a **magnitude** das diferenças. Uma diferença negativa não deve ser interpretada como uma perda de renda causada pelo sexo da pessoa responsável: trata-se de uma **associação descritiva** entre grupos, não de uma relação causal demonstrada.
 
-for (i in seq_along(indicadores)) {
-  delta <- diferenca_absoluta[i]
-  direcao <- if (delta < 0) "menor" else if (delta > 0) "maior" else "igual"
-  percentual <- diferenca_percentual[i]
-  comparacao <- if (is.na(percentual)) {
-    "percentual indefinido"
-  } else {
-    paste0(formatC(percentual, digits = 2, format = "f", decimal.mark = ","), "%")
-  }
-  cat(tabela_comparativa$indicador[i],
-      "no grupo com responsáveis mulheres foi", direcao,
-      "em relação ao grupo com responsáveis homens",
-      paste0("(", comparacao, ").\n\n"))
-}
-```
+Também vale comparar se a diferença é maior ou menor quando passamos do rendimento total para o per capita. A composição e o tamanho dos domicílios podem ajudar a compreender por que os dois indicadores apresentam resultados distintos.
 
-Para comparar as duas linhas, observe se o sinal e a magnitude percentual mudam ao passar do total para o per capita. Diferenças de composição domiciliar e de fontes de renda podem estar associadas aos resultados. Os contrastes são descritivos. As médias, por si só, não permitem atribuir as diferenças ao sexo da pessoa responsável. Tampouco os erros-padrão das médias, isoladamente, permitem testar a diferença entre elas. Um teste exigiria um contraste calculado com o desenho amostral e a covariância entre as estimativas.
+**Cuidado estatístico:** os erros-padrão calculados por `svyby()` mostram a precisão das médias, mas não bastam, isoladamente, para afirmar que a diferença entre os grupos é estatisticamente significativa. Esse tipo de conclusão exigiria um procedimento específico de comparação que considerasse o desenho amostral.
+
+## Síntese da seção
+
+Aprendemos a utilizar **`svyby()`** para estimar rendimentos médios por grupo, calculamos diferenças em **reais** e em **percentual** e comparamos as duas medidas de rendimento domiciliar. Com isso, produzimos uma tabela que responde descritivamente à pergunta central do projeto, sem antecipar as análises por escolaridade, faixa etária e outras características socioeconômicas das próximas seções.
+
+*Referências técnicas: [documentação de `svyby()`](https://r-survey.r-forge.r-project.org/pkgdown/docs/reference/svyby.html) e [IBGE — deflacionamento anual por visita](https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Documentacao_Geral/PNADcIBGE_Deflator_Anual_Visita.pdf).*
