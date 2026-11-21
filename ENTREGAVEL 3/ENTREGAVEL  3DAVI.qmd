@@ -12,43 +12,78 @@ Neste entregável, avançamos para o tratamento e manipulação dos microdados d
 
 ## O Objeto de Desenho Amostral e a Tabela `pnad$variables`
 
-Na importação realizada com o pacote `PNADCIBGE` utilizando o argumento `design = TRUE`, o R cria um objeto da classe `svyrep.design`. Esse objeto não é uma simples tabela de dados (como um `data.frame` ou `tibble`), mas uma estrutura estatística complexa que integra:
+Na importação realizada com o pacote `PNADCIBGE` utilizando o argumento `design = TRUE`, feito no primeiro capítulo, o R cria um objeto da classe `svyrep.design`(objeto que contém os dados da pesquisa e as informações de seu desenho amostral, permitindo calcular estatísticas considerando como a amostra foi selecionada). Esse objeto não é uma simples tabela de dados (como um `data.frame`(tabela tradicional do R, organizada em linhas e colunas.) ou `tibble`( versão mais moderna de uma tabela, que facilita a organização e visualização dos dados)), mas uma estrutura estatística complexa que integra:
 
- **O plano de amostragem e os pesos de replicação (*replicate weights*):** Utilizados pelas funções do pacote `survey` para calcular erros-padrão, variâncias e estimativas populacionais representativas.
+- **O plano de amostragem e os pesos de replicação (*replicate weights*):** informações utilizadas pelo pacote `survey` para calcular estimativas representativas da população brasileira e medidas de precisão, como variâncias e erros-padrão.
 
- **A tabela de microdados brutos:** Armazenada no componente `pnad$variables`.
+- **A tabela de microdados:** armazenada em `pnad$variables`, contém as informações coletadas pelo IBGE, como idade, sexo e renda dos entrevistados. Podemos acessar e manipular esses dados no R, mas essa tabela, isoladamente, não preserva toda a estrutura do desenho amostral.
 
-### Por que o design amostral é indispensável em microeconomia?
+
+### Por que o desenho amostral é indispensável em microeconomia?
 A PNAD Contínua adota um plano de amostragem probabilística complexa por conglomerados em múltiplos estágios (com estratificação e pesos amostrais de pós-estratificação). Se realizarmos análises estatísticas ignorando a estrutura amostral (como calcular médias simples ou regressões de Mínimos Quadrados Ordinários sem pesos), as estimativas populacionais serão viesadas e os erros-padrão calculados incorretamente, levando a inferências estatísticas inválidas.
 
 Por isso, durante o tratamento dos dados (como filtragem de subpopulações e criação de novas colunas), manipulamos a tabela contida em `pnad$variables` ou geramos uma base derivada contendo as variáveis transformadas.
 
 ---
 
-## Principais Funções de Manipulação de Dados (`dplyr`)
-
-Para transformar e filtrar nossa base de maneira eficiente, utilizamos o pacote `dplyr` em conjunto com o operador *pipe* (`%>%` ou `|>`).
-
-### `filter()`: Filtragem de Observações (Linhas)
-A função `filter()` seleciona apenas os registros (linhas) que atendem a condições lógicas especificadas.
-* *Sintaxe básica:* `tabela %>% filter(condicao_logica)`
-
-### `mutate()`: Modificação e Criação de Variáveis (Colunas)
-A função `mutate()` adiciona novas colunas ou modifica colunas existentes sem alterar a quantidade de linhas da tabela.
-* *Sintaxe básica:* `tabela %>% mutate(nova_coluna = expressao)`
-
-### `case_when()`: Condicionais Múltiplas e Recodificação
-Usada dentro de `mutate()`, a função `case_when()` permite atribuir valores com base em múltiplas condições lógicas encadeadas (equivalente ao "SE... ENTÃO... SENÃO"). A sintaxe utiliza o til (`~`) para separar a condição do valor final.
-
----
-
 ## Filtrando a Pessoa Responsável e Construindo a Chefia Feminina
 
-Nossa pesquisa analisa características socioeconômicas no **nível do domicílio**. Como a PNAD Contínua apresenta registros individuais por morador (várias linhas por domicílio), precisamos selecionar apenas a pessoa responsável (`V2005`) para evitar a duplicação dos dados domiciliares.
+Nossa pesquisa analisa características socioeconômicas no **nível do domicílio**. Como a PNAD Contínua apresenta registros individuais por morador (várias linhas por domicílio), precisamos selecionar apenas a pessoa responsável (`V2005`, que anteriormente nomeamos como `condicao_domicilio`) para evitar a duplicação dos dados domiciliares.
 
-Antes de aplicar o filtro, é fundamental verificar o tipo de dado da variável `V2005` (Condição no domicílio), pois o código `'01'` (pessoa responsável) pode estar armazenado como texto (`character`/`factor`) ou como número (`numeric`/`integer`).
+Antes de aplicar o filtro, precisamos entender como a variável `V2005` está armazenada no R. Uma mesma informação pode ser apresentada de diferentes formas:
 
-Utilizamos o operador `%in% c("01", 1)` para garantir que a seleção funcione independentemente de `V2005` ser caractere ou numérico. Em seguida, recodificamos o sexo do responsável (`V2007`, onde `1` representa Homem e `2` representa Mulher) para construir as variáveis de chefia.
+- `numeric`: valores numéricos, como `1`, `2` e `3`.
+- `character`: informações armazenadas como texto, como `"01"` ou `"Homem"`.
+- `factor`: variável categórica, que organiza as observações em categorias, como `"Pessoa responsável pelo domicílio"` ou `"Filho(a) do responsável e do cônjuge"`.
+
+Para descobrir o tipo de uma variável, utilizamos a função `class()`. Caso ela seja do tipo `factor`, podemos utilizar `levels()` para consultar os nomes de suas categorias.
+
+**Vamos colocar em prática!**
+
+Primeiramente, utilizaremos `class()` para descobrir como a variável `V2005` está armazenada na nossa base de dados.
+
+```{r}
+class(pnad$variables$V2005)
+```
+
+**Saída esperada:**
+
+```text
+[1] "factor"
+```
+
+Esse resultado indica que `V2005` está armazenada como uma variável categórica (`factor`).
+
+Agora que sabemos disso, podemos utilizar `levels()` para descobrir quais categorias estão disponíveis nessa variável.
+
+```{r}
+levels(pnad$variables$V2005)
+```
+
+**Saída esperada (trecho inicial):**
+
+```text
+[1] "Pessoa responsável pelo domicílio"
+[2] "Cônjuge ou companheiro(a) de sexo diferente"
+[3] "Cônjuge ou companheiro(a) do mesmo sexo"
+[4] "Filho(a) do responsável e do cônjuge"
+[5] "Filho(a) somente do responsável"
+```
+
+O comando apresenta todas as categorias existentes na variável, que são 19. Mostramos apenas as cinco primeiras para facilitar a visualização.
+
+Observe que a primeira categoria corresponde à **pessoa responsável pelo domicílio**, justamente o grupo que queremos selecionar para nossa pesquisa.
+
+**Entendendo os comandos:**
+
+- `class()`: identifica o tipo de objeto ou variável armazenado no R.
+- `levels()`: apresenta as categorias de uma variável do tipo `factor`.
+- `pnad$variables`: acessa a tabela de microdados da PNAD.
+- `$V2005`: acessa a variável `V2005` dentro dessa tabela.
+
+**Observação:** em outras formas de importação, a pessoa responsável pode estar identificada pelo código numérico `1` ou pelo texto `"01"`. Nesses casos, poderíamos utilizar `%in% c("01", 1)` para verificar se a variável corresponde a um desses valores. Entretanto, **esse procedimento não é adequado para nossa base atual**, pois seus valores estão representados por categorias com nomes descritivos.
+
+Na próxima etapa, utilizaremos a função `filter()` do pacote `dplyr` para realizar essa seleção. Posteriormente, construiremos as variáveis que identificam o sexo da pessoa responsável e classificam os domicílios conforme a chefia masculina ou feminina.
 
 ---
 
@@ -61,7 +96,6 @@ Antes de iniciar, carregamos os pacotes necessários:
 ```{r}
 #| label: carregar-pacotes
 #| message: false
-#| warning: false
 
 library(dplyr)
 library(knitr)
@@ -69,62 +103,11 @@ library(knitr)
 
 O pacote `dplyr` será utilizado para manipular os dados, enquanto o `knitr` permitirá organizar os resultados em tabelas para apresentação.
 
-### Carregamento e preparação da base de dados
-
-Primeiramente, precisamos disponibilizar os microdados para trabalhar. O comando `file.exists()` verifica se determinado arquivo está presente no diretório de trabalho. Caso o arquivo `pnad_2024_q1.rds` exista, utilizamos `readRDS()` para carregá-lo.
-
-```{r}
-#| label: carregar-base
-#| message: false
-#| warning: false
-
-if (file.exists("pnad_2024_q1.rds")) {
-  pnad <- readRDS("pnad_2024_q1.rds")
-}
-```
-
-Caso o arquivo não esteja disponível e o objeto `pnad` ainda não exista no ambiente do R, podemos utilizar uma base simulada para demonstrar o funcionamento dos procedimentos. Essa alternativa é especialmente útil para fins didáticos, pois permite acompanhar as transformações mesmo sem ter os microdados originais carregados.
-
-```{r}
-#| label: base-simulada
-#| message: false
-#| warning: false
-
-if (!exists("pnad")) {
-  set.seed(123)
-  n_obs <- 1000
-
-  dados_simulados <- tibble(
-    UF = sample(c("35", "33", "31", "41", "53"),
-                n_obs, replace = TRUE),
-    V2001 = sample(1:6, n_obs, replace = TRUE),
-    V2005 = sample(c("01", "02", "03", "04"),
-                   n_obs, replace = TRUE),
-    V2007 = sample(c("1", "2"), n_obs, replace = TRUE),
-    V2009 = sample(18:85, n_obs, replace = TRUE),
-    VD5001 = round(abs(rnorm(n_obs, mean = 3500, sd = 1500)), 2),
-    VD5002 = round(abs(rnorm(n_obs, mean = 1400, sd = 800)), 2)
-  )
-
-  pnad <- list(variables = dados_simulados)
-}
-```
-
-Vamos entender alguns comandos utilizados:
-
-- `set.seed(123)`: estabelece uma semente para a geração de números aleatórios. Isso garante que a base simulada apresente os mesmos valores sempre que o código for executado, facilitando a reprodução dos resultados.
-- `n_obs <- 1000`: define que a base simulada terá 1.000 observações.
-- `sample()`: seleciona valores aleatórios de um conjunto de possibilidades. O argumento `replace = TRUE` permite que um mesmo valor seja selecionado mais de uma vez.
-- `rnorm()`: gera números aleatórios segundo uma distribuição normal, definida pela média (`mean`) e pelo desvio-padrão (`sd`).
-- `abs()`: transforma os valores negativos em positivos, enquanto `round()` arredonda os valores para duas casas decimais.
-- `tibble()`: organiza as variáveis em uma tabela, estrutura utilizada pelo pacote `dplyr`.
-- `list()`: cria uma lista, na qual armazenamos a tabela simulada no componente `variables`.
-
-**Atenção:** os dados simulados servem apenas para demonstrar o funcionamento do código. Eles não representam estimativas oficiais da PNAD Contínua e não devem ser utilizados para tirar conclusões sobre a população brasileira.
+Com os pacotes carregados e o objeto pnad disponível, podemos iniciar a identificação da pessoa responsável pelo domicílio.
 
 ### Verificação da estrutura dos dados
 
-Antes de manipular a base, é importante verificar como os dados estão organizados e quais são suas classes. Para isso, utilizamos três comandos:
+Agora que aprendemos a utilizar `class()`, podemos aplicar essa função para verificar a estrutura do objeto `pnad` e de seus componentes.
 
 ```{r}
 #| label: verificar-estrutura
@@ -134,21 +117,29 @@ class(pnad$variables)
 class(pnad$variables$V2005)
 ```
 
-A função `class()` identifica a classe de um objeto no R, permitindo compreender sua estrutura e quais operações podem ser realizadas sobre ele.
+**Saída esperada:**
 
-- `class(pnad)`: identifica a classe do objeto principal, que contém a estrutura do desenho amostral.
-- `class(pnad$variables)`: verifica a classe da tabela que armazena os microdados.
-- `class(pnad$variables$V2005)`: identifica o tipo de dado da variável que representa a condição do morador no domicílio.
+```text
+[1] "svyrep.design"
+[1] "data.frame"
+[1] "factor"
+```
 
-O operador `$` permite acessar componentes de um objeto pelo nome. Assim, `pnad$variables` acessa a tabela de microdados, enquanto `pnad$variables$V2005` acessa especificamente a variável `V2005`.
+**Interpretando os resultados:**
 
-Essa verificação é importante porque os códigos das variáveis podem estar armazenados como números ou textos, dependendo da forma de importação dos dados. Conhecer essa estrutura evita erros durante a filtragem e a recodificação.
+- `pnad` — `svyrep.design`: objeto que contém os dados e o desenho amostral da pesquisa.
+- `pnad$variables` — `data.frame`: tabela de dados organizada em linhas e colunas.
+- `pnad$variables$V2005` — `factor`: variável categórica, com valores classificados em categorias.
+
+Observe que o operador `$` permite acessar componentes específicos de um objeto. Assim, `pnad$variables` acessa a tabela de microdados, enquanto `$V2005` seleciona uma variável dessa tabela.
+
+Essa verificação nos ajuda a compreender a organização dos dados antes de realizar as próximas transformações.
 
 ### Identificação da pessoa responsável pelo domicílio
 
 A PNAD Contínua registra informações individualmente para cada morador. Isso significa que um mesmo domicílio pode aparecer em diversas linhas da base, uma para cada pessoa residente.
 
-Entretanto, como nossa pesquisa pretende analisar características domiciliares, precisamos selecionar apenas uma observação por domicílio: aquela correspondente à pessoa responsável, identificada pelo código `01` na variável `V2005`.
+Entretanto, como nossa pesquisa pretende analisar características domiciliares, precisamos selecionar apenas uma observação por domicílio: aquela correspondente à pessoa responsável, identificada pela categoria `"Pessoa responsável pelo domicílio"` na variável `V2005`, conforme verificamos anteriormente com a função `levels()`.
 
 ```{r}
 #| label: filtrar-responsavel
@@ -157,27 +148,43 @@ base_domicilios <- pnad$variables %>%
   filter(V2005 == "Pessoa responsável pelo domicílio")
 ```
 
-Nesse trecho, o operador `%in%` verifica se os valores de `V2005` pertencem ao conjunto de possibilidades apresentado em `c("01", 1)`. A utilização das duas representações permite contemplar tanto códigos armazenados como texto quanto códigos armazenados como números.
+**Entendendo o código:**
 
-O resultado é atribuído ao objeto `base_domicilios`, que passa a conter somente as observações referentes às pessoas responsáveis pelos domicílios.
+- `base_domicilios`: nome da nova tabela que armazenará os registros selecionados.
+- `<-`: atribui o resultado da operação ao objeto `base_domicilios`.
+- `pnad$variables`: acessa a tabela de microdados da PNAD.
+- `%>%`: operador *pipe*, que encaminha os dados para a função seguinte.
+- `filter()`: função do pacote `dplyr` que seleciona apenas as linhas que atendem a uma condição.
+- `V2005 == "Pessoa responsável pelo domicílio"`: verifica quais observações pertencem à categoria desejada. O operador `==` significa "é igual a".
 
+Assim, o objeto `base_domicilios` passa a conter somente as observações referentes às pessoas responsáveis pelos domicílios.
 
 **Por que isso é importante?**
 
-Imagine um domicílio com quatro moradores. Na base original, ele aparece em quatro linhas. Se utilizássemos todas essas observações para analisar características domiciliares, poderíamos contabilizar o mesmo domicílio diversas vezes.
+Imagine um domicílio com quatro moradores. Na base original, ele aparece em quatro linhas. Se utilizássemos todas essas observações para analisar características domiciliares, poderíamos contabilizar o mesmo domicílio diversas vezes. Se utilizássemos todas as linhas para calcular a renda domiciliar média por exemplo, esse domicílio entraria quatro vezes no cálculo
 
-Ao selecionar a pessoa responsável, estabelecemos uma observação de referência para cada domicílio, evitando essa duplicação na análise.
+Ao selecionar a pessoa responsável, estabelecemos uma observação de referência para cada domicílio, evitando duplicações na análise e, ao mesmo tempo, restringindo a base ao grupo de interesse principal da nossa pesquisa: os responsáveis pelos domicílios.
 
 ### Criação e recodificação das variáveis
 
-Após identificar os responsáveis, precisamos organizar as informações que serão utilizadas na pesquisa. Para isso, criamos novas variáveis com nomes mais intuitivos, facilitando a interpretação dos dados.
+Após identificar as pessoas responsáveis pelos domicílios, precisamos organizar as informações que serão utilizadas na pesquisa. Para isso, utilizaremos duas funções do pacote `dplyr`: `mutate()` e `case_when()`.
+
+**Conhecendo as funções:**
+
+- **`mutate()`**: permite criar novas colunas ou modificar colunas existentes em uma tabela. Por exemplo, podemos criar uma variável chamada `idade_chefe` utilizando os valores da variável original `V2009`, sem precisar excluir esta última.
+
+- **`case_when()`**: permite criar classificações a partir de condições. Por exemplo, podemos verificar se a pessoa responsável é mulher e, nesse caso, atribuir a categoria `"Mulher Chefe"`. Caso seja homem, atribuímos `"Homem Chefe"`.
+
+As duas funções podem ser utilizadas em conjunto: enquanto `mutate()` cria a nova coluna, `case_when()` determina quais valores ela receberá.
+
+**Vamos colocar em prática!**
 
 ```{r}
 #| label: criar-variaveis
 
 base_domicilios <- base_domicilios %>%
   mutate(
-    # Renomeação das variáveis
+    # Criação de variáveis com nomes descritivos
     uf = UF,
     numero_moradores = V2001,
     condicao_domicilio = V2005,
@@ -205,32 +212,51 @@ base_domicilios <- base_domicilios %>%
   )
 ```
 
-As primeiras atribuições apenas criam nomes mais descritivos para as variáveis originais:
+**1. Criação de variáveis com nomes descritivos**
+
+A primeira parte do código cria novas colunas com nomes mais fáceis de compreender, preservando as variáveis originais.
+
+Por exemplo, ao escrever `idade_chefe = V2009`, criamos uma coluna chamada `idade_chefe` que contém os mesmos valores de `V2009`.
 
 | Nova variável | Variável original | Informação |
 |---|---|---|
 | `uf` | `UF` | Unidade da Federação |
 | `numero_moradores` | `V2001` | Número de moradores |
-| `idade_chefe` | `V2009` | Idade do responsável |
+| `idade_chefe` | `V2009` | Idade da pessoa responsável |
 | `rendimento_domiciliar` | `VD5001` | Rendimento domiciliar |
 | `rendimento_per_capita` | `VD5002` | Rendimento domiciliar per capita |
 
-Em seguida, construímos duas variáveis relacionadas ao sexo da pessoa responsável.
+**2. Identificação do sexo e classificação da chefia domiciliar**
 
-A variável `sexo_responsavel` transforma os códigos numéricos da variável `V2007` em categorias de leitura mais simples:
+Na segunda parte, utilizamos `case_when()` dentro de `mutate()` para criar duas variáveis a partir de `V2007`, que identifica o sexo da pessoa responsável.
 
-- Código `1`: Homem.
-- Código `2`: Mulher.
+- `sexo_responsavel`: mantém a identificação como `"Homem"` ou `"Mulher"`.
+- `chefia_feminina`: classifica os registros como `"Homem Chefe"` ou `"Mulher Chefe"`.
 
-Já a variável `chefia_feminina` identifica a classificação da chefia domiciliar, distinguindo domicílios com responsáveis homens e mulheres.
+Observe a seguinte expressão:
 
-Observe também a utilização de `TRUE ~ NA_character_`. Essa condição determina que, caso nenhuma das condições anteriores seja satisfeita, o resultado será um valor ausente (`NA`) armazenado como texto. Isso evita classificar incorretamente observações com códigos não identificados.
+```{r}
+V2007 == "Mulher" ~ "Mulher Chefe"
+```
 
-**Atenção à interpretação:** a variável construída identifica o sexo da pessoa responsável pelo domicílio, conforme a classificação da PNAD Contínua. Portanto, não deve ser interpretada automaticamente como uma medida de autoridade, poder de decisão ou responsabilidade econômica exclusiva dentro da família.
+Ela significa: **se** o valor de `V2007` for `"Mulher"`, **então** a nova variável receberá `"Mulher Chefe"`.
+
+O operador `~` separa a condição do resultado que será atribuído quando ela for verdadeira.
+
+Por fim:
+
+```{r}
+TRUE ~ NA_character_
+```
+
+Essa instrução determina que, quando nenhuma das condições anteriores for satisfeita, será atribuído um valor ausente (`NA`) do tipo texto. Assim, evitamos classificar incorretamente observações que não correspondam às categorias previstas.
+
+**Atenção à interpretação:** a variável `chefia_feminina` identifica o sexo da pessoa responsável pelo domicílio, conforme a classificação da PNAD Contínua. Portanto, não deve ser interpretada automaticamente como uma medida de autoridade, poder de decisão ou responsabilidade econômica exclusiva dentro da família.
+
 
 ### Validação da base construída
 
-Depois das transformações, precisamos verificar se a nova base foi construída corretamente. Para isso, utilizamos algumas funções que permitem examinar suas dimensões e a distribuição das categorias criadas.
+Depois das transformações, precisamos realizar algumas verificações para identificar possíveis problemas na base construída. Para isso, utilizamos funções que permitem examinar suas dimensões e a distribuição das categorias criadas.
 
 ```{r}
 #| label: validar-base
@@ -250,7 +276,7 @@ Em seguida, verificamos quantas observações foram classificadas em cada catego
 table(base_domicilios$chefia_feminina, useNA = "ifany")
 ```
 
-A função `table()` constrói uma tabela de frequência, contabilizando quantas observações pertencem a cada categoria da variável analisada.
+A função `table()` constrói uma tabela de frequência, contabilizando quantas observações pertencem a cada categoria da variável analisada. Por padrão, table() desconsidera valores ausentes (NA). Assim, os percentuais são calculados apenas entre as observações com classificação disponível.
 
 O argumento `useNA = "ifany"` permite incluir os valores ausentes na contagem, caso existam. Dessa forma, conseguimos identificar se há observações que não foram classificadas como chefia masculina ou feminina.
 
@@ -330,6 +356,14 @@ saveRDS(
 )
 ```
 
+**Salvando a base construída**
+
+Após organizar e verificar os dados, utilizamos `saveRDS()` para salvar a base tratada em um arquivo `.rds`, permitindo recuperá-la posteriormente sem repetir todas as etapas de preparação.
+
+O comando `dir.create("dados", showWarnings = FALSE)` cria a pasta `dados`, caso ela ainda não exista.
+
+As configurações `echo: false` e `include: false` controlam a apresentação do bloco no documento. Nesse caso, `include: false` oculta tanto o código quanto seus resultados, sem impedir sua execução.
+
 ### Síntese da etapa
 
 Ao final desse procedimento, transformamos os microdados individuais em uma base organizada a partir das pessoas responsáveis pelos domicílios. Além de padronizar os nomes das variáveis, construímos uma classificação da chefia domiciliar segundo o sexo do responsável.
@@ -337,3 +371,19 @@ Ao final desse procedimento, transformamos os microdados individuais em uma base
 Essa transformação representa uma etapa fundamental da pesquisa, pois estabelece a unidade de análise que será utilizada nas comparações socioeconômicas posteriores.
 
 **Importante:** a base construída ainda não corresponde a uma análise populacional ponderada. Nas próximas etapas, será necessário considerar o desenho amostral da PNAD Contínua para calcular estimativas, proporções e medidas de renda representativas da população brasileira.
+
+
+## Resumo das Principais Funções de Manipulação de Dados (`dplyr`)
+
+Para transformar e filtrar nossa base de maneira eficiente, utilizamos o pacote `dplyr` em conjunto com o operador *pipe* (`%>%` ou `|>`).
+
+### `filter()`: Filtragem de Observações (Linhas)
+A função `filter()` seleciona apenas os registros (linhas) que atendem a condições lógicas especificadas.
+* *Sintaxe básica:* `tabela %>% filter(condicao_logica)`
+
+### `mutate()`: Modificação e Criação de Variáveis (Colunas)
+A função `mutate()` adiciona novas colunas ou modifica colunas existentes sem alterar a quantidade de linhas da tabela.
+* *Sintaxe básica:* `tabela %>% mutate(nova_coluna = expressao)`
+
+### `case_when()`: Condicionais Múltiplas e Recodificação
+Usada dentro de `mutate()`, a função `case_when()` permite atribuir valores com base em múltiplas condições lógicas encadeadas (equivalente ao "SE... ENTÃO... SENÃO"). A sintaxe utiliza o til (`~`) para separar a condição do valor final.
