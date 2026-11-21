@@ -1,99 +1,208 @@
+---
+title: "Deflacionamento e pesos amostrais na PNAD Contínua"
+format: pdf
+execute:
+  echo: true
+  message: false
+  warning: false
+---
+
 # Deflacionamento e pesos amostrais na PNAD Contínua
 
-Nesta aula, aprenderemos a transformar um rendimento nominal em rendimento real e a calcular médias considerando o desenho amostral da PNAD Contínua. Partiremos do objeto `pnad`, importado no Entregável 1 com `design = TRUE`. Assim, não precisamos antecipar as etapas de filtragem e limpeza das outras duplas.
+Nesta etapa, aprenderemos a transformar rendimentos nominais em rendimentos reais e a calcular médias considerando os pesos e o desenho amostral da PNAD Contínua. Trabalharemos com os **microdados anuais de 2024, primeira entrevista**, utilizados desde o Entregável 1.
+
+O objetivo é demonstrar essas ferramentas sem repetir a filtragem ou a limpeza realizadas nas outras partes do Entregável 3. Por isso, partiremos do objeto `pnad`, que contém os registros individuais e as informações do desenho amostral.
 
 ## Rendimento nominal e rendimento real
 
-**Rendimento nominal** é o valor registrado em reais no período da pesquisa, sem ajuste pela variação dos preços. **Rendimento real** é o valor ajustado para uma referência de preços, permitindo comparar o poder de compra entre períodos.
+**Rendimento nominal** é o valor registrado em reais no período da pesquisa, sem ajuste pela variação dos preços. **Rendimento real** é o valor ajustado para uma referência de preços, tornando mais adequadas as comparações de poder de compra.
 
-A transformação é chamada de **deflacionamento**. Quando utilizamos o fator multiplicativo fornecido pelo IBGE, o cálculo é:
+Esse ajuste é chamado de **deflacionamento**. Quando o IBGE fornece um fator multiplicativo de deflação, calculamos:
 
-\[
-\text{Renda real} = \text{Renda nominal} \times \text{Fator de deflação}
-\]
+$$
+\text{Rendimento real} = \text{Rendimento nominal} \times \text{Fator de deflação}
+$$
 
-A PNAD Contínua distingue dois fatores, de acordo com a definição do rendimento:
+A PNAD Contínua distingue o rendimento **habitual** (o que a pessoa costuma receber) do **efetivo** (o que recebeu no período de referência). Os fatores também dependem da base temporal usada na pesquisa. Para os **microdados anuais por visita**, os principais fatores são:
 
-- `Habitual`: para rendimentos habitualmente recebidos;
-- `Efetivo`: para rendimentos efetivamente recebidos.
+| Fator | Tipo de rendimento | Referência dos preços |
+|---|---|---|
+| `CO1` | Habitual | Preços médios do próprio ano |
+| `CO1e` | Efetivo | Preços médios do próprio ano |
+| `CO2` | Habitual | Preços médios do ano de referência do deflator |
+| `CO2e` | Efetivo | Preços médios do ano de referência do deflator |
 
-A escolha depende da variável analisada. Por exemplo, `VD4019` representa rendimento habitual de todos os trabalhos, enquanto `VD4020` representa rendimento efetivo de todos os trabalhos. Não devemos aplicar o mesmo fator indiscriminadamente.
+**Atenção:** `Habitual` e `Efetivo` são nomes de fatores utilizados em outras modalidades dos microdados, como na divulgação trimestral. Eles **não substituem** `CO1` e `CO1e` na nossa base anual por visita.
 
-No Entregável 2, selecionamos **`VD5002`**, rendimento domiciliar *efetivo* per capita. Portanto, o fator correspondente é **`Efetivo`**:
+No Entregável 2, selecionamos `VD5002`, o **rendimento domiciliar efetivo per capita**. Para expressá-lo a preços médios de **2024**, utilizaremos `CO1e`:
 
-\[
-\text{Renda per capita real} = \text{VD5002} \times \text{Efetivo}
-\]
+$$
+\text{Rendimento domiciliar per capita real} = \text{VD5002} \times \text{CO1e}
+$$
 
-O exemplo utiliza o fator incorporado à base pelo pacote `PNADcIBGE`. Seu nome e sua presença devem ser conferidos na edição utilizada; não devemos substituí-lo por um número arbitrário.
+Assim, não inventamos um percentual de inflação: utilizamos o fator fornecido para a PNAD, adequado ao rendimento e ao ano estudados.
 
-## Conferindo o deflator e criando a renda real
+*Fonte: [IBGE — documentação de apoio para deflacionamento anual por visita](https://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Anual/Microdados/Visita/Documentacao_Geral/PNADcIBGE_Deflator_Anual_Visita.pdf).*
 
-Antes de calcular, verificamos se a renda e o fator estão disponíveis:
+## Preparando o objeto com o desenho amostral
+
+Anteriormente, vimos que `pnad` pertence à classe `svyrep.design`: ele contém a base de microdados **e** as informações necessárias para levar em conta o plano amostral. A tabela `pnad$variables`, por sua vez, contém os registros e as variáveis observadas, mas não substitui o desenho completo.
+
+Nesta parte, utilizaremos o pacote `survey`, especializado na análise de pesquisas amostrais complexas. Também precisaremos garantir que a variável `CO1e` foi incluída na importação.
+
+**Vamos colocar em prática!** O bloco abaixo reaproveita `pnad` quando ele já está disponível, contém o desenho amostral e possui as variáveis necessárias. Caso contrário, importa os mesmos microdados do Entregável 1, agora especificando o fator de deflação. Isso também permite executar este arquivo `.qmd` separadamente dos arquivos dos colegas.
 
 ```{r}
-#| eval: false
-
-c("VD5002", "Efetivo") %in% names(pnad$variables)
-```
-
-O resultado esperado é `TRUE` para ambos. Se `Efetivo` não existir, precisamos verificar a importação e a disponibilização do deflator antes de continuar.
-
-Como `pnad` é um objeto de desenho amostral, utilizaremos **`update()`**, do pacote `survey`, para criar a variável sem descartar os pesos de replicação:
-
-```{r}
-#| eval: false
+#| label: preparar-pnad-com-deflator
+#| message: false
 
 library(survey)
 
+# Conferir se o objeto já está disponível e contém as variáveis necessárias.
+pnad_pronta <- exists("pnad", inherits = TRUE)
+
+if (pnad_pronta) {
+  pnad_pronta <-
+    inherits(pnad, c("svyrep.design", "survey.design")) &&
+    !is.null(pnad$variables) &&
+    all(c("VD5002", "CO1e", "UF") %in% names(pnad$variables))
+}
+
+# Se necessário, importar a PNAD anual de 2024 (primeira entrevista).
+if (!pnad_pronta) {
+  if (!requireNamespace("PNADcIBGE", quietly = TRUE)) {
+    stop("Instale o pacote PNADcIBGE: install.packages('PNADcIBGE')")
+  }
+
+  dir.create("dados/cache_pnadc", recursive = TRUE, showWarnings = FALSE)
+
+  pnad <- PNADcIBGE::get_pnadc(
+    year = 2024,
+    interview = 1,
+    defyear = 2024,
+    labels = TRUE,
+    deflator = TRUE,
+    design = TRUE,
+    reload = FALSE,
+    savedir = "dados/cache_pnadc"
+  )
+}
+
+# Impedir cálculos com um objeto ou fator inadequado.
+if (!inherits(pnad, c("svyrep.design", "survey.design"))) {
+  stop("O objeto 'pnad' precisa conter o desenho amostral (design = TRUE).")
+}
+
+variaveis_necessarias <- c("VD5002", "CO1e", "UF")
+faltantes <- setdiff(variaveis_necessarias, names(pnad$variables))
+
+if (length(faltantes) > 0) {
+  stop(paste("Variáveis não encontradas:", paste(faltantes, collapse = ", ")))
+}
+
+if (!is.numeric(pnad$variables$VD5002) || !is.numeric(pnad$variables$CO1e)) {
+  stop("VD5002 e CO1e precisam estar em formato numérico. Confira a importação.")
+}
+```
+
+**Entendendo as novidades desse bloco:**
+
+- `library(survey)` carrega as funções que trabalham com pesos e desenhos amostrais.
+- `exists("pnad")` verifica se o objeto já está disponível na sessão do R.
+- `inherits()` confere se o objeto pertence à classe esperada, como `svyrep.design`.
+- `%in%` verifica se cada nome informado está entre as colunas existentes; `all()` exige que **todos** estejam presentes.
+- `if (...)` executa um trecho apenas quando a condição é verdadeira; `!` significa **não**.
+- `get_pnadc()` importa a pesquisa. Os argumentos `year = 2024` e `interview = 1` mantêm a mesma edição; `deflator = TRUE` inclui os fatores de deflação, `defyear = 2024` fixa o ano de referência e `design = TRUE` preserva o plano amostral.
+- `stop()` interrompe a execução com uma mensagem explicativa caso algum requisito não seja atendido. Dessa forma, evitamos calcular uma renda real incorreta sem perceber.
+
+**Observação:** se os microdados não estiverem disponíveis localmente, a importação poderá exigir conexão com a internet. A pasta `dados/cache_pnadc` é usada para guardar os arquivos baixados. Não precisamos inventar valores ou recorrer à tabela `base_domicilios`, que não contém o desenho amostral completo.
+
+## Conferindo o fator de deflação
+
+Antes de calcular a renda real, confirmamos quais variáveis estão disponíveis:
+
+```{r}
+#| label: conferir-deflator
+
+c("VD5002", "CO1e", "UF") %in% names(pnad$variables)
+
+head(pnad$variables[c("VD5002", "CO1e")])
+```
+
+**Como interpretar?** O primeiro comando deve apresentar três valores `TRUE`: isso significa que encontramos a renda per capita, o fator de deflação e a UF. O segundo mostra apenas as seis primeiras observações dessas duas variáveis, sem modificar os dados.
+
+## Criando o rendimento domiciliar per capita real
+
+Até aqui, utilizamos `mutate()` para criar colunas em tabelas convencionais. Agora aprenderemos **`update()`**, que permite criar uma variável **dentro de um objeto de desenho amostral**, preservando sua estrutura.
+
+```{r}
+#| label: criar-renda-real
+
 pnad_real <- update(
   pnad,
-  renda_per_capita_real = VD5002 * Efetivo
+  renda_per_capita_real = VD5002 * CO1e
 )
 
 head(pnad_real$variables$renda_per_capita_real)
 ```
 
-O objeto `pnad_real` contém a nova variável `renda_per_capita_real` e mantém o desenho amostral do objeto original. Já `head()` mostra os primeiros valores para conferência. Nenhum resultado numérico é presumido nesta aula.
+**Interpretando o código:**
 
-### Logaritmo da renda (opcional)
+- `pnad_real <-` guarda o resultado em um novo objeto, sem substituir `pnad`.
+- `update(pnad, ...)` acrescenta a variável ao objeto amostral.
+- `VD5002 * CO1e` multiplica o rendimento nominal pelo deflator correspondente.
+- `head()` apresenta os seis primeiros valores calculados para conferência.
 
-Em algumas análises, usamos `log()` para reduzir a escala de rendas muito altas. O logaritmo natural só pode ser aplicado a rendimentos **positivos**:
+Diferentemente de criar uma tabela a partir de `pnad$variables`, esse procedimento **mantém o desenho amostral** necessário às próximas estimativas.
+
+### Logaritmo do rendimento real (opcional)
+
+Em Economia e Econometria, é comum utilizar o **logaritmo natural** (`log()`) dos rendimentos. Ele pode ajudar a trabalhar com distribuições muito assimétricas e permite interpretações específicas em modelos econométricos.
+
+Porém, o logaritmo real não está definido para rendimentos iguais a zero ou negativos. Por isso, criamos uma variável adicional apenas para valores positivos, mantendo a renda original em reais:
 
 ```{r}
-#| eval: false
+#| label: criar-log-renda
 
 pnad_real <- update(
   pnad_real,
-  log_renda_real = log(ifelse(
-    renda_per_capita_real > 0,
-    renda_per_capita_real,
-    NA_real_
-  ))
+  log_renda_real = log(
+    ifelse(renda_per_capita_real > 0, renda_per_capita_real, NA_real_)
+  )
 )
+
+head(pnad_real$variables$log_renda_real)
 ```
 
-Assim, valores iguais a zero, negativos ou ausentes não recebem um logaritmo válido. A variável em log é opcional e não substitui a renda real em reais.
+A função `ifelse()` segue a lógica **se... então... senão**: se a renda for positiva, mantém seu valor para o cálculo do logaritmo; caso contrário, utiliza `NA_real_`, um valor ausente numérico. Assim, não tentamos calcular `log(0)` ou `log()` de valores negativos.
+
+**Importante:** uma renda zero pode ser válida na pesquisa. Ela não deve ser excluída da base apenas porque o logaritmo não está definido. A nova variável em log é opcional e não substitui `renda_per_capita_real`.
 
 ## Por que utilizar pesos amostrais?
 
-A PNAD Contínua investiga uma **amostra**, não todos os moradores do Brasil. As observações têm pesos diferentes, e o desenho da pesquisa também influencia a precisão das estimativas.
+A PNAD Contínua entrevista **uma amostra da população**, não todos os moradores do Brasil. Como os domicílios e as pessoas não têm necessariamente a mesma probabilidade de participar, a pesquisa utiliza pesos amostrais. Seu desenho também precisa ser considerado para calcular corretamente a precisão das estimativas.
 
-Por isso, a média aritmética obtida com `mean()` não deve ser tratada automaticamente como estimativa da população:
+Uma média aritmética simples, produzida por `mean()`, atribui o mesmo peso a cada registro observado:
 
 ```{r}
-#| eval: false
+#| label: calcular-media-simples
 
-# Média simples dos registros: não considera os pesos
-mean(pnad_real$variables$renda_per_capita_real, na.rm = TRUE)
+media_simples <- mean(
+  pnad_real$variables$renda_per_capita_real,
+  na.rm = TRUE
+)
+
+media_simples
 ```
 
-No Entregável 1, `pnad` foi importado com `design = TRUE`, formando um objeto de desenho com pesos de replicação. O pacote `survey` utiliza essas informações para calcular estimativas e seus erros-padrão.
+O argumento `na.rm = TRUE` pede ao R que desconsidere os valores ausentes no cálculo. Essa média descreve os registros disponíveis na amostra, **mas não incorpora os pesos ou o desenho amostral**. Por isso, não deve ser apresentada automaticamente como uma estimativa representativa da população.
 
-## Estimando a renda média com `svymean()`
+## Estimando a média com `svymean()`
+
+A função **`svymean()`**, do pacote `survey`, calcula médias utilizando as informações amostrais contidas no objeto `pnad_real`.
 
 ```{r}
-#| eval: false
+#| label: calcular-media-ponderada
 
 media_renda <- svymean(
   ~renda_per_capita_real,
@@ -104,16 +213,22 @@ media_renda <- svymean(
 media_renda
 ```
 
-O símbolo `~` identifica a variável analisada; `design` indica o objeto com os pesos e `na.rm = TRUE` permite desconsiderar valores ausentes na estimativa. O resultado apresenta a média estimada e seu **erro-padrão**, relacionado à incerteza da amostragem.
+**Entendendo as partes novas:**
 
-**Atenção à interpretação:** neste exemplo, usamos todos os registros de pessoas presentes em `pnad`. Isso não equivale automaticamente a uma média calculada com uma observação por domicílio, que dependerá da definição da população de análise em outra parte do trabalho.
+- `~renda_per_capita_real` indica a variável que queremos analisar. O símbolo `~` introduz uma **fórmula** no R; aqui ele não representa uma operação de divisão nem uma conta matemática.
+- `design = pnad_real` informa qual objeto contém os microdados e o desenho amostral.
+- `na.rm = TRUE` desconsidera registros com renda ausente na estimativa.
 
-## Comparando médias por grupos com `svyby()`
+A saída apresenta a **média estimada** e seu **erro-padrão**, que ajuda a avaliar a incerteza associada ao fato de trabalharmos com uma amostra em vez de observar toda a população. O resultado numérico dependerá dos dados efetivamente importados.
 
-A função `svyby()` calcula a mesma estatística separadamente por grupos. Como a variável de chefia será criada por outra dupla, usaremos aqui apenas `UF`, já apresentada no Entregável 2:
+**Atenção à unidade de análise:** neste exemplo, cada registro corresponde a uma pessoa. Como `VD5002` é um rendimento **domiciliar per capita**, seus valores podem se repetir entre moradores do mesmo domicílio. A estimativa ponderada sobre pessoas **não é automaticamente** a mesma coisa que uma média em que cada domicílio entra uma única vez. Para comparar os responsáveis pelos domicílios, será necessário fazer a seleção apropriada **dentro do objeto amostral**, conforme as etapas desenvolvidas pelas outras duplas.
+
+## Comparando médias entre estados com `svyby()`
+
+Podemos ir além da média geral e calcular uma estimativa para cada Unidade da Federação. Para isso, utilizamos **`svyby()`**, que aplica uma função estatística separadamente a cada grupo.
 
 ```{r}
-#| eval: false
+#| label: calcular-media-por-uf
 
 media_por_uf <- svyby(
   ~renda_per_capita_real,
@@ -127,11 +242,19 @@ media_por_uf <- svyby(
 media_por_uf
 ```
 
-Nesse comando, `~UF` define os grupos, `FUN = svymean` solicita a média de cada estado e `vartype = "se"` apresenta os erros-padrão. O cálculo continua considerando o desenho amostral.
+**Interpretando os argumentos:**
+
+- `~renda_per_capita_real` identifica o rendimento cuja média será calculada.
+- `~UF` divide a análise por Unidade da Federação.
+- `FUN = svymean` solicita uma média para cada grupo (UF).
+- `vartype = "se"` pede que os **erros-padrão** também apareçam na tabela de resultados.
+
+Observe que `svyby()` **não ignora o desenho amostral** ao separar os grupos. O pacote `survey` utiliza as informações de `pnad_real` em cada estimativa.
 
 ## Conclusão
 
-Nesta aula, distinguimos rendimento nominal e real, utilizamos o fator `Efetivo` correspondente à variável `VD5002` para criar `renda_per_capita_real` e apresentamos a transformação opcional `log()`. Também vimos que **`svymean()` e `svyby()` consideram o desenho amostral da PNAD**, ao contrário de uma média simples dos registros.
+Nesta etapa, distinguimos rendimento nominal de rendimento real e aprendemos a utilizar o fator **`CO1e`**, adequado ao rendimento domiciliar efetivo per capita (`VD5002`) nos microdados anuais por visita, para expressar a renda a preços médios de **2024**.
 
-Nos próximos usos desses resultados, será importante manter o fator de deflação adequado, preservar os pesos e interpretar corretamente a população representada. Esta seção não realiza a filtragem, a limpeza nem o fechamento coletivo da base.
+Também vimos que `update()` permite acrescentar variáveis sem perder o desenho amostral; que `mean()` calcula uma média simples dos registros; e que `svymean()` e `svyby()` utilizam as informações amostrais para estimar médias e seus erros-padrão.
 
+**Lembrete metodológico:** este arquivo demonstra o deflacionamento e o uso de pesos no objeto original `pnad`. Ele não substitui a filtragem e a limpeza realizadas nos arquivos anteriores, nem apresenta resultados finais sobre chefia masculina e feminina. Essas comparações exigem integrar as transformações ao objeto amostral e definir corretamente a população de interesse.
