@@ -23,6 +23,7 @@ Vamos aproveitar `base_comparacao`, criada na seção 4.3. Ela já contém uma o
 ```{r}
 #| label: e4-p3-preparar-base
 
+library(PNADcIBGE)
 if (!requireNamespace("survey", quietly = TRUE)) {
   stop("Instale o pacote survey: install.packages('survey')")
 }

@@ -26,6 +26,7 @@ Precisamos utilizar o objeto com o **desenho amostral**, pois ele preserva as in
 ```{r}
 #| label: e4-p2-preparar-base
 
+library(PNADcIBGE)
 if (!requireNamespace("survey", quietly = TRUE)) {
   stop("Instale o pacote survey: install.packages('survey')")
 }

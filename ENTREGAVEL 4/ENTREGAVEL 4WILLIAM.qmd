@@ -35,6 +35,7 @@ O bloco a seguir recupera o objeto `pnad`, quando ele já estiver carregado corr
 #| label: e4-p1-preparar-base
 
 # O pacote survey calcula estatísticas de pesquisas amostrais complexas.
+library(PNADcIBGE)
 if (!requireNamespace("survey", quietly = TRUE)) {
   stop("Instale o pacote survey: install.packages('survey')")
 }
